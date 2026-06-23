@@ -73,7 +73,7 @@
 ### TASK-1.2: Auth Endpoints (Backend)
 **File:** `src/routes/auth.routes.ts`, `src/controllers/auth.controller.ts`, `src/services/auth.service.ts`
 
-- [ ] `POST /api/auth/register` — register new user
+- [x] `POST /api/auth/register` — register new user
   - Validate: username (unique), email (unique, valid format), password (min 8)
   - Hash password with bcrypt (12 rounds)
   - Create User record
@@ -81,7 +81,7 @@
   - Create BuyerProfile/SellerProfile/DriverProfile based on roles
   - Return: user data (no password)
 
-- [ ] `POST /api/auth/login` — login
+- [x] `POST /api/auth/login` — login
   - Find user by email or username
   - Compare password with bcrypt
   - Generate access token (JWT, 15min) with: sub, username, roles[], active_role
@@ -91,25 +91,25 @@
   - Set refresh token as httpOnly cookie
   - Return: access_token, user info
 
-- [ ] `POST /api/auth/logout` — logout
+- [x] `POST /api/auth/logout` — logout
   - Read refresh token from cookie
   - Mark refresh token as revoked in DB
   - Clear cookie
   - Return: 200 OK
 
-- [ ] `POST /api/auth/refresh` — refresh access token
+- [x] `POST /api/auth/refresh` — refresh access token
   - Read refresh token from cookie
   - Verify JWT signature + expiry
   - Check DB: not revoked
   - Issue new access token
   - Return: new access_token
 
-- [ ] `POST /api/auth/select-role` — choose active role
+- [x] `POST /api/auth/select-role` — choose active role
   - Verify user owns requested role
   - Issue new access token with active_role set
   - Return: new access_token
 
-- [ ] `GET /api/auth/me` — current user profile
+- [x] `GET /api/auth/me` — current user profile
   - Return: user data + roles + active_role + financial placeholders
 
 ### TASK-1.3: Auth Middleware (Backend)
@@ -155,7 +155,7 @@
 
 ### TASK-1.7: Swagger Setup (Backend)
 - [x] Configure `swagger-jsdoc` in `src/config/swagger.ts`
-- [ ] Add JSDoc annotations to all auth + public routes
+- [x] Add JSDoc annotations to all auth routes (public routes still pending)
 - [x] Serve Swagger UI at `GET /api/docs`
 
 ### TASK-1.8: Landing Page (Frontend)
