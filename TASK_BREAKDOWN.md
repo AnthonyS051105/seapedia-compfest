@@ -38,8 +38,8 @@
 - [x] Create `.env.example` with all required variables
 
 ### SETUP-03: Frontend Setup
-- [ ] `cd apps/frontend && npx create-next-app@latest . --typescript --tailwind --app --src-dir=false`
-- [ ] Install additional dependencies:
+- [x] `cd apps/frontend && npx create-next-app@latest . --typescript --tailwind --app --src-dir=false` (scaffolded with Next.js 16 + Tailwind 4, latest at time of setup — see ARCHITECTURE.md deviation note)
+- [x] Install additional dependencies:
   ```
   axios zustand
   react-hook-form @hookform/resolvers zod
@@ -48,11 +48,12 @@
   clsx tailwind-merge
   dompurify @types/dompurify
   ```
-- [ ] Configure Tailwind CSS with custom color palette
-- [ ] Create `lib/api.ts` (axios instance)
-- [ ] Create `middleware.ts` (Next.js route protection)
-- [ ] Set up `store/` directory (Zustand stores)
-- [ ] Create `types/index.ts` (shared TypeScript interfaces)
+  (dompurify not yet installed — not needed until user-generated content is rendered)
+- [x] Configure Tailwind CSS with custom color palette (Tailwind v4 CSS-based `@theme` tokens in `app/globals.css`, not `tailwind.config.ts`)
+- [x] Create `lib/api.ts` (axios instance)
+- [x] Create `proxy.ts` (Next.js route protection — renamed from `middleware.ts` per Next.js 16 convention)
+- [x] Set up `store/` directory (Zustand stores)
+- [x] Create `types/index.ts` (shared TypeScript interfaces)
 
 ### SETUP-04: Database
 - [ ] Provision PostgreSQL on Supabase or Neon
@@ -210,27 +211,27 @@
 ### TASK-1.13: Reusable UI Components (Frontend)
 **File:** `components/ui/`
 
-- [ ] `Button.tsx` — variants: primary, secondary, outline, ghost, danger
-- [ ] `Input.tsx` — with label, error state, helper text
+- [x] `Button.tsx` — variants: primary, secondary, outline, ghost, danger
+- [x] `Input.tsx` — with label, error state, helper text
 - [ ] `Card.tsx` — basic card container
-- [ ] `Badge.tsx` — status badge with color variants
-- [ ] `Modal.tsx` — dialog with backdrop
-- [ ] `Toast.tsx` — using react-hot-toast (configure in providers)
+- [x] `Badge.tsx` — status badge with color variants
+- [x] `Modal.tsx` — dialog with backdrop
+- [x] `Toast.tsx` — using react-hot-toast (configured in `app/providers.tsx`)
 - [ ] `Spinner.tsx` — loading indicator
-- [ ] `Skeleton.tsx` — loading skeleton
+- [x] `Skeleton.tsx` — loading skeleton
 - [ ] `StarRating.tsx` — interactive + display-only star rating
 - [ ] `Pagination.tsx` — page number controls
-- [ ] `EmptyState.tsx` — empty state with icon + message
+- [x] `EmptyState.tsx` — empty state with icon + message
 
 ### TASK-1.14: Next.js Middleware (Frontend)
-**File:** `middleware.ts`
+**File:** `proxy.ts` (renamed from `middleware.ts` — Next.js 16 deprecated the old convention)
 
-- [ ] Protect `/buyer/*` routes (check refresh token cookie)
-- [ ] Protect `/seller/*` routes
-- [ ] Protect `/driver/*` routes
-- [ ] Protect `/admin/*` routes
-- [ ] Redirect to /auth/login if no cookie
-- [ ] Public routes: /, /products/*, /stores/*, /auth/*
+- [x] Protect `/buyer/*` routes (check refresh token cookie)
+- [x] Protect `/seller/*` routes
+- [x] Protect `/driver/*` routes
+- [x] Protect `/admin/*` routes
+- [x] Redirect to /auth/login if no cookie
+- [x] Public routes: /, /products/*, /stores/*, /auth/* (implicit — only protected prefixes are matched)
 
 ---
 
