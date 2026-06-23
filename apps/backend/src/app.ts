@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec } from './config/swagger'
 import { errorHandler } from './middleware/errorHandler'
 import authRoutes from './routes/auth.routes'
+import publicRoutes from './routes/public.routes'
 
 const app: Application = express()
 
@@ -38,9 +39,9 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.get('/api/docs.json', (_req, res) => res.json(swaggerSpec))
 
 app.use('/api/auth', authRoutes)
+app.use('/api', publicRoutes)
 
 // Route placeholder — individual routers will be mounted here as they are implemented
-// app.use('/api', publicRoutes)
 // app.use('/api/buyer', buyerRoutes)
 // app.use('/api/seller', sellerRoutes)
 // app.use('/api/driver', driverRoutes)

@@ -127,26 +127,26 @@
 ### TASK-1.4: Public Catalog Endpoints (Backend)
 **File:** `src/routes/public.routes.ts`
 
-- [ ] `GET /api/products` — paginated product list
+- [x] `GET /api/products` — paginated product list
   - Query params: page, limit, search, store_id, min_price, max_price, sort
   - Include store info in response
 
-- [ ] `GET /api/products/:id` — product detail
+- [x] `GET /api/products/:id` — product detail
   - Include store info
   - Return 404 if not found
 
-- [ ] `GET /api/stores` — store listing
-- [ ] `GET /api/stores/:id` — store detail with products
+- [x] `GET /api/stores` — store listing
+- [x] `GET /api/stores/:id` — store detail with products
 
 ### TASK-1.5: App Reviews Endpoints (Backend)
 **File:** `src/routes/review.routes.ts`
 
-- [ ] `POST /api/reviews` — submit review (no auth required)
+- [x] `POST /api/reviews` — submit review (no auth required)
   - Validate: reviewer_name, rating (1-5), comment
   - Sanitize reviewer_name and comment (strip HTML)
   - Store in DB
 
-- [ ] `GET /api/reviews` — list reviews (paginated, DESC order)
+- [x] `GET /api/reviews` — list reviews (paginated, DESC order)
 
 ### TASK-1.6: Error Handler & Response Util (Backend)
 - [x] Create `src/middleware/errorHandler.ts` — global error handler
@@ -155,7 +155,7 @@
 
 ### TASK-1.7: Swagger Setup (Backend)
 - [x] Configure `swagger-jsdoc` in `src/config/swagger.ts`
-- [x] Add JSDoc annotations to all auth routes (public routes still pending)
+- [x] Add JSDoc annotations to all auth + public routes
 - [x] Serve Swagger UI at `GET /api/docs`
 
 ### TASK-1.8: Landing Page (Frontend)
@@ -569,7 +569,7 @@
 - [ ] Document in README: "All queries use Prisma ORM which parameterizes automatically"
 
 ### TASK-7.2: XSS Prevention (Backend + Frontend)
-- [ ] Backend: Add `sanitize-html` to review submit handler (already done in TASK-1.5 — verify)
+- [x] Backend: Add `sanitize-html` to review submit handler (done in TASK-1.5, verified with live `<script>`/`onerror` XSS payload via curl — both stripped)
 - [ ] Backend: Add sanitization to any other user-submitted text fields (store.name, product.description, etc.)
 - [ ] Frontend: Ensure all user-generated content rendered with React (JSX auto-escapes)
 - [ ] Frontend: Never use `dangerouslySetInnerHTML` for user content
