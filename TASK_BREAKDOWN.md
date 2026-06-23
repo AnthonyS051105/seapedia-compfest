@@ -34,7 +34,7 @@
 - [x] Configure `tsconfig.json` (strict mode, paths)
 - [x] Create `src/app.ts` (Express app) and `src/server.ts` (entry)
 - [x] Set up `prisma/schema.prisma` with all models
-- [ ] Run `npx prisma init` and configure DATABASE_URL (schema configured directly; no real DB provisioned yet)
+- [x] Run `npx prisma init` and configure DATABASE_URL (configured directly with Supabase pooled `DATABASE_URL` + direct `DIRECT_URL` for migrations, instead of running `prisma init`)
 - [x] Create `.env.example` with all required variables
 
 ### SETUP-03: Frontend Setup
@@ -56,10 +56,10 @@
 - [x] Create `types/index.ts` (shared TypeScript interfaces)
 
 ### SETUP-04: Database
-- [ ] Provision PostgreSQL on Supabase or Neon
-- [ ] Copy DATABASE_URL to `.env`
-- [ ] Run `npx prisma migrate dev --name init` to create all tables
-- [ ] Verify schema with `npx prisma studio`
+- [x] Provision PostgreSQL on Supabase or Neon
+- [x] Copy DATABASE_URL to `.env`
+- [x] Run `npx prisma migrate dev --name init` to create all tables
+- [x] Verify schema with `npx prisma studio` (verified via direct query against `information_schema.tables` — all 19 model tables confirmed; Studio itself not opened since it's an interactive server)
 
 ---
 
@@ -67,8 +67,8 @@
 
 ### TASK-1.1: Database Schema (Backend)
 - [x] Write complete Prisma schema (all models from SDD)
-- [ ] Run initial migration
-- [ ] Create `prisma/seed.ts` skeleton (fill in later)
+- [x] Run initial migration
+- [x] Create `prisma/seed.ts` skeleton (fill in later) — fully implemented, not just a skeleton
 
 ### TASK-1.2: Auth Endpoints (Backend)
 **File:** `src/routes/auth.routes.ts`, `src/controllers/auth.controller.ts`, `src/services/auth.service.ts`
@@ -609,19 +609,19 @@
 **File:** `prisma/seed.ts`
 
 Complete seed with:
-- [ ] Admin account: admin@seapedia.com / Admin@123
-- [ ] Seller account (also Buyer): seller1@seapedia.com / Seller@123
+- [x] Admin account: admin@seapedia.com / Admin@123
+- [x] Seller account (also Buyer): seller1@seapedia.com / Seller@123
   - Store: "Toko Elektronik Maju"
   - 5+ products with stock
 
-- [ ] Buyer account (also Driver): buyer1@seapedia.com / Buyer@123
+- [x] Buyer account (also Driver): buyer1@seapedia.com / Buyer@123
   - Wallet balance: Rp 1,000,000
   - 1 default address
 
-- [ ] Driver-only account: driver1@seapedia.com / Driver@123
-- [ ] 2 active vouchers (HEMAT10, DISC50K)
-- [ ] 2 active promos (PROMO15, FLASH25K)
-- [ ] Run: `npx prisma db seed`
+- [x] Driver-only account: driver1@seapedia.com / Driver@123
+- [x] 2 active vouchers (HEMAT10, DISC50K)
+- [x] 2 active promos (PROMO15, FLASH25K)
+- [x] Run: `npx prisma db seed`
 
 ### TASK-7.9: Swagger Annotations (Backend)
 - [ ] Add JSDoc Swagger annotations to ALL route files
