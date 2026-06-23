@@ -9,14 +9,14 @@
 ## Project Setup (Before Level 1)
 
 ### SETUP-01: Initialize Monorepo
-- [ ] Create root `package.json` with workspaces config
-- [ ] Create `apps/frontend/` and `apps/backend/` directories
-- [ ] Initialize Git repository + `.gitignore`
+- [x] Create root `package.json` with workspaces config
+- [x] Create `apps/frontend/` and `apps/backend/` directories
+- [x] Initialize Git repository + `.gitignore`
 - [ ] Create root `README.md` skeleton
 
 ### SETUP-02: Backend Setup
-- [ ] `cd apps/backend && npm init -y`
-- [ ] Install dependencies:
+- [x] `cd apps/backend && npm init -y`
+- [x] Install dependencies:
   ```
   express typescript ts-node-dev @types/node @types/express
   prisma @prisma/client
@@ -31,11 +31,11 @@
   swagger-jsdoc swagger-ui-express
   dotenv
   ```
-- [ ] Configure `tsconfig.json` (strict mode, paths)
-- [ ] Create `src/app.ts` (Express app) and `src/server.ts` (entry)
-- [ ] Set up `prisma/schema.prisma` with all models
-- [ ] Run `npx prisma init` and configure DATABASE_URL
-- [ ] Create `.env.example` with all required variables
+- [x] Configure `tsconfig.json` (strict mode, paths)
+- [x] Create `src/app.ts` (Express app) and `src/server.ts` (entry)
+- [x] Set up `prisma/schema.prisma` with all models
+- [ ] Run `npx prisma init` and configure DATABASE_URL (schema configured directly; no real DB provisioned yet)
+- [x] Create `.env.example` with all required variables
 
 ### SETUP-03: Frontend Setup
 - [ ] `cd apps/frontend && npx create-next-app@latest . --typescript --tailwind --app --src-dir=false`
@@ -65,7 +65,7 @@
 ## Level 1: Public Marketplace, Auth & Reviews
 
 ### TASK-1.1: Database Schema (Backend)
-- [ ] Write complete Prisma schema (all models from SDD)
+- [x] Write complete Prisma schema (all models from SDD)
 - [ ] Run initial migration
 - [ ] Create `prisma/seed.ts` skeleton (fill in later)
 
@@ -114,14 +114,14 @@
 ### TASK-1.3: Auth Middleware (Backend)
 **File:** `src/middleware/authenticate.ts`, `src/middleware/requireRole.ts`
 
-- [ ] `authenticate` middleware — extract + verify JWT from Authorization header
+- [x] `authenticate` middleware — extract + verify JWT from Authorization header
   - Return 401 if missing/invalid/expired
   - Attach `req.user` payload
 
-- [ ] `requireRole(role)` middleware — check active_role
+- [x] `requireRole(role)` middleware — check active_role
   - Return 403 if active_role !== required role
 
-- [ ] Input validation middleware using Zod schemas
+- [x] Input validation middleware using Zod schemas (`validateBody`, `validateQuery`)
 
 ### TASK-1.4: Public Catalog Endpoints (Backend)
 **File:** `src/routes/public.routes.ts`
@@ -148,14 +148,14 @@
 - [ ] `GET /api/reviews` — list reviews (paginated, DESC order)
 
 ### TASK-1.6: Error Handler & Response Util (Backend)
-- [ ] Create `src/middleware/errorHandler.ts` — global error handler
-- [ ] Create `src/utils/response.ts` — standard response envelope
-- [ ] Create custom error classes: `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `ConflictError`
+- [x] Create `src/middleware/errorHandler.ts` — global error handler
+- [x] Create `src/utils/response.ts` — standard response envelope
+- [x] Create custom error classes: `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `ConflictError`
 
 ### TASK-1.7: Swagger Setup (Backend)
-- [ ] Configure `swagger-jsdoc` in `src/config/swagger.ts`
+- [x] Configure `swagger-jsdoc` in `src/config/swagger.ts`
 - [ ] Add JSDoc annotations to all auth + public routes
-- [ ] Serve Swagger UI at `GET /api/docs`
+- [x] Serve Swagger UI at `GET /api/docs`
 
 ### TASK-1.8: Landing Page (Frontend)
 **File:** `app/page.tsx`
@@ -366,7 +366,7 @@
 - [ ] `app/seller/orders/[id]/page.tsx` — seller order detail
 
 ### TASK-3.10: Pricing Utility (Backend)
-- [ ] `src/utils/pricing.ts` — calculatePricing(), DELIVERY_FEES constant
+- [x] `src/utils/pricing.ts` — calculatePricing(), DELIVERY_FEES constant
 - [ ] Unit test pricing calculations (optional but recommended)
 
 ---

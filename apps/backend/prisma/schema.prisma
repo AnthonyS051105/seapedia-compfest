@@ -1,0 +1,389 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================
+// ENUMS
+// =====================
+
+enum Role {
+  ADMIN
+  SELLER
+  BUYER
+  DRIVER
+}
+
+enum OrderStatus {
+  SEDANG_DIKEMAS
+  MENUNGGU_PENGIRIM
+  SEDANG_DIKIRIM
+  PESANAN_SELESAI
+  DIKEMBALIKAN
+}
+
+enum DeliveryMethod {
+  INSTANT
+  NEXT_DAY
+  REGULAR
+}
+
+enum WalletTransactionType {
+  TOP_UP
+  PAYMENT
+  REFUND
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+// =====================
+// USERS & AUTH
+// =====================
+
+model User {
+  id         String   @id @default(uuid())
+  username   String   @unique
+  email      String   @unique
+  password   String
+  full_name  String?
+  phone      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user_roles     UserRole[]
+  refresh_tokens RefreshToken[]
+  buyer_profile  BuyerProfile?
+  seller_profile SellerProfile?
+  driver_profile DriverProfile?
+  reviews        AppReview[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model UserRole {
+  id         String   @id @default(uuid())
+  user_id    String
+  role       Role
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role])
+  @@index([user_id])
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @unique
+  is_revoked Boolean  @default(false)
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([user_id])
+}
+
+// =====================
+// BUYER PROFILE
+// =====================
+
+model BuyerProfile {
+  id         String   @id @default(uuid())
+  user_id    String   @unique
+  balance    Decimal  @default(0) @db.Decimal(15, 2)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user        User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  addresses   DeliveryAddress[]
+  wallet_txns WalletTransaction[]
+  orders      Order[]
+  cart_items  CartItem[]
+}
+
+model DeliveryAddress {
+  id             String   @id @default(uuid())
+  buyer_id       String
+  label          String
+  recipient_name String
+  phone          String
+  street         String
+  city           String
+  province       String
+  postal_code    String
+  is_default     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  buyer_profile BuyerProfile @relation(fields: [buyer_id], references: [id], onDelete: Cascade)
+  orders        Order[]
+
+  @@index([buyer_id])
+}
+
+model WalletTransaction {
+  id          String                @id @default(uuid())
+  buyer_id    String
+  type        WalletTransactionType
+  amount      Decimal               @db.Decimal(15, 2)
+  description String?
+  order_id    String?
+  created_at  DateTime              @default(now())
+
+  buyer_profile BuyerProfile @relation(fields: [buyer_id], references: [id], onDelete: Cascade)
+
+  @@index([buyer_id])
+}
+
+model CartItem {
+  id         String   @id @default(uuid())
+  buyer_id   String
+  product_id String
+  quantity   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  buyer_profile BuyerProfile @relation(fields: [buyer_id], references: [id], onDelete: Cascade)
+  product       Product      @relation(fields: [product_id], references: [id])
+
+  @@unique([buyer_id, product_id])
+  @@index([buyer_id])
+}
+
+// =====================
+// SELLER PROFILE & STORE
+// =====================
+
+model SellerProfile {
+  id           String   @id @default(uuid())
+  user_id      String   @unique
+  total_income Decimal  @default(0) @db.Decimal(15, 2)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  user  User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  store Store?
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  seller_id   String   @unique
+  name        String   @unique
+  description String?
+  address     String?
+  logo_url    String?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  seller_profile SellerProfile @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+  products       Product[]
+
+  @@index([name])
+}
+
+// =====================
+// PRODUCTS
+// =====================
+
+model Product {
+  id          String    @id @default(uuid())
+  store_id    String
+  name        String
+  description String?
+  price       Decimal   @db.Decimal(15, 2)
+  stock       Int       @default(0)
+  images      String[]
+  is_active   Boolean   @default(true)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  store       Store       @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  cart_items  CartItem[]
+  order_items OrderItem[]
+
+  @@index([store_id])
+  @@index([price])
+  @@index([created_at])
+}
+
+// =====================
+// DRIVER PROFILE
+// =====================
+
+model DriverProfile {
+  id             String   @id @default(uuid())
+  user_id        String   @unique
+  total_earnings Decimal  @default(0) @db.Decimal(15, 2)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  user          User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  delivery_jobs DeliveryJob[]
+}
+
+// =====================
+// ORDERS
+// =====================
+
+model Order {
+  id              String         @id @default(uuid())
+  buyer_id        String
+  store_id        String
+  address_id      String
+  delivery_method DeliveryMethod
+  status          OrderStatus    @default(SEDANG_DIKEMAS)
+
+  subtotal        Decimal @db.Decimal(15, 2)
+  discount_amount Decimal @default(0) @db.Decimal(15, 2)
+  delivery_fee    Decimal @db.Decimal(15, 2)
+  ppn_amount      Decimal @db.Decimal(15, 2)
+  final_total     Decimal @db.Decimal(15, 2)
+
+  discount_code String?
+  discount_type String?
+  voucher_id    String?
+  promo_id      String?
+
+  is_overdue_processed Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  buyer_profile    BuyerProfile         @relation(fields: [buyer_id], references: [id])
+  delivery_address DeliveryAddress      @relation(fields: [address_id], references: [id])
+  order_items      OrderItem[]
+  status_history   OrderStatusHistory[]
+  delivery_job     DeliveryJob?
+
+  @@index([buyer_id])
+  @@index([store_id])
+  @@index([status])
+  @@index([created_at])
+}
+
+model OrderItem {
+  id            String  @id @default(uuid())
+  order_id      String
+  product_id    String
+  product_name  String
+  product_price Decimal @db.Decimal(15, 2)
+  quantity      Int
+  subtotal      Decimal @db.Decimal(15, 2)
+
+  order   Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@index([order_id])
+}
+
+model OrderStatusHistory {
+  id         String      @id @default(uuid())
+  order_id   String
+  status     OrderStatus
+  note       String?
+  created_at DateTime    @default(now())
+
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([order_id])
+}
+
+// =====================
+// DELIVERY JOBS
+// =====================
+
+model DeliveryJob {
+  id           String    @id @default(uuid())
+  order_id     String    @unique
+  driver_id    String?
+  earning      Decimal?  @db.Decimal(15, 2)
+  taken_at     DateTime?
+  completed_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  order          Order          @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  driver_profile DriverProfile? @relation(fields: [driver_id], references: [id])
+
+  @@index([driver_id])
+  @@index([order_id])
+}
+
+// =====================
+// DISCOUNTS
+// =====================
+
+model Voucher {
+  id                  String       @id @default(uuid())
+  code                String       @unique
+  discount_type       DiscountType
+  discount_value      Decimal      @db.Decimal(10, 2)
+  max_discount_amount Decimal?     @db.Decimal(15, 2)
+  min_order_amount    Decimal?     @db.Decimal(15, 2)
+  expiry_date         DateTime
+  max_usage           Int
+  current_usage       Int          @default(0)
+  is_active           Boolean      @default(true)
+  created_at          DateTime     @default(now())
+  updated_at          DateTime     @updatedAt
+
+  @@index([code])
+}
+
+model Promo {
+  id                  String       @id @default(uuid())
+  code                String       @unique
+  name                String
+  description         String?
+  discount_type       DiscountType
+  discount_value      Decimal      @db.Decimal(10, 2)
+  max_discount_amount Decimal?     @db.Decimal(15, 2)
+  min_order_amount    Decimal?     @db.Decimal(15, 2)
+  expiry_date         DateTime
+  is_active           Boolean      @default(true)
+  created_at          DateTime     @default(now())
+  updated_at          DateTime     @updatedAt
+
+  @@index([code])
+}
+
+// =====================
+// APP REVIEWS
+// =====================
+
+model AppReview {
+  id            String   @id @default(uuid())
+  reviewer_name String
+  rating        Int
+  comment       String
+  user_id       String?
+  created_at    DateTime @default(now())
+
+  user User? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([created_at])
+}
+
+// =====================
+// SYSTEM CONFIG
+// =====================
+
+model SystemConfig {
+  id         String   @id @default(uuid())
+  key        String   @unique
+  value      String
+  updated_at DateTime @updatedAt
+}
