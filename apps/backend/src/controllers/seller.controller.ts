@@ -120,3 +120,14 @@ export const getOrderDetail = async (req: Request, res: Response, next: NextFunc
     next(error)
   }
 }
+
+export const processOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const { id } = req.params
+    const order = await sellerService.processOrder(userId, id)
+    success(res, order, 'Pesanan berhasil diproses')
+  } catch (error) {
+    next(error)
+  }
+}

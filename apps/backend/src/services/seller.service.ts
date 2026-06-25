@@ -7,6 +7,9 @@ import { sanitizeText } from '../utils/sanitize'
 import { ConflictError, NotFoundError, BadRequestError } from '../utils/errors'
 import { PaginationMeta } from '../utils/response'
 
+const SELLER_PROCESSABLE_STATUS = 'SEDANG_DIKEMAS' as const
+const SELLER_PROCESSED_STATUS = 'MENUNGGU_PENGIRIM' as const
+
 export interface StoreResult {
   id: string
   name: string
@@ -34,6 +37,7 @@ export interface SellerProductResult {
 export interface OrderListItem {
   id: string
   buyer_id: string
+  buyer_name: string
   status: string
   delivery_method: string
   subtotal: number
@@ -251,6 +255,7 @@ class SellerService {
         orderBy: { created_at: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
+        include: { buyer_profile: { include: { user: { select: { username: true, full_name: true } } } } },
       }),
       prisma.order.count({ where }),
     ])
@@ -269,6 +274,7 @@ class SellerService {
       include: {
         order_items: true,
         status_history: { orderBy: { created_at: 'asc' } },
+        buyer_profile: { include: { user: { select: { username: true, full_name: true } } } },
       },
     })
     if (!order) {
@@ -295,6 +301,35 @@ class SellerService {
         created_at: h.created_at,
       })),
     }
+  }
+
+  async processOrder(userId: string, orderId: string): Promise<OrderDetailResult> {
+    const store = await this.getOwnStoreOrThrow(userId)
+
+    const order = await prisma.order.findFirst({ where: { id: orderId, store_id: store.id } })
+    if (!order) {
+      throw new NotFoundError('Pesanan tidak ditemukan')
+    }
+    if (order.status !== SELLER_PROCESSABLE_STATUS) {
+      throw new BadRequestError(
+        `Pesanan tidak dapat diproses dari status saat ini (${order.status})`
+      )
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: order.id },
+        data: { status: SELLER_PROCESSED_STATUS },
+      })
+      await tx.orderStatusHistory.create({
+        data: { order_id: order.id, status: SELLER_PROCESSED_STATUS },
+      })
+      await tx.deliveryJob.create({
+        data: { order_id: order.id },
+      })
+    })
+
+    return this.getOrderDetail(userId, orderId)
   }
 
   private async getSellerProfileOrThrow(userId: string): Promise<{ id: string }> {
@@ -364,10 +399,12 @@ class SellerService {
     ppn_amount: Prisma.Decimal
     final_total: Prisma.Decimal
     created_at: Date
+    buyer_profile: { user: { username: string; full_name: string | null } }
   }): OrderListItem {
     return {
       id: order.id,
       buyer_id: order.buyer_id,
+      buyer_name: order.buyer_profile.user.full_name ?? order.buyer_profile.user.username,
       status: order.status,
       delivery_method: order.delivery_method,
       subtotal: Number(order.subtotal),

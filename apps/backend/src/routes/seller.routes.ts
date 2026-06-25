@@ -413,4 +413,36 @@ router.get(
  */
 router.get('/orders/:id', authenticate, requireRole('SELLER'), sellerController.getOrderDetail)
 
+/**
+ * @swagger
+ * /seller/orders/{id}/process:
+ *   post:
+ *     summary: Proses pesanan masuk
+ *     description: |
+ *       Mengubah status pesanan dari `SEDANG_DIKEMAS` ke `MENUNGGU_PENGIRIM`,
+ *       mencatat perubahan ke riwayat status, dan membuat record `DeliveryJob`
+ *       (belum diambil driver). Hanya bisa dilakukan jika status saat ini
+ *       `SEDANG_DIKEMAS`.
+ *     tags: [Seller - Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Pesanan berhasil diproses
+ *       400:
+ *         description: Pesanan tidak dapat diproses dari status saat ini
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan SELLER
+ *       404:
+ *         description: Pesanan tidak ditemukan atau bukan milik toko ini
+ */
+router.post('/orders/:id/process', authenticate, requireRole('SELLER'), sellerController.processOrder)
+
 export default router

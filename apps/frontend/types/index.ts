@@ -57,6 +57,19 @@ export interface Product {
   is_active?: boolean
 }
 
+export interface SellerProduct {
+  id: string
+  store_id: string
+  name: string
+  description: string | null
+  price: number
+  stock: number
+  images: string[]
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface CartItem {
   id: string
   buyer_id: string
@@ -115,6 +128,28 @@ export interface Order {
   updated_at: string
   order_items?: OrderItem[]
   status_history?: OrderStatusHistoryEntry[]
+}
+
+export interface SellerOrder {
+  id: string
+  buyer_id: string
+  buyer_name: string
+  status: OrderStatus
+  delivery_method: DeliveryMethod
+  subtotal: number
+  discount_amount: number
+  delivery_fee: number
+  ppn_amount: number
+  final_total: number
+  created_at: string
+}
+
+export interface SellerOrderDetail extends SellerOrder {
+  address_id: string
+  discount_code: string | null
+  discount_type: string | null
+  order_items: OrderItem[]
+  status_history: OrderStatusHistoryEntry[]
 }
 
 export interface DeliveryJob {
