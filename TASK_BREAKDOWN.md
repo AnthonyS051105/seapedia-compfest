@@ -531,23 +531,23 @@
 
 ### TASK-5.4: Driver Dashboard Pages (Frontend)
 
-- [ ] `app/driver/dashboard/page.tsx` — stats: active job, today's earnings
-- [ ] `app/driver/jobs/page.tsx` — available jobs list
+- [x] `app/driver/dashboard/page.tsx` — stats: active job, today's earnings (implemented as active job count, available jobs count, and total earnings — no "today only" breakdown since backend earnings endpoint is all-time/date-range filtered, not day-specific)
+- [x] `app/driver/jobs/page.tsx` — available jobs list
   - Job cards with estimated earning, delivery method, destination area
   - "Ambil Pekerjaan" button → confirmation modal
 
-- [ ] `app/driver/jobs/active/page.tsx` — active job detail
+- [x] `app/driver/jobs/active/page.tsx` — active job detail
   - Buyer info, destination address, items summary
   - "Konfirmasi Selesai" button
 
-- [ ] `app/driver/jobs/history/page.tsx` — completed jobs
-- [ ] `app/driver/earnings/page.tsx` — earnings summary
+- [x] `app/driver/jobs/history/page.tsx` — completed jobs
+- [x] `app/driver/earnings/page.tsx` — earnings summary
 
 ### TASK-5.5: Delivery Tracking (Frontend)
 
-- [ ] Update buyer order detail to show driver info when SEDANG_DIKIRIM
+- [x] Update buyer order detail to show driver info when SEDANG_DIKIRIM (required adding `driver_info` to backend `GET /buyer/orders/:id` response — sourced from `DeliveryJob → DriverProfile → User`; verified live: card appears only while status is SEDANG_DIKIRIM and disappears once PESANAN_SELESAI)
 - [ ] Update seller order detail to show delivery status
-- [ ] Order status timeline auto-updated when polling or navigating
+- [ ] Order status timeline auto-updated when polling or navigating (currently fetched once on mount, no polling)
 
 ---
 

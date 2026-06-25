@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { Truck } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
@@ -73,6 +74,25 @@ export default function BuyerOrderDetailPage() {
             <h2 className="mb-4 font-semibold text-text">Status Pesanan</h2>
             <OrderStatusTimeline history={order.status_history} currentStatus={order.status} />
           </Card>
+
+          {order.status === 'SEDANG_DIKIRIM' && order.driver_info && (
+            <Card>
+              <h2 className="mb-4 flex items-center gap-2 font-semibold text-text">
+                <Truck className="h-4 w-4" />
+                Informasi Kurir
+              </h2>
+              <div className="flex flex-col gap-1 text-sm">
+                <p className="text-text-sub">
+                  Nama: <span className="font-medium text-text">{order.driver_info.name}</span>
+                </p>
+                {order.driver_info.phone && (
+                  <p className="text-text-sub">
+                    Telepon: <span className="font-medium text-text">{order.driver_info.phone}</span>
+                  </p>
+                )}
+              </div>
+            </Card>
+          )}
 
           <Card>
             <h2 className="mb-4 font-semibold text-text">Produk</h2>

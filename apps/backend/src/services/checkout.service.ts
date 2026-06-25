@@ -47,9 +47,16 @@ export interface OrderResult extends PricingBreakdownResult {
   created_at: Date
 }
 
+export interface DriverInfoResult {
+  name: string
+  phone: string | null
+  taken_at: Date | null
+}
+
 export interface OrderDetailResult extends OrderResult {
   order_items: OrderItemResult[]
   status_history: OrderStatusHistoryResult[]
+  driver_info: DriverInfoResult | null
 }
 
 interface CartItemWithProduct {
@@ -266,11 +273,23 @@ class CheckoutService {
       include: {
         order_items: true,
         status_history: { orderBy: { created_at: 'asc' } },
+        delivery_job: {
+          include: { driver_profile: { include: { user: { select: { username: true, full_name: true, phone: true } } } } },
+        },
       },
     })
     if (!order) {
       throw new NotFoundError('Pesanan tidak ditemukan')
     }
+
+    const driver = order.delivery_job?.driver_profile
+    const driverInfo: DriverInfoResult | null = driver
+      ? {
+          name: driver.user.full_name ?? driver.user.username,
+          phone: driver.user.phone,
+          taken_at: order.delivery_job?.taken_at ?? null,
+        }
+      : null
 
     return {
       ...this.toOrderResult(order),
@@ -288,6 +307,7 @@ class CheckoutService {
         note: h.note,
         created_at: h.created_at,
       })),
+      driver_info: driverInfo,
     }
   }
 

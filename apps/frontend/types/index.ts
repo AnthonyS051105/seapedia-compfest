@@ -288,9 +288,69 @@ export interface BuyerOrder {
   created_at: string
 }
 
+export interface DriverInfo {
+  name: string
+  phone: string | null
+  taken_at: string | null
+}
+
 export interface BuyerOrderDetail extends BuyerOrder {
   order_items: OrderItem[]
   status_history: OrderStatusHistoryEntry[]
+  driver_info: DriverInfo | null
+}
+
+export interface AvailableJob {
+  id: string
+  order_id: string
+  delivery_method: DeliveryMethod
+  estimated_earning: number
+  destination_city: string
+  delivery_fee: number
+  created_at: string
+}
+
+export interface AddressSummary {
+  label: string
+  recipient_name: string
+  phone: string
+  street: string
+  city: string
+  province: string
+  postal_code: string
+}
+
+export interface JobDetail {
+  id: string
+  order_id: string
+  driver_id: string | null
+  status: OrderStatus
+  delivery_method: DeliveryMethod
+  delivery_fee: number
+  estimated_earning: number
+  earning: number | null
+  taken_at: string | null
+  completed_at: string | null
+  address: AddressSummary
+  order_items: OrderItem[]
+  status_history: OrderStatusHistoryEntry[]
+  created_at: string
+}
+
+export interface DriverEarningsJobItem {
+  job_id: string
+  order_id: string
+  delivery_method: DeliveryMethod
+  earning: number
+  completed_at: string | null
+}
+
+export interface DriverEarnings {
+  total_earnings: number
+  completed_jobs_count: number
+  from_date: string | null
+  to_date: string | null
+  jobs: DriverEarningsJobItem[]
 }
 
 export interface FieldError {
