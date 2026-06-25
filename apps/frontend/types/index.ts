@@ -38,18 +38,23 @@ export interface Store {
   updated_at: string
 }
 
+export interface ProductStoreSummary {
+  id: string
+  name: string
+  seller_id: string
+}
+
 export interface Product {
   id: string
-  store_id: string
   name: string
   description: string | null
   price: number
   stock: number
   images: string[]
-  is_active: boolean
   created_at: string
   updated_at: string
-  store?: Pick<Store, 'id' | 'name' | 'seller_id'>
+  store: ProductStoreSummary
+  is_active?: boolean
 }
 
 export interface CartItem {
@@ -147,6 +152,19 @@ export interface Promo {
   min_order_amount: number | null
   expiry_date: string
   is_active: boolean
+}
+
+export interface Review {
+  id: string
+  reviewer_name: string
+  rating: number
+  comment: string
+  created_at: string
+}
+
+export interface StoreDetail extends Store {
+  products: Product[]
+  products_meta: PaginationMeta
 }
 
 export interface WalletTransaction {

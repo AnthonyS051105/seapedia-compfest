@@ -159,14 +159,14 @@
 - [x] Serve Swagger UI at `GET /api/docs`
 
 ### TASK-1.8: Landing Page (Frontend)
-**File:** `app/page.tsx`
+**File:** `app/(public)/page.tsx` (moved into route group — see TASK-1.9/1.14 notes)
 
-- [ ] Hero section (title, subtitle, CTA buttons)
-- [ ] Featured products section (fetch from /api/products, limit=8)
-- [ ] "How It Works" section (3 steps)
-- [ ] App Reviews section (fetch from /api/reviews)
-- [ ] Review submission form (inline)
-- [ ] Footer component
+- [x] Hero section (title, subtitle, CTA buttons)
+- [x] Featured products section (fetch from /api/products, limit=8)
+- [x] "How It Works" section (3 steps)
+- [x] App Reviews section (fetch from /api/reviews)
+- [x] Review submission form (inline)
+- [x] Footer component
 
 ### TASK-1.9: Navbar Component (Frontend)
 **File:** `components/layout/Navbar.tsx`
@@ -213,14 +213,14 @@
 
 - [x] `Button.tsx` — variants: primary, secondary, outline, ghost, danger
 - [x] `Input.tsx` — with label, error state, helper text
-- [ ] `Card.tsx` — basic card container
+- [x] `Card.tsx` — basic card container
 - [x] `Badge.tsx` — status badge with color variants
 - [x] `Modal.tsx` — dialog with backdrop
 - [x] `Toast.tsx` — using react-hot-toast (configured in `app/providers.tsx`)
 - [ ] `Spinner.tsx` — loading indicator
 - [x] `Skeleton.tsx` — loading skeleton
-- [ ] `StarRating.tsx` — interactive + display-only star rating
-- [ ] `Pagination.tsx` — page number controls
+- [x] `StarRating.tsx` — interactive + display-only star rating
+- [x] `Pagination.tsx` — page number controls
 - [x] `EmptyState.tsx` — empty state with icon + message
 
 ### TASK-1.14: Next.js Middleware (Frontend)
@@ -274,15 +274,15 @@
 - [ ] `app/seller/products/[id]/edit/page.tsx` — edit product form
 
 ### TASK-2.4: Public Catalog Connected to Real Data (Frontend)
-- [ ] `app/products/page.tsx` — product listing with search/filter/pagination
+- [x] `app/(public)/products/page.tsx` — product listing with search/filter/pagination
   - Fetch from /api/products with query params
   - ProductCard component with store name
 
-- [ ] `app/products/[id]/page.tsx` — product detail
+- [x] `app/(public)/products/[id]/page.tsx` — product detail
   - Show store info block
-  - Add to cart button (Buyer only)
+  - Add to cart button (Buyer only) — calls `POST /buyer/cart`; endpoint not yet implemented (Level 3/TASK-3.3), so this currently surfaces a graceful error toast until that endpoint exists
 
-- [ ] `app/stores/[id]/page.tsx` — store page with product list
+- [x] `app/(public)/stores/[id]/page.tsx` — store page with product list
 
 ---
 

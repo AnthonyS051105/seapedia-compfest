@@ -1,21 +1,20 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const PROTECTED_PREFIXES = ['/buyer', '/seller', '/driver', '/admin']
-
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))
-
-  if (isProtected) {
-    const hasRefreshToken = request.cookies.has('seapedia_refresh_token')
-    if (!hasRefreshToken) {
-      const loginUrl = new URL('/auth/login', request.url)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
-
+/**
+ * Route protection intentionally lives client-side (hooks/useRequireRole.ts), not here.
+ *
+ * The refresh-token cookie is set with `Path=/api/auth` (see SRS.md 5.4) so the browser
+ * never attaches it to requests outside that path — including /buyer/*, /admin/* etc.
+ * A middleware check on `request.cookies` against those routes can therefore never see
+ * the cookie and would always redirect, even immediately after a successful login.
+ *
+ * useRequireRole() reads the Zustand auth store (populated from the access token) and
+ * redirects client-side instead. Backend endpoints re-validate active_role from the JWT
+ * regardless, so this isn't a security regression — just removing a check that could
+ * never have worked given the cookie's scope.
+ */
+export function proxy(_request: NextRequest) {
   return NextResponse.next()
 }
 
