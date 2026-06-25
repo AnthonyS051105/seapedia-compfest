@@ -6,11 +6,13 @@ export interface FieldError {
 export class AppError extends Error {
   public readonly statusCode: number
   public readonly errors?: FieldError[]
+  public readonly data?: unknown
 
-  constructor(message: string, statusCode: number, errors?: FieldError[]) {
+  constructor(message: string, statusCode: number, errors?: FieldError[], data?: unknown) {
     super(message)
     this.statusCode = statusCode
     this.errors = errors
+    this.data = data
     Object.setPrototypeOf(this, AppError.prototype)
   }
 }
@@ -40,7 +42,7 @@ export class NotFoundError extends AppError {
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string, errors?: FieldError[]) {
-    super(message, 409, errors)
+  constructor(message: string, data?: unknown, errors?: FieldError[]) {
+    super(message, 409, errors, data)
   }
 }

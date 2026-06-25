@@ -329,19 +329,19 @@
 
 ### TASK-3.3: Cart Endpoints (Backend)
 
-- [ ] `GET /api/buyer/cart` — cart with items, store info, subtotal
-- [ ] `POST /api/buyer/cart` — add item
+- [x] `GET /api/buyer/cart` — cart with items, store info, subtotal
+- [x] `POST /api/buyer/cart` — add item
   - Validate product exists and has stock
   - Single-store rule: check if cart has items from different store → 409
   - If same product exists → increment quantity
   - If different product, same store → add
 
-- [ ] `PUT /api/buyer/cart/:itemId` — update quantity
+- [x] `PUT /api/buyer/cart/:itemId` — update quantity
   - Validate: quantity >= 1, quantity <= product.stock
   - Verify item belongs to this buyer
 
-- [ ] `DELETE /api/buyer/cart/:itemId` — remove item
-- [ ] `DELETE /api/buyer/cart` — clear all items
+- [x] `DELETE /api/buyer/cart/:itemId` — remove item
+- [x] `DELETE /api/buyer/cart` — clear all items
 
 ### TASK-3.4: Checkout Endpoints (Backend)
 

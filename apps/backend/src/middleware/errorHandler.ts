@@ -13,6 +13,7 @@ export function errorHandler(
       success: false,
       message: err.message,
       ...(err.errors ? { errors: err.errors } : {}),
+      ...(err.data !== undefined ? { data: err.data } : {}),
     })
   }
 

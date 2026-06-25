@@ -2,8 +2,10 @@ import { Request, Response, NextFunction } from 'express'
 import { AuthRequest } from '../middleware/authenticate'
 import { walletService } from '../services/wallet.service'
 import { addressService } from '../services/address.service'
+import { cartService } from '../services/cart.service'
 import { success } from '../utils/response'
 import { TopUpDto, CreateAddressDto, UpdateAddressDto } from '../schemas/buyer.schema'
+import { AddToCartDto, UpdateCartItemDto } from '../schemas/cart.schema'
 
 interface PaginationQueryDto {
   page: number
@@ -82,6 +84,60 @@ export const setDefaultAddress = async (req: Request, res: Response, next: NextF
     const { id } = req.params
     const address = await addressService.setDefault(userId, id)
     success(res, address, 'Alamat default berhasil diperbarui')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const cart = await cartService.getCart(userId)
+    success(res, cart)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const addToCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const { product_id, quantity } = req.body as AddToCartDto
+    const cart = await cartService.addToCart(userId, product_id, quantity)
+    success(res, cart, 'Produk berhasil ditambahkan ke keranjang')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const updateCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const { itemId } = req.params
+    const { quantity } = req.body as UpdateCartItemDto
+    const cart = await cartService.updateCartItem(userId, itemId, quantity)
+    success(res, cart, 'Jumlah produk berhasil diperbarui')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const removeCartItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const { itemId } = req.params
+    const cart = await cartService.removeCartItem(userId, itemId)
+    success(res, cart, 'Item berhasil dihapus dari keranjang')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const clearCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    await cartService.clearCart(userId)
+    res.status(204).send()
   } catch (error) {
     next(error)
   }
