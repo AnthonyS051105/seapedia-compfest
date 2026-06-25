@@ -5,6 +5,7 @@ import { ArrowDownCircle, ArrowUpCircle, Wallet as WalletIcon } from 'lucide-rea
 import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { api } from '@/lib/api'
+import { useAuthStore } from '@/store/auth.store'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -13,7 +14,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { createResolver } from '@/lib/validation/resolver'
 import { TopUpFormSchema, TopUpFormData } from '@/lib/validation/buyer.schema'
-import { ApiErrorResponse, ApiResponse, WalletSummary, WalletTransactionType } from '@/types'
+import { ApiErrorResponse, ApiResponse, User, WalletSummary, WalletTransactionType } from '@/types'
 
 const QUICK_AMOUNTS = [50_000, 100_000, 250_000, 500_000, 1_000_000]
 
@@ -48,6 +49,7 @@ function TransactionIcon({ type }: { type: WalletTransactionType }) {
 }
 
 export default function BuyerWalletPage() {
+  const updateUser = useAuthStore((state) => state.updateUser)
   const [wallet, setWallet] = useState<WalletSummary | null | undefined>(undefined)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -65,6 +67,12 @@ export default function BuyerWalletPage() {
   const handleTopUpSuccess = () => {
     setIsModalOpen(false)
     fetchWallet()
+    api
+      .get<ApiResponse<User>>('/auth/me')
+      .then((res) => updateUser(res.data.data))
+      .catch(() => {
+        // ignore — wallet page itself already shows the fresh balance
+      })
   }
 
   return (
