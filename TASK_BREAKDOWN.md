@@ -345,15 +345,15 @@
 
 ### TASK-3.4: Checkout Endpoints (Backend)
 
-- [ ] `POST /api/buyer/checkout/preview` — calculate totals without creating order
+- [x] `POST /api/buyer/checkout/preview` — calculate totals without creating order
   - Same validation as checkout
   - Return pricing breakdown
 
-- [ ] `POST /api/buyer/checkout` — place order (full transaction in Prisma $transaction)
+- [x] `POST /api/buyer/checkout` — place order (full transaction in Prisma $transaction)
   - All steps from SDD Section 3.4
 
-- [ ] `GET /api/buyer/orders` — order history (paginated, filter by status)
-- [ ] `GET /api/buyer/orders/:id` — order detail with items + status history
+- [x] `GET /api/buyer/orders` — order history (paginated, filter by status)
+- [x] `GET /api/buyer/orders/:id` — order detail with items + status history
 
 ### TASK-3.5: Seller Incoming Orders Endpoint (Backend)
 

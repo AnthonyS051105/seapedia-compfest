@@ -4,6 +4,8 @@ import { requireRole } from '../middleware/requireRole'
 import { validateBody, validateQuery } from '../middleware/validate'
 import { TopUpSchema, CreateAddressSchema, UpdateAddressSchema } from '../schemas/buyer.schema'
 import { AddToCartSchema, UpdateCartItemSchema } from '../schemas/cart.schema'
+import { CheckoutSchema } from '../schemas/checkout.schema'
+import { GetOrdersQuerySchema } from '../schemas/order.schema'
 import { paginationSchema } from '../schemas/utils'
 import * as buyerController from '../controllers/buyer.controller'
 
@@ -18,6 +20,8 @@ const router = Router()
  *     description: Manajemen alamat pengiriman pembeli
  *   - name: Buyer - Cart
  *     description: Keranjang belanja pembeli (aturan single-store)
+ *   - name: Buyer - Checkout
+ *     description: Checkout dan riwayat pesanan pembeli
  */
 
 /**
@@ -528,5 +532,239 @@ router.delete('/cart/:itemId', authenticate, requireRole('BUYER'), buyerControll
  *         description: Active role bukan BUYER
  */
 router.delete('/cart', authenticate, requireRole('BUYER'), buyerController.clearCart)
+
+/**
+ * @swagger
+ * /buyer/checkout/preview:
+ *   post:
+ *     summary: Preview kalkulasi harga sebelum checkout
+ *     description: |
+ *       Mengembalikan breakdown harga tanpa membuat pesanan atau mengubah apapun
+ *       di database. Gunakan endpoint ini untuk menampilkan rincian biaya di
+ *       halaman checkout.
+ *
+ *       **Formula harga (urutan wajib):**
+ *       ```
+ *       subtotal        = Σ(price × qty)
+ *       discount_amount = apply_discount(code, subtotal)
+ *       discounted      = subtotal - discount_amount
+ *       delivery_fee    = fee_by_method(delivery_method)
+ *       tax_base        = discounted + delivery_fee
+ *       ppn_amount      = round(tax_base × 0.12)
+ *       final_total     = tax_base + ppn_amount
+ *       ```
+ *     tags: [Buyer - Checkout]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [address_id, delivery_method]
+ *             properties:
+ *               address_id:
+ *                 type: string
+ *                 format: uuid
+ *               delivery_method:
+ *                 type: string
+ *                 enum: [INSTANT, NEXT_DAY, REGULAR]
+ *                 description: "INSTANT=Rp15.000 | NEXT_DAY=Rp10.000 | REGULAR=Rp6.000"
+ *               discount_code:
+ *                 type: string
+ *                 example: HEMAT10
+ *     responses:
+ *       200:
+ *         description: Kalkulasi harga berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     subtotal:           { type: number, example: 300000 }
+ *                     discount_amount:    { type: number, example: 30000 }
+ *                     discount_code:      { type: string, example: HEMAT10, nullable: true }
+ *                     discount_type:      { type: string, example: VOUCHER, nullable: true }
+ *                     delivery_fee:       { type: number, example: 6000 }
+ *                     ppn_amount:         { type: number, example: 33120 }
+ *                     final_total:        { type: number, example: 309120 }
+ *                     wallet_balance:     { type: number, example: 1500000 }
+ *                     is_balance_enough:  { type: boolean, example: true }
+ *       400:
+ *         description: Keranjang kosong, kode diskon tidak valid/kadaluarsa/habis
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan BUYER
+ *       404:
+ *         description: Alamat pengiriman tidak ditemukan
+ */
+router.post(
+  '/checkout/preview',
+  authenticate,
+  requireRole('BUYER'),
+  validateBody(CheckoutSchema),
+  buyerController.previewCheckout
+)
+
+/**
+ * @swagger
+ * /buyer/checkout:
+ *   post:
+ *     summary: Buat pesanan (checkout)
+ *     description: |
+ *       Memproses checkout secara atomik dalam satu Prisma `$transaction()`:
+ *       1. Validasi keranjang tidak kosong
+ *       2. Validasi stok seluruh item
+ *       3. Validasi alamat milik buyer
+ *       4. Validasi kode diskon (jika ada)
+ *       5. Hitung total harga
+ *       6. Validasi saldo dompet
+ *       7. Potong saldo dompet + catat transaksi PAYMENT
+ *       8. Kurangi stok produk (conditional update, no negative stock)
+ *       9. Buat record pesanan + order items (snapshot harga)
+ *       10. Catat status SEDANG_DIKEMAS ke riwayat status
+ *       11. Tambah current_usage voucher (jika voucher digunakan)
+ *       12. Kosongkan keranjang
+ *
+ *       Jika salah satu langkah gagal, seluruh proses dibatalkan (rollback) —
+ *       tidak ada perubahan saldo, stok, atau data lain yang tersimpan.
+ *     tags: [Buyer - Checkout]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [address_id, delivery_method]
+ *             properties:
+ *               address_id:
+ *                 type: string
+ *                 format: uuid
+ *               delivery_method:
+ *                 type: string
+ *                 enum: [INSTANT, NEXT_DAY, REGULAR]
+ *               discount_code:
+ *                 type: string
+ *                 example: HEMAT10
+ *     responses:
+ *       201:
+ *         description: Pesanan berhasil dibuat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 message: { type: string, example: Pesanan berhasil dibuat }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:              { type: string, format: uuid }
+ *                     status:          { type: string, example: SEDANG_DIKEMAS }
+ *                     subtotal:        { type: number, example: 300000 }
+ *                     discount_amount: { type: number, example: 30000 }
+ *                     delivery_fee:    { type: number, example: 6000 }
+ *                     ppn_amount:      { type: number, example: 33120 }
+ *                     final_total:     { type: number, example: 309120 }
+ *                     order_items:
+ *                       type: array
+ *                       items: { type: object }
+ *                     status_history:
+ *                       type: array
+ *                       items: { type: object }
+ *       400:
+ *         description: |
+ *           Berbagai error validasi (tidak ada perubahan DB jika error terjadi):
+ *           - Keranjang kosong
+ *           - Stok tidak mencukupi
+ *           - Saldo tidak cukup
+ *           - Kode diskon tidak valid/kadaluarsa/habis
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan BUYER
+ *       404:
+ *         description: Alamat pengiriman tidak ditemukan
+ */
+router.post(
+  '/checkout',
+  authenticate,
+  requireRole('BUYER'),
+  validateBody(CheckoutSchema),
+  buyerController.checkout
+)
+
+/**
+ * @swagger
+ * /buyer/orders:
+ *   get:
+ *     summary: Riwayat pesanan milik sendiri
+ *     tags: [Buyer - Checkout]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [SEDANG_DIKEMAS, MENUNGGU_PENGIRIM, SEDANG_DIKIRIM, PESANAN_SELESAI, DIKEMBALIKAN]
+ *     responses:
+ *       200:
+ *         description: Daftar pesanan berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan BUYER
+ */
+router.get(
+  '/orders',
+  authenticate,
+  requireRole('BUYER'),
+  validateQuery(GetOrdersQuerySchema),
+  buyerController.getOrders
+)
+
+/**
+ * @swagger
+ * /buyer/orders/{id}:
+ *   get:
+ *     summary: Detail pesanan (item + riwayat status) milik sendiri
+ *     tags: [Buyer - Checkout]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Detail pesanan berhasil diambil
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan BUYER
+ *       404:
+ *         description: Pesanan tidak ditemukan atau bukan milik pembeli ini
+ */
+router.get('/orders/:id', authenticate, requireRole('BUYER'), buyerController.getOrderDetail)
 
 export default router
