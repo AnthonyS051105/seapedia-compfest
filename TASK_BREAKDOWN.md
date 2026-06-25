@@ -495,26 +495,26 @@
 
 **File:** `src/routes/driver.routes.ts`
 
-- [ ] `GET /api/driver/jobs` — available jobs
+- [x] `GET /api/driver/jobs` — available jobs
   - Only orders with status = MENUNGGU_PENGIRIM and driver_id IS NULL
   - Include order summary, delivery address, delivery method, estimated earning
 
-- [ ] `GET /api/driver/jobs/active` — current taken job (driver_id = this driver, status = SEDANG_DIKIRIM)
-- [ ] `GET /api/driver/jobs/history` — completed jobs (status = PESANAN_SELESAI)
-- [ ] `GET /api/driver/jobs/:id` — job detail with order info + address
+- [x] `GET /api/driver/jobs/active` — current taken job (driver_id = this driver, status = SEDANG_DIKIRIM)
+- [x] `GET /api/driver/jobs/history` — completed jobs (status = PESANAN_SELESAI)
+- [x] `GET /api/driver/jobs/:id` — job detail with order info + address
 
 ### TASK-5.2: Take Job & Complete (Backend)
 
 **File:** `src/services/driver.service.ts`
 
-- [ ] `POST /api/driver/jobs/:id/take` — take job
+- [x] `POST /api/driver/jobs/:id/take` — take job
   - Prisma $transaction with SELECT FOR UPDATE (raw query)
   - Set delivery_job.driver_id, taken_at
   - Update order status → SEDANG_DIKIRIM
   - Create OrderStatusHistory entry
   - Return 409 if already taken
 
-- [ ] `POST /api/driver/jobs/:id/complete` — confirm completion
+- [x] `POST /api/driver/jobs/:id/complete` — confirm completion
   - Validate: driver_id === this driver
   - Update order status → PESANAN_SELESAI
   - Set delivery_job.completed_at
@@ -525,7 +525,7 @@
 
 ### TASK-5.3: Driver Earnings (Backend)
 
-- [ ] `GET /api/driver/earnings` — earnings summary
+- [x] `GET /api/driver/earnings` — earnings summary
   - Total earnings, completed jobs count, jobs list with earnings per job
   - Date range filter
 
