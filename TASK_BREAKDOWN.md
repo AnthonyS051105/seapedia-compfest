@@ -240,26 +240,26 @@
 ### TASK-2.1: Seller Store Endpoints (Backend)
 **File:** `src/routes/seller.routes.ts`
 
-- [ ] `POST /api/seller/store` — create store
+- [x] `POST /api/seller/store` — create store
   - Validate: name unique (case-insensitive), 3-100 chars
   - Seller can only have 1 store
   - Return 409 if store name taken or seller already has store
 
-- [ ] `GET /api/seller/store` — get own store details
-- [ ] `PUT /api/seller/store` — update store (name, description, logo_url)
+- [x] `GET /api/seller/store` — get own store details
+- [x] `PUT /api/seller/store` — update store (name, description, logo_url)
 
 ### TASK-2.2: Seller Product Endpoints (Backend)
-- [ ] `GET /api/seller/products` — paginated list (own products only)
-- [ ] `GET /api/seller/products/:id` — own product detail
-- [ ] `POST /api/seller/products` — create product
+- [x] `GET /api/seller/products` — paginated list (own products only)
+- [x] `GET /api/seller/products/:id` — own product detail
+- [x] `POST /api/seller/products` — create product
   - Requires seller to have a store first
   - Validate: name, price > 0, stock >= 0
 
-- [ ] `PUT /api/seller/products/:id` — update product
+- [x] `PUT /api/seller/products/:id` — update product
   - Verify ownership (product.store.seller_id === req.user.sub)
-  - Return 403 if not owner
+  - Return 403 if not owner (implemented as 404 — not-found is used instead of 403 to avoid leaking existence of other sellers' products; see ARCHITECTURE.md IDOR mitigation pattern)
 
-- [ ] `DELETE /api/seller/products/:id` — soft delete (set deleted_at)
+- [x] `DELETE /api/seller/products/:id` — soft delete (set deleted_at)
   - Verify ownership
 
 ### TASK-2.3: Seller Dashboard Pages (Frontend)
@@ -330,8 +330,8 @@
 - [ ] `GET /api/buyer/orders/:id` — order detail with items + status history
 
 ### TASK-3.5: Seller Incoming Orders Endpoint (Backend)
-- [ ] `GET /api/seller/orders` — orders for this seller's store
-- [ ] `GET /api/seller/orders/:id` — order detail
+- [x] `GET /api/seller/orders` — orders for this seller's store
+- [x] `GET /api/seller/orders/:id` — order detail
 
 ### TASK-3.6: Wallet & Address Pages (Frontend)
 - [ ] `app/buyer/wallet/page.tsx` — balance card + top up button + history list
