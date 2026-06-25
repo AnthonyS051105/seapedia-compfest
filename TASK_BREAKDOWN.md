@@ -454,7 +454,7 @@
   - Total spent, orders count, by status breakdown
   - Date range filter (from_date, to_date)
 
-- [ ] `GET /api/seller/reports/income` — income summary
+- [x] `GET /api/seller/reports/income` — income summary
   - Total income (from PESANAN_SELESAI orders only)
   - Orders count, average order value
   - Date range filter

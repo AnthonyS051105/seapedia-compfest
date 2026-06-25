@@ -4,7 +4,7 @@ import { sellerService } from '../services/seller.service'
 import { success, paginated } from '../utils/response'
 import { CreateStoreDto, UpdateStoreDto } from '../schemas/store.schema'
 import { CreateProductDto, UpdateProductDto } from '../schemas/product.schema'
-import { GetOrdersQueryDto } from '../schemas/order.schema'
+import { GetOrdersQueryDto, GetIncomeReportQueryDto } from '../schemas/order.schema'
 
 interface PaginationQueryDto {
   page: number
@@ -127,6 +127,17 @@ export const processOrder = async (req: Request, res: Response, next: NextFuncti
     const { id } = req.params
     const order = await sellerService.processOrder(userId, id)
     success(res, order, 'Pesanan berhasil diproses')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getIncomeReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const query = req.query as unknown as GetIncomeReportQueryDto
+    const report = await sellerService.getIncomeReport(userId, query)
+    success(res, report)
   } catch (error) {
     next(error)
   }

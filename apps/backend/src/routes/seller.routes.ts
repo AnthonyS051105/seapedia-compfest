@@ -4,7 +4,7 @@ import { requireRole } from '../middleware/requireRole'
 import { validateBody, validateQuery } from '../middleware/validate'
 import { CreateStoreSchema, UpdateStoreSchema } from '../schemas/store.schema'
 import { CreateProductSchema, UpdateProductSchema } from '../schemas/product.schema'
-import { GetOrdersQuerySchema } from '../schemas/order.schema'
+import { GetOrdersQuerySchema, GetIncomeReportQuerySchema } from '../schemas/order.schema'
 import { paginationSchema } from '../schemas/utils'
 import * as sellerController from '../controllers/seller.controller'
 
@@ -19,6 +19,8 @@ const router = Router()
  *     description: Manajemen produk penjual
  *   - name: Seller - Orders
  *     description: Pesanan masuk untuk toko penjual
+ *   - name: Seller - Reports
+ *     description: Laporan pendapatan penjual
  */
 
 /**
@@ -444,5 +446,65 @@ router.get('/orders/:id', authenticate, requireRole('SELLER'), sellerController.
  *         description: Pesanan tidak ditemukan atau bukan milik toko ini
  */
 router.post('/orders/:id/process', authenticate, requireRole('SELLER'), sellerController.processOrder)
+
+/**
+ * @swagger
+ * /seller/reports/income:
+ *   get:
+ *     summary: Laporan pendapatan penjual
+ *     description: |
+ *       Menghitung total pendapatan dari pesanan dengan status `PESANAN_SELESAI` saja.
+ *       Pesanan dengan status `DIKEMBALIKAN` (refund/overdue) tidak dihitung.
+ *     tags: [Seller - Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: from_date
+ *         schema: { type: string, format: date-time }
+ *         description: Filter pesanan dari tanggal ini (ISO 8601)
+ *       - in: query
+ *         name: to_date
+ *         schema: { type: string, format: date-time }
+ *         description: Filter pesanan sampai tanggal ini (ISO 8601)
+ *     responses:
+ *       200:
+ *         description: Laporan pendapatan berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     total_income: { type: number, example: 1250000 }
+ *                     order_count: { type: integer, example: 5 }
+ *                     average_order_value: { type: number, example: 250000 }
+ *                     from_date: { type: string, nullable: true }
+ *                     to_date: { type: string, nullable: true }
+ *                     period_breakdown:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           period: { type: string, example: "2025-06" }
+ *                           order_count: { type: integer, example: 5 }
+ *                           income: { type: number, example: 1250000 }
+ *       400:
+ *         description: Validasi gagal, atau penjual belum memiliki toko
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan SELLER
+ */
+router.get(
+  '/reports/income',
+  authenticate,
+  requireRole('SELLER'),
+  validateQuery(GetIncomeReportQuerySchema),
+  sellerController.getIncomeReport
+)
 
 export default router

@@ -2,13 +2,14 @@ import { Prisma } from '@prisma/client'
 import { prisma } from '../prisma/client'
 import { CreateStoreDto, UpdateStoreDto } from '../schemas/store.schema'
 import { CreateProductDto, UpdateProductDto } from '../schemas/product.schema'
-import { GetOrdersQueryDto } from '../schemas/order.schema'
+import { GetOrdersQueryDto, GetIncomeReportQueryDto } from '../schemas/order.schema'
 import { sanitizeText } from '../utils/sanitize'
 import { ConflictError, NotFoundError, BadRequestError } from '../utils/errors'
 import { PaginationMeta } from '../utils/response'
 
 const SELLER_PROCESSABLE_STATUS = 'SEDANG_DIKEMAS' as const
 const SELLER_PROCESSED_STATUS = 'MENUNGGU_PENGIRIM' as const
+const SELLER_INCOME_STATUS = 'PESANAN_SELESAI' as const
 
 export interface StoreResult {
   id: string
@@ -62,6 +63,21 @@ export interface OrderItemDetail {
   product_price: number
   quantity: number
   subtotal: number
+}
+
+export interface IncomeReportPeriodBreakdown {
+  period: string
+  order_count: number
+  income: number
+}
+
+export interface IncomeReportResult {
+  total_income: number
+  order_count: number
+  average_order_value: number
+  from_date: string | null
+  to_date: string | null
+  period_breakdown: IncomeReportPeriodBreakdown[]
 }
 
 export interface OrderDetailResult extends OrderListItem {
@@ -330,6 +346,56 @@ class SellerService {
     })
 
     return this.getOrderDetail(userId, orderId)
+  }
+
+  async getIncomeReport(userId: string, query: GetIncomeReportQueryDto): Promise<IncomeReportResult> {
+    const store = await this.getOwnStoreOrThrow(userId)
+    const { from_date, to_date } = query
+
+    const where: Prisma.OrderWhereInput = {
+      store_id: store.id,
+      status: SELLER_INCOME_STATUS,
+      ...(from_date || to_date
+        ? {
+            created_at: {
+              ...(from_date ? { gte: new Date(from_date) } : {}),
+              ...(to_date ? { lte: new Date(to_date) } : {}),
+            },
+          }
+        : {}),
+    }
+
+    const orders = await prisma.order.findMany({
+      where,
+      select: { final_total: true, created_at: true },
+      orderBy: { created_at: 'asc' },
+    })
+
+    const orderCount = orders.length
+    const totalIncome = orders.reduce((sum, o) => sum + Number(o.final_total), 0)
+    const averageOrderValue = orderCount > 0 ? totalIncome / orderCount : 0
+
+    const breakdownMap = new Map<string, { order_count: number; income: number }>()
+    for (const order of orders) {
+      const period = order.created_at.toISOString().slice(0, 7) // YYYY-MM
+      const entry = breakdownMap.get(period) ?? { order_count: 0, income: 0 }
+      entry.order_count += 1
+      entry.income += Number(order.final_total)
+      breakdownMap.set(period, entry)
+    }
+
+    const periodBreakdown: IncomeReportPeriodBreakdown[] = Array.from(breakdownMap.entries()).map(
+      ([period, value]) => ({ period, order_count: value.order_count, income: value.income })
+    )
+
+    return {
+      total_income: totalIncome,
+      order_count: orderCount,
+      average_order_value: averageOrderValue,
+      from_date: from_date ?? null,
+      to_date: to_date ?? null,
+      period_breakdown: periodBreakdown,
+    }
   }
 
   private async getSellerProfileOrThrow(userId: string): Promise<{ id: string }> {
