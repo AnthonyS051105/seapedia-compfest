@@ -215,6 +215,21 @@ export interface Promo {
   is_active: boolean
 }
 
+export interface IncomeReportPeriodBreakdown {
+  period: string
+  order_count: number
+  income: number
+}
+
+export interface IncomeReport {
+  total_income: number
+  order_count: number
+  average_order_value: number
+  from_date: string | null
+  to_date: string | null
+  period_breakdown: IncomeReportPeriodBreakdown[]
+}
+
 export interface Review {
   id: string
   reviewer_name: string

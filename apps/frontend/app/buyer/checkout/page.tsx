@@ -75,8 +75,31 @@ export default function BuyerCheckoutPage() {
       .catch((error) => {
         if (!isCurrent) return
         const apiErr = error as { response?: { data?: ApiErrorResponse } }
+        const message = apiErr.response?.data?.message ?? 'Gagal memuat ringkasan harga'
+
+        // If the discount code is the cause, fall back to a no-discount preview
+        // so the rest of checkout (address/delivery/total) stays usable while
+        // the error is surfaced next to the discount input.
+        if (appliedDiscountCode) {
+          setPreviewError(message)
+          api
+            .post<ApiResponse<CheckoutPreview>>('/buyer/checkout/preview', {
+              address_id: addressId,
+              delivery_method: deliveryMethod,
+            })
+            .then((fallbackRes) => {
+              if (!isCurrent) return
+              setPreview(fallbackRes.data.data)
+            })
+            .catch(() => {
+              if (!isCurrent) return
+              setPreview(null)
+            })
+          return
+        }
+
         setPreview(null)
-        setPreviewError(apiErr.response?.data?.message ?? 'Gagal memuat ringkasan harga')
+        setPreviewError(message)
       })
 
     return () => {
@@ -203,14 +226,16 @@ export default function BuyerCheckoutPage() {
               Gunakan
             </Button>
           </div>
-          {preview?.discount_code && (
+          {preview?.discount_code && !previewError && (
             <p className="mt-2 text-sm text-secondary">
               ✓ {preview.discount_type === 'VOUCHER' ? 'Voucher' : 'Promo'} {preview.discount_code} berhasil
               diterapkan (-{formatRupiah(preview.discount_amount)})
             </p>
           )}
           {previewError && appliedDiscountCode && (
-            <p className="mt-2 text-sm text-danger">{previewError}</p>
+            <div className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-danger">
+              ✗ {previewError}
+            </div>
           )}
         </Card>
 

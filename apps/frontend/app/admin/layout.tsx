@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { LayoutDashboard, Users, Store, ClipboardList, Truck, Tag, RotateCcw } from 'lucide-react'
+import { LayoutDashboard, Users, Store, ClipboardList, Truck, Tag, Megaphone, RotateCcw } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar, SidebarLink } from '@/components/layout/Sidebar'
 import { useRequireRole } from '@/hooks/useRequireRole'
@@ -12,7 +12,8 @@ const LINKS: SidebarLink[] = [
   { href: '/admin/stores', label: 'Toko', icon: Store },
   { href: '/admin/orders', label: 'Pesanan', icon: ClipboardList },
   { href: '/admin/delivery-jobs', label: 'Pengiriman', icon: Truck },
-  { href: '/admin/vouchers', label: 'Voucher & Promo', icon: Tag },
+  { href: '/admin/vouchers', label: 'Voucher', icon: Tag },
+  { href: '/admin/promos', label: 'Promo', icon: Megaphone },
   { href: '/admin/overdue', label: 'Overdue', icon: RotateCcw },
 ]
 

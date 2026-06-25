@@ -461,10 +461,10 @@
 
 ### TASK-4.6: Discount UI (Frontend)
 
-- [ ] Discount code input + validate in checkout page
-- [ ] Show applied discount in price breakdown
-- [ ] Show discount type label (Voucher / Promo)
-- [ ] Error messages for invalid codes
+- [x] Discount code input + validate in checkout page (pre-existing)
+- [x] Show applied discount in price breakdown (pre-existing)
+- [x] Show discount type label (Voucher / Promo) (pre-existing)
+- [x] Error messages for invalid codes (fixed: invalid code no longer blanks the entire order summary — now falls back to a no-discount preview and shows the error in a clear red banner next to the discount input; verified live with an invalid code and with voucher TESTUI20)
 
 ### TASK-4.7: Seller Order Processing UI (Frontend)
 
@@ -475,8 +475,8 @@
 ### TASK-4.8: Reports Pages (Frontend)
 
 - [ ] `app/buyer/reports/page.tsx` — spending summary with charts
-- [ ] `app/seller/reports/page.tsx` — income summary with charts
-  - Simple bar chart for monthly income (use recharts or native SVG)
+- [x] `app/seller/reports/page.tsx` — income summary with charts
+  - Simple bar chart for monthly income (use recharts or native SVG) (implemented with native SVG/divs, no recharts dependency added)
 
 ### TASK-4.9: Order Status Timeline Component (Frontend)
 
@@ -607,9 +607,9 @@
 
 ### TASK-6.7: Voucher & Promo Management UI (Frontend)
 
-- [ ] `app/admin/vouchers/page.tsx` — list + create form modal
+- [x] `app/admin/vouchers/page.tsx` — list + create form modal
 - [ ] `app/admin/vouchers/[id]/page.tsx` — detail view
-- [ ] `app/admin/promos/page.tsx` — list + create form modal
+- [x] `app/admin/promos/page.tsx` — list + create form modal
 - [ ] `app/admin/promos/[id]/page.tsx` — detail view
 
 ---
