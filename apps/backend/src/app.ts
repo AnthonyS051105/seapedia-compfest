@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/errorHandler'
 import authRoutes from './routes/auth.routes'
 import publicRoutes from './routes/public.routes'
 import sellerRoutes from './routes/seller.routes'
+import buyerRoutes from './routes/buyer.routes'
 
 const app: Application = express()
 
@@ -42,9 +43,9 @@ app.get('/api/docs.json', (_req, res) => res.json(swaggerSpec))
 app.use('/api/auth', authRoutes)
 app.use('/api', publicRoutes)
 app.use('/api/seller', sellerRoutes)
+app.use('/api/buyer', buyerRoutes)
 
 // Route placeholder — individual routers will be mounted here as they are implemented
-// app.use('/api/buyer', buyerRoutes)
 // app.use('/api/driver', driverRoutes)
 // app.use('/api/admin', adminRoutes)
 // app.use('/api/reviews', reviewRoutes)

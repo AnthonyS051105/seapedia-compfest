@@ -312,19 +312,19 @@
 
 ### TASK-3.1: Buyer Wallet Endpoints (Backend)
 
-- [ ] `GET /api/buyer/wallet` — balance + transaction history
-- [ ] `POST /api/buyer/wallet/topup` — top up
+- [x] `GET /api/buyer/wallet` — balance + transaction history
+- [x] `POST /api/buyer/wallet/topup` — top up
   - Validate amount: min 10000, max 10000000
   - Update balance atomically
   - Create TOP_UP wallet transaction record
 
 ### TASK-3.2: Delivery Address Endpoints (Backend)
 
-- [ ] `GET /api/buyer/addresses` — list addresses
-- [ ] `POST /api/buyer/addresses` — create address
-- [ ] `PUT /api/buyer/addresses/:id` — update (verify ownership)
-- [ ] `DELETE /api/buyer/addresses/:id` — delete (verify ownership)
-- [ ] `PUT /api/buyer/addresses/:id/default` — set as default
+- [x] `GET /api/buyer/addresses` — list addresses
+- [x] `POST /api/buyer/addresses` — create address
+- [x] `PUT /api/buyer/addresses/:id` — update (verify ownership)
+- [x] `DELETE /api/buyer/addresses/:id` — delete (verify ownership)
+- [x] `PUT /api/buyer/addresses/:id/default` — set as default
   - Unset previous default address first
 
 ### TASK-3.3: Cart Endpoints (Backend)
