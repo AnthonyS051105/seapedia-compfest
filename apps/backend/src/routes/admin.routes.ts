@@ -248,4 +248,78 @@ router.get('/promos', validateQuery(GetDiscountsQuerySchema), adminController.ge
  */
 router.get('/promos/:id', adminController.getPromoById)
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Overdue
+ *     description: Simulasi waktu dan pemrosesan pesanan overdue (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/simulate-next-day:
+ *   post:
+ *     summary: Majukan tanggal sistem 1 hari dan proses pesanan overdue
+ *     description: |
+ *       Menambah `system_date_offset` sebanyak 1 hari, lalu menjalankan
+ *       pemrosesan overdue untuk semua pesanan yang melewati SLA pengiriman.
+ *       Setiap pesanan overdue di-refund secara atomik (saldo dikembalikan,
+ *       stok dipulihkan, status menjadi DIKEMBALIKAN) dan ditandai
+ *       `is_overdue_processed = true` agar tidak diproses dua kali.
+ *     tags: [Admin - Overdue]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Simulasi berhasil dijalankan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     new_offset:      { type: integer, example: 1 }
+ *                     processed_count: { type: integer, example: 2 }
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.post('/simulate-next-day', adminController.simulateNextDay)
+
+/**
+ * @swagger
+ * /admin/process-overdue:
+ *   post:
+ *     summary: Jalankan pemrosesan overdue secara manual
+ *     description: |
+ *       Memicu pemrosesan overdue tanpa memajukan tanggal sistem.
+ *       Berguna untuk memproses ulang setelah perubahan data tanpa
+ *       mengubah offset hari simulasi.
+ *     tags: [Admin - Overdue]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Pemrosesan overdue selesai
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     processed_count: { type: integer, example: 0 }
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.post('/process-overdue', adminController.processOverdue)
+
 export default router

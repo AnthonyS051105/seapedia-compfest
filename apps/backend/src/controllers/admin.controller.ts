@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { discountService } from '../services/discount.service'
+import { overdueService } from '../services/overdue.service'
 import { success, paginated } from '../utils/response'
 import { CreateVoucherDto, CreatePromoDto, GetDiscountsQueryDto } from '../schemas/discount.schema'
 
@@ -58,6 +59,24 @@ export const getPromoById = async (req: Request, res: Response, next: NextFuncti
     const { id } = req.params
     const promo = await discountService.getPromoById(id)
     success(res, promo)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const simulateNextDay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const result = await overdueService.simulateNextDay()
+    success(res, result, 'Simulasi hari berikutnya berhasil dijalankan')
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const processOverdue = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const processedCount = await overdueService.processOverdueOrders()
+    success(res, { processed_count: processedCount }, 'Pemrosesan overdue selesai')
   } catch (error) {
     next(error)
   }

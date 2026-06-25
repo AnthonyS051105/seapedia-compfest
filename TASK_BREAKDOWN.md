@@ -583,15 +583,15 @@
 
 **File:** `src/services/overdue.service.ts`
 
-- [ ] `getSystemDate()` — read system_date_offset from DB, apply to current date
-- [ ] `simulateNextDay()` — increment offset + trigger processOverdueOrders()
-- [ ] `processOverdueOrders()` — find + process all overdue orders
-- [ ] `refundOrder(order)` — full refund transaction (as in SDD Section 3.5)
+- [x] `getSystemDate()` — read system_date_offset from DB, apply to current date
+- [x] `simulateNextDay()` — increment offset + trigger processOverdueOrders()
+- [x] `processOverdueOrders()` — find + process all overdue orders
+- [x] `refundOrder(order)` — full refund transaction (as in SDD Section 3.5)
 
 ### TASK-6.5: Admin Overdue Endpoints (Backend)
 
-- [ ] `POST /api/admin/simulate-next-day` — increment system day + process overdue
-- [ ] `POST /api/admin/process-overdue` — manual trigger for overdue processing
+- [x] `POST /api/admin/simulate-next-day` — increment system day + process overdue
+- [x] `POST /api/admin/process-overdue` — manual trigger for overdue processing
 
 ### TASK-6.6: Admin Dashboard Pages (Frontend)
 
