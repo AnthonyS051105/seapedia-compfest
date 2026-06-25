@@ -171,42 +171,42 @@
 ### TASK-1.9: Navbar Component (Frontend)
 **File:** `components/layout/Navbar.tsx`
 
-- [ ] Guest nav: Logo | Products | Login | Register
-- [ ] Logged-in nav: Logo | Products | 🛒 Cart | [Username + Role] ▼ | Dropdown (switch role, logout)
-- [ ] Active role badge visible in navbar
-- [ ] Mobile hamburger menu with drawer
-- [ ] Cart icon with item count badge
+- [x] Guest nav: Logo | Products | Login | Register
+- [x] Logged-in nav: Logo | Products | 🛒 Cart | [Username + Role] ▼ | Dropdown (switch role, logout)
+- [x] Active role badge visible in navbar
+- [x] Mobile hamburger menu with drawer
+- [x] Cart icon with item count badge (static 0 — wired to real cart state in TASK-3.7)
 
 ### TASK-1.10: Auth Pages (Frontend)
-- [ ] `app/auth/login/page.tsx` — login form
+- [x] `app/auth/login/page.tsx` — login form
   - react-hook-form + zod validation
   - POST /auth/login → handle multi-role redirect
   - Store access token in Zustand store
 
-- [ ] `app/auth/register/page.tsx` — register form
+- [x] `app/auth/register/page.tsx` — register form
   - Checkboxes for role selection (Buyer, Seller, Driver)
   - POST /auth/register
 
-- [ ] `app/auth/select-role/page.tsx` — role selection cards
+- [x] `app/auth/select-role/page.tsx` — role selection cards
   - Show only roles user owns
   - POST /auth/select-role → redirect to role dashboard
 
 ### TASK-1.11: Auth Store (Frontend)
 **File:** `store/auth.store.ts`
 
-- [ ] State: user, accessToken, activeRole, isLoading
-- [ ] Actions: login, logout, selectRole, refreshToken, setUser
-- [ ] Persist accessToken in memory (NOT localStorage)
-- [ ] Auto-refresh token on 401 response (via axios interceptor)
+- [x] State: user, accessToken, activeRole, isLoading (`isAuthenticated` used in place of `isLoading`; initial auth-check loading state lives in `app/providers.tsx`)
+- [x] Actions: login, logout, selectRole, refreshToken, setUser (implemented as `setAuth`/`setAccessToken`/`setActiveRole`/`clearAuth`; login/logout/refresh themselves are page-level API calls, not store actions)
+- [x] Persist accessToken in memory (NOT localStorage)
+- [x] Auto-refresh token on 401 response (via axios interceptor)
 
 ### TASK-1.12: Dashboard Shells (Frontend)
-- [ ] `app/buyer/layout.tsx` — buyer layout with sidebar
-- [ ] `app/seller/layout.tsx` — seller layout with sidebar
-- [ ] `app/driver/layout.tsx` — driver layout with sidebar
-- [ ] `app/admin/layout.tsx` — admin layout with sidebar
-- [ ] Each dashboard shell shows placeholder content
-- [ ] Route protection: redirect to /auth/login if no token
-- [ ] Route protection: redirect to /auth/select-role if wrong active_role
+- [x] `app/buyer/layout.tsx` — buyer layout with sidebar
+- [x] `app/seller/layout.tsx` — seller layout with sidebar
+- [x] `app/driver/layout.tsx` — driver layout with sidebar
+- [x] `app/admin/layout.tsx` — admin layout with sidebar
+- [x] Each dashboard shell shows placeholder content
+- [x] Route protection: redirect to /auth/login if no token
+- [x] Route protection: redirect to /auth/select-role if wrong active_role
 
 ### TASK-1.13: Reusable UI Components (Frontend)
 **File:** `components/ui/`

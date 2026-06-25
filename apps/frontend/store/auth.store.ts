@@ -8,6 +8,7 @@ interface AuthState {
   isAuthenticated: boolean
   setAuth: (user: User, accessToken: string) => void
   setAccessToken: (accessToken: string) => void
+  setActiveRole: (role: Role) => void
   clearAuth: () => void
 }
 
@@ -26,6 +27,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     }),
 
   setAccessToken: (accessToken) => set({ accessToken }),
+
+  setActiveRole: (role) =>
+    set((state) => ({
+      activeRole: role,
+      user: state.user ? { ...state.user, active_role: role } : state.user,
+    })),
 
   clearAuth: () =>
     set({
