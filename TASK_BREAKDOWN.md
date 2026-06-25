@@ -362,23 +362,23 @@
 
 ### TASK-3.6: Wallet & Address Pages (Frontend)
 
-- [ ] `app/buyer/wallet/page.tsx` — balance card + top up button + history list
-- [ ] `app/buyer/addresses/page.tsx` — address list + CRUD forms
+- [x] `app/buyer/wallet/page.tsx` — balance card + top up button + history list
+- [x] `app/buyer/addresses/page.tsx` — address list + CRUD forms
 
 ### TASK-3.7: Cart Page (Frontend)
 
-- [ ] `app/buyer/cart/page.tsx`
+- [x] `app/buyer/cart/page.tsx`
   - Show single-store warning banner
   - Cart items with quantity controls
   - Subtotal calculation (client-side)
   - Empty state
   - "Lanjut ke Checkout" button
 
-- [ ] Cart store (Zustand) — sync with backend cart state
+- [x] Cart store (Zustand) — sync with backend cart state
 
 ### TASK-3.8: Checkout Page (Frontend)
 
-- [ ] `app/buyer/checkout/page.tsx`
+- [x] `app/buyer/checkout/page.tsx`
   - Address selection (from saved addresses)
   - Delivery method selection (radio buttons)
   - Discount code input with validate button
@@ -388,8 +388,8 @@
 
 ### TASK-3.9: Order Pages (Frontend)
 
-- [ ] `app/buyer/orders/page.tsx` — order list with status filter
-- [ ] `app/buyer/orders/[id]/page.tsx` — order detail
+- [x] `app/buyer/orders/page.tsx` — order list with status filter
+- [x] `app/buyer/orders/[id]/page.tsx` — order detail
   - Status timeline component (Stepper)
   - Price breakdown
   - Items list
@@ -485,7 +485,7 @@
 - [x] Vertical stepper with timestamps
 - [x] Different icons per status
 - [x] Completed/current/pending visual states
-- [ ] Used on buyer order detail + seller order detail (seller order detail done; buyer order detail page doesn't exist yet — Level 3 buyer pages still pending)
+- [x] Used on buyer order detail + seller order detail
 
 ---
 

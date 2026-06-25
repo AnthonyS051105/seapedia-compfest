@@ -78,6 +78,32 @@ export interface CartItem {
   product: Product
 }
 
+export interface CartStoreSummary {
+  id: string
+  name: string
+}
+
+export interface CartItemSummary {
+  id: string
+  product_id: string
+  product_name: string
+  product_price: number
+  product_stock: number
+  quantity: number
+  subtotal: number
+}
+
+export interface CartSummary {
+  store: CartStoreSummary | null
+  items: CartItemSummary[]
+  subtotal: number
+}
+
+export interface CartConflictData {
+  current_store: CartStoreSummary
+  requested_store: CartStoreSummary
+}
+
 export interface DeliveryAddress {
   id: string
   buyer_id: string
@@ -210,6 +236,46 @@ export interface WalletTransaction {
   description: string | null
   order_id: string | null
   created_at: string
+}
+
+export interface WalletSummary {
+  balance: number
+  transactions: WalletTransaction[]
+  meta: PaginationMeta
+}
+
+export interface CheckoutPreview {
+  subtotal: number
+  discount_amount: number
+  discount_code: string | null
+  discount_type: 'VOUCHER' | 'PROMO' | null
+  delivery_fee: number
+  ppn_amount: number
+  final_total: number
+  wallet_balance: number
+  is_balance_enough: boolean
+}
+
+export interface BuyerOrder {
+  id: string
+  buyer_id: string
+  store_id: string
+  address_id: string
+  delivery_method: DeliveryMethod
+  status: OrderStatus
+  subtotal: number
+  discount_amount: number
+  discount_code: string | null
+  discount_type: 'VOUCHER' | 'PROMO' | null
+  delivery_fee: number
+  ppn_amount: number
+  final_total: number
+  created_at: string
+}
+
+export interface BuyerOrderDetail extends BuyerOrder {
+  order_items: OrderItem[]
+  status_history: OrderStatusHistoryEntry[]
 }
 
 export interface FieldError {

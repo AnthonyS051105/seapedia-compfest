@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, X, ShoppingCart, ChevronDown } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
+import { useCartStore } from '@/store/cart.store'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 
@@ -20,8 +21,15 @@ const ROLE_LABEL: Record<string, string> = {
 export function Navbar() {
   const router = useRouter()
   const { user, activeRole, isAuthenticated, clearAuth } = useAuthStore()
+  const { itemCount, refreshItemCount } = useCartStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  useEffect(() => {
+    if (isAuthenticated && activeRole === 'BUYER') {
+      refreshItemCount()
+    }
+  }, [isAuthenticated, activeRole, refreshItemCount])
 
   const handleLogout = async () => {
     try {
@@ -51,9 +59,11 @@ export function Navbar() {
             <>
               <Link href="/buyer/cart" className="relative text-text hover:text-primary" aria-label="Keranjang">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-white">
-                  0
-                </span>
+                {itemCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-white">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
 
               <div className="relative">

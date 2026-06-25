@@ -7,10 +7,12 @@ import toast from 'react-hot-toast'
 import { ImageOff, Minus, Plus, Store as StoreIcon } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
+import { useCartStore } from '@/store/cart.store'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
+import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { ApiErrorResponse, ApiResponse, Product } from '@/types'
+import { ApiErrorResponse, ApiResponse, CartConflictData, Product } from '@/types'
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
@@ -20,12 +22,15 @@ export default function ProductDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { isAuthenticated, activeRole } = useAuthStore()
+  const refreshItemCount = useCartStore((state) => state.refreshItemCount)
 
   const [product, setProduct] = useState<Product | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [conflict, setConflict] = useState<CartConflictData | null>(null)
+  const [isResolvingConflict, setIsResolvingConflict] = useState(false)
 
   useEffect(() => {
     api
@@ -83,15 +88,35 @@ export default function ProductDetailPage() {
     try {
       await api.post('/buyer/cart', { product_id: product.id, quantity })
       toast.success('Produk ditambahkan ke keranjang 🛒')
+      refreshItemCount()
     } catch (error) {
-      const apiErr = error as { response?: { status?: number; data?: ApiErrorResponse } }
-      if (apiErr.response?.status === 409) {
-        toast.error(apiErr.response.data?.message ?? 'Produk dari toko berbeda tidak bisa digabung')
+      const apiErr = error as {
+        response?: { status?: number; data?: ApiErrorResponse & { data?: CartConflictData } }
+      }
+      if (apiErr.response?.status === 409 && apiErr.response.data?.data) {
+        setConflict(apiErr.response.data.data)
       } else {
         toast.error(apiErr.response?.data?.message ?? 'Gagal menambahkan ke keranjang')
       }
     } finally {
       setIsAddingToCart(false)
+    }
+  }
+
+  const handleClearCartAndRetry = async () => {
+    if (!product) return
+    setIsResolvingConflict(true)
+    try {
+      await api.delete('/buyer/cart')
+      await api.post('/buyer/cart', { product_id: product.id, quantity })
+      toast.success('Produk ditambahkan ke keranjang 🛒')
+      refreshItemCount()
+      setConflict(null)
+    } catch (error) {
+      const apiErr = error as { response?: { data?: ApiErrorResponse } }
+      toast.error(apiErr.response?.data?.message ?? 'Gagal menambahkan ke keranjang')
+    } finally {
+      setIsResolvingConflict(false)
     }
   }
 
@@ -205,6 +230,26 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={!!conflict} onClose={() => setConflict(null)} title="⚠️ Produk dari Toko Berbeda">
+        <p className="text-sm text-text-sub">
+          Keranjangmu saat ini berisi produk dari{' '}
+          <span className="font-medium text-text">&quot;{conflict?.current_store.name}&quot;</span>. SEAPEDIA hanya
+          mengizinkan pembelian dari 1 toko dalam 1 pesanan.
+        </p>
+        <p className="mt-2 text-sm text-text-sub">
+          Apakah kamu ingin mengosongkan keranjang dan menambahkan produk dari{' '}
+          <span className="font-medium text-text">&quot;{conflict?.requested_store.name}&quot;</span> ini?
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="outline" onClick={() => setConflict(null)} disabled={isResolvingConflict}>
+            Batal
+          </Button>
+          <Button onClick={handleClearCartAndRetry} isLoading={isResolvingConflict}>
+            Ya, Kosongkan
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }
