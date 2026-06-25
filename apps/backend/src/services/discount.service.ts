@@ -1,6 +1,9 @@
 import { Prisma, PrismaClient } from '@prisma/client'
+import { prisma } from '../prisma/client'
 import { applyDiscount } from '../utils/pricing'
-import { BadRequestError } from '../utils/errors'
+import { BadRequestError, ConflictError, NotFoundError } from '../utils/errors'
+import { CreateVoucherDto, CreatePromoDto, GetDiscountsQueryDto } from '../schemas/discount.schema'
+import { PaginationMeta } from '../utils/response'
 
 export type DiscountDb = PrismaClient | Prisma.TransactionClient
 
@@ -13,7 +16,210 @@ export interface DiscountCodeResult {
   max_discount_amount: number | null
 }
 
+export interface ValidateDiscountResult extends DiscountCodeResult {
+  is_valid: boolean
+  discount_amount: number
+  min_order_amount: number | null
+  expiry_date: Date
+}
+
+export interface VoucherResult {
+  id: string
+  code: string
+  discount_type: 'PERCENTAGE' | 'FIXED_AMOUNT'
+  discount_value: number
+  max_discount_amount: number | null
+  min_order_amount: number | null
+  expiry_date: Date
+  max_usage: number
+  current_usage: number
+  is_active: boolean
+  created_at: Date
+  updated_at: Date
+}
+
+export interface PromoResult {
+  id: string
+  code: string
+  name: string
+  description: string | null
+  discount_type: 'PERCENTAGE' | 'FIXED_AMOUNT'
+  discount_value: number
+  max_discount_amount: number | null
+  min_order_amount: number | null
+  expiry_date: Date
+  is_active: boolean
+  created_at: Date
+  updated_at: Date
+}
+
+interface VoucherRow {
+  id: string
+  code: string
+  discount_type: string
+  discount_value: Prisma.Decimal
+  max_discount_amount: Prisma.Decimal | null
+  min_order_amount: Prisma.Decimal | null
+  expiry_date: Date
+  max_usage: number
+  current_usage: number
+  is_active: boolean
+  created_at: Date
+  updated_at: Date
+}
+
+interface PromoRow {
+  id: string
+  code: string
+  name: string
+  description: string | null
+  discount_type: string
+  discount_value: Prisma.Decimal
+  max_discount_amount: Prisma.Decimal | null
+  min_order_amount: Prisma.Decimal | null
+  expiry_date: Date
+  is_active: boolean
+  created_at: Date
+  updated_at: Date
+}
+
 class DiscountService {
+  async createVoucher(dto: CreateVoucherDto): Promise<VoucherResult> {
+    const existing = await prisma.voucher.findUnique({ where: { code: dto.code } })
+    if (existing) {
+      throw new ConflictError('Kode voucher sudah digunakan')
+    }
+    const promoExisting = await prisma.promo.findUnique({ where: { code: dto.code } })
+    if (promoExisting) {
+      throw new ConflictError('Kode sudah digunakan oleh promo lain')
+    }
+
+    const voucher = await prisma.voucher.create({
+      data: {
+        code: dto.code,
+        discount_type: dto.discount_type,
+        discount_value: dto.discount_value,
+        max_discount_amount: dto.max_discount_amount,
+        min_order_amount: dto.min_order_amount,
+        expiry_date: new Date(dto.expiry_date),
+        max_usage: dto.max_usage,
+        is_active: dto.is_active,
+      },
+    })
+
+    return this.toVoucherResult(voucher)
+  }
+
+  async createPromo(dto: CreatePromoDto): Promise<PromoResult> {
+    const existing = await prisma.promo.findUnique({ where: { code: dto.code } })
+    if (existing) {
+      throw new ConflictError('Kode promo sudah digunakan')
+    }
+    const voucherExisting = await prisma.voucher.findUnique({ where: { code: dto.code } })
+    if (voucherExisting) {
+      throw new ConflictError('Kode sudah digunakan oleh voucher lain')
+    }
+
+    const promo = await prisma.promo.create({
+      data: {
+        code: dto.code,
+        name: dto.name,
+        description: dto.description,
+        discount_type: dto.discount_type,
+        discount_value: dto.discount_value,
+        max_discount_amount: dto.max_discount_amount,
+        min_order_amount: dto.min_order_amount,
+        expiry_date: new Date(dto.expiry_date),
+        is_active: dto.is_active,
+      },
+    })
+
+    return this.toPromoResult(promo)
+  }
+
+  async getVouchers(query: GetDiscountsQueryDto): Promise<{ data: VoucherResult[]; meta: PaginationMeta }> {
+    const { page, limit, is_active } = query
+
+    const where: Prisma.VoucherWhereInput = {
+      ...(is_active !== undefined ? { is_active } : {}),
+    }
+
+    const [vouchers, total] = await Promise.all([
+      prisma.voucher.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.voucher.count({ where }),
+    ])
+
+    return {
+      data: vouchers.map((v) => this.toVoucherResult(v)),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    }
+  }
+
+  async getVoucherById(id: string): Promise<VoucherResult> {
+    const voucher = await prisma.voucher.findUnique({ where: { id } })
+    if (!voucher) {
+      throw new NotFoundError('Voucher tidak ditemukan')
+    }
+    return this.toVoucherResult(voucher)
+  }
+
+  async getPromos(query: GetDiscountsQueryDto): Promise<{ data: PromoResult[]; meta: PaginationMeta }> {
+    const { page, limit, is_active } = query
+
+    const where: Prisma.PromoWhereInput = {
+      ...(is_active !== undefined ? { is_active } : {}),
+    }
+
+    const [promos, total] = await Promise.all([
+      prisma.promo.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.promo.count({ where }),
+    ])
+
+    return {
+      data: promos.map((p) => this.toPromoResult(p)),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    }
+  }
+
+  async getPromoById(id: string): Promise<PromoResult> {
+    const promo = await prisma.promo.findUnique({ where: { id } })
+    if (!promo) {
+      throw new NotFoundError('Promo tidak ditemukan')
+    }
+    return this.toPromoResult(promo)
+  }
+
+  async validateDiscountCode(code: string, subtotal: number): Promise<ValidateDiscountResult> {
+    const discount = await this.validateCode(prisma, code, subtotal)
+    const discountAmount = this.calculateDiscount(discount, subtotal)
+
+    const record =
+      discount.type === 'VOUCHER'
+        ? await prisma.voucher.findUnique({ where: { id: discount.id } })
+        : await prisma.promo.findUnique({ where: { id: discount.id } })
+    if (!record) {
+      throw new NotFoundError('Kode diskon tidak ditemukan')
+    }
+
+    return {
+      ...discount,
+      is_valid: true,
+      discount_amount: discountAmount,
+      min_order_amount: record.min_order_amount !== null ? Number(record.min_order_amount) : null,
+      expiry_date: record.expiry_date,
+    }
+  }
+
   async validateCode(db: DiscountDb, code: string, subtotal: number): Promise<DiscountCodeResult> {
     const voucher = await db.voucher.findUnique({ where: { code } })
     if (voucher) {
@@ -116,6 +322,40 @@ class DiscountService {
       discount_type: promo.discount_type as 'PERCENTAGE' | 'FIXED_AMOUNT',
       discount_value: Number(promo.discount_value),
       max_discount_amount: promo.max_discount_amount !== null ? Number(promo.max_discount_amount) : null,
+    }
+  }
+
+  private toVoucherResult(voucher: VoucherRow): VoucherResult {
+    return {
+      id: voucher.id,
+      code: voucher.code,
+      discount_type: voucher.discount_type as 'PERCENTAGE' | 'FIXED_AMOUNT',
+      discount_value: Number(voucher.discount_value),
+      max_discount_amount: voucher.max_discount_amount !== null ? Number(voucher.max_discount_amount) : null,
+      min_order_amount: voucher.min_order_amount !== null ? Number(voucher.min_order_amount) : null,
+      expiry_date: voucher.expiry_date,
+      max_usage: voucher.max_usage,
+      current_usage: voucher.current_usage,
+      is_active: voucher.is_active,
+      created_at: voucher.created_at,
+      updated_at: voucher.updated_at,
+    }
+  }
+
+  private toPromoResult(promo: PromoRow): PromoResult {
+    return {
+      id: promo.id,
+      code: promo.code,
+      name: promo.name,
+      description: promo.description,
+      discount_type: promo.discount_type as 'PERCENTAGE' | 'FIXED_AMOUNT',
+      discount_value: Number(promo.discount_value),
+      max_discount_amount: promo.max_discount_amount !== null ? Number(promo.max_discount_amount) : null,
+      min_order_amount: promo.min_order_amount !== null ? Number(promo.min_order_amount) : null,
+      expiry_date: promo.expiry_date,
+      is_active: promo.is_active,
+      created_at: promo.created_at,
+      updated_at: promo.updated_at,
     }
   }
 }

@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.routes'
 import publicRoutes from './routes/public.routes'
 import sellerRoutes from './routes/seller.routes'
 import buyerRoutes from './routes/buyer.routes'
+import adminRoutes from './routes/admin.routes'
 
 const app: Application = express()
 
@@ -44,10 +45,10 @@ app.use('/api/auth', authRoutes)
 app.use('/api', publicRoutes)
 app.use('/api/seller', sellerRoutes)
 app.use('/api/buyer', buyerRoutes)
+app.use('/api/admin', adminRoutes)
 
 // Route placeholder — individual routers will be mounted here as they are implemented
 // app.use('/api/driver', driverRoutes)
-// app.use('/api/admin', adminRoutes)
 // app.use('/api/reviews', reviewRoutes)
 
 app.use(errorHandler)

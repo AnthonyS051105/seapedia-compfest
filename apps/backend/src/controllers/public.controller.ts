@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { catalogService } from '../services/catalog.service'
 import { reviewService } from '../services/review.service'
+import { discountService } from '../services/discount.service'
 import { success, paginated } from '../utils/response'
 import { GetProductsQueryDto } from '../schemas/product.schema'
 import { CreateReviewDto } from '../schemas/review.schema'
+import { ValidateDiscountCodeQueryDto } from '../schemas/discount.schema'
 
 interface PaginationQueryDto {
   page: number
@@ -66,6 +68,20 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
     const query = req.query as unknown as PaginationQueryDto
     const { data, meta } = await reviewService.getReviews(query)
     paginated(res, data, meta)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const validateDiscountCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { code, subtotal } = req.query as unknown as ValidateDiscountCodeQueryDto
+    const result = await discountService.validateDiscountCode(code, subtotal)
+    success(res, result)
   } catch (error) {
     next(error)
   }

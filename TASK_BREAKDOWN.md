@@ -408,17 +408,17 @@
 
 ### TASK-4.1: Voucher & Promo Endpoints (Backend)
 
-- [ ] `POST /api/admin/vouchers` — create voucher (Admin only)
+- [x] `POST /api/admin/vouchers` — create voucher (Admin only)
   - Validate: code unique, discount_value > 0, expiry_date > now, max_usage > 0
 
-- [ ] `GET /api/admin/vouchers` — list with filters
-- [ ] `GET /api/admin/vouchers/:id` — detail
+- [x] `GET /api/admin/vouchers` — list with filters
+- [x] `GET /api/admin/vouchers/:id` — detail
 
-- [ ] `POST /api/admin/promos` — create promo (Admin only)
-- [ ] `GET /api/admin/promos` — list
-- [ ] `GET /api/admin/promos/:id` — detail
+- [x] `POST /api/admin/promos` — create promo (Admin only)
+- [x] `GET /api/admin/promos` — list
+- [x] `GET /api/admin/promos/:id` — detail
 
-- [ ] `GET /api/vouchers/validate?code=XXX` — validate discount code (Buyer)
+- [x] `GET /api/vouchers/validate?code=XXX` — validate discount code (Buyer)
   - Check: exists, not expired, usage remaining, is_active
   - Return: discount info + validity + error reason if invalid
 
@@ -426,17 +426,17 @@
 
 **File:** `src/services/discount.service.ts`
 
-- [ ] `validateDiscountCode(code, subtotal)` — full validation
-- [ ] `calculateDiscount(voucher/promo, subtotal)` — apply discount formula
+- [x] `validateDiscountCode(code, subtotal)` — full validation
+- [x] `calculateDiscount(voucher/promo, subtotal)` — apply discount formula
   - PERCENTAGE: min(subtotal \* rate, maxDiscountAmount ?? Infinity)
   - FIXED_AMOUNT: min(value, subtotal)
-- [ ] `applyVoucherUsage(tx, voucherId)` — increment usage in transaction
+- [x] `applyVoucherUsage(tx, voucherId)` — increment usage in transaction (pre-existing as `incrementVoucherUsage`, already wired into checkout.service.ts)
 
 ### TASK-4.3: Update Checkout with Discount (Backend)
 
-- [ ] Integrate discount service into checkout.service.ts
-- [ ] Update checkout preview endpoint to accept discount_code
-- [ ] Return discount_type, discount_code in order response
+- [x] Integrate discount service into checkout.service.ts (pre-existing)
+- [x] Update checkout preview endpoint to accept discount_code (pre-existing)
+- [x] Return discount_type, discount_code in order response (pre-existing)
 
 ### TASK-4.4: Seller Order Processing (Backend)
 
@@ -555,8 +555,8 @@
 
 ### TASK-6.1: Admin Middleware & Route Setup (Backend)
 
-- [ ] Ensure all `/api/admin/*` routes require active_role = ADMIN
-- [ ] Create seed for admin account
+- [x] Ensure all `/api/admin/*` routes require active_role = ADMIN (enforced via `router.use(authenticate, requireRole('ADMIN'))` in admin.routes.ts — covers vouchers/promos so far; re-verify once dashboard/users/etc. routes are added)
+- [x] Create seed for admin account (pre-existing in prisma/seed.ts)
 
 ### TASK-6.2: Admin Dashboard Stats (Backend)
 

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { validateBody, validateQuery } from '../middleware/validate'
 import { GetProductsQuerySchema } from '../schemas/product.schema'
 import { CreateReviewSchema, GetReviewsQuerySchema } from '../schemas/review.schema'
+import { ValidateDiscountCodeQuerySchema } from '../schemas/discount.schema'
 import { paginationSchema } from '../schemas/utils'
 import * as publicController from '../controllers/public.controller'
 
@@ -14,6 +15,8 @@ const router = Router()
  *     description: Endpoint publik (tidak perlu login)
  *   - name: Reviews
  *     description: Ulasan aplikasi (publik, tidak perlu login)
+ *   - name: Vouchers & Promos
+ *     description: Validasi kode diskon (publik)
  */
 
 /**
@@ -210,5 +213,59 @@ router.post('/reviews', validateBody(CreateReviewSchema), publicController.creat
  *               $ref: '#/components/schemas/PaginatedResponse'
  */
 router.get('/reviews', validateQuery(GetReviewsQuerySchema), publicController.getReviews)
+
+/**
+ * @swagger
+ * /vouchers/validate:
+ *   get:
+ *     summary: Validasi kode voucher atau promo
+ *     description: |
+ *       Memeriksa apakah kode diskon (voucher atau promo) valid untuk digunakan:
+ *       tidak kadaluarsa, kuota pemakaian masih tersedia (khusus voucher), aktif,
+ *       dan subtotal memenuhi syarat minimal order (jika ada).
+ *     tags: [Vouchers & Promos]
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: true
+ *         schema: { type: string, example: HEMAT10 }
+ *       - in: query
+ *         name: subtotal
+ *         schema: { type: number, default: 0, example: 300000 }
+ *         description: Subtotal keranjang untuk menghitung estimasi nilai diskon
+ *     responses:
+ *       200:
+ *         description: Kode diskon valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     type:                { type: string, enum: [VOUCHER, PROMO] }
+ *                     id:                  { type: string, format: uuid }
+ *                     code:                { type: string, example: HEMAT10 }
+ *                     discount_type:       { type: string, enum: [PERCENTAGE, FIXED_AMOUNT] }
+ *                     discount_value:      { type: number, example: 10 }
+ *                     max_discount_amount: { type: number, nullable: true }
+ *                     min_order_amount:    { type: number, nullable: true }
+ *                     expiry_date:         { type: string, format: date-time }
+ *                     is_valid:            { type: boolean, example: true }
+ *                     discount_amount:     { type: number, example: 30000 }
+ *       400:
+ *         description: |
+ *           Kode tidak valid, kadaluarsa, kuota habis, tidak aktif, atau subtotal
+ *           tidak memenuhi minimal order
+ *       404:
+ *         description: Kode diskon tidak ditemukan
+ */
+router.get(
+  '/vouchers/validate',
+  validateQuery(ValidateDiscountCodeQuerySchema),
+  publicController.validateDiscountCode
+)
 
 export default router
