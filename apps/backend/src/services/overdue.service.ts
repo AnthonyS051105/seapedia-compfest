@@ -29,11 +29,15 @@ interface OverdueOrderRow {
 }
 
 class OverdueService {
-  async getSystemDate(): Promise<Date> {
+  async getSystemDateOffset(): Promise<number> {
     const config = await prisma.systemConfig.findUnique({
       where: { key: SYSTEM_DATE_OFFSET_KEY },
     })
-    const offset = parseInt(config?.value ?? '0', 10)
+    return parseInt(config?.value ?? '0', 10)
+  }
+
+  async getSystemDate(): Promise<Date> {
+    const offset = await this.getSystemDateOffset()
     const now = new Date()
     now.setDate(now.getDate() + offset)
     return now

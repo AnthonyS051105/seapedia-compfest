@@ -7,6 +7,13 @@ import {
   CreatePromoSchema,
   GetDiscountsQuerySchema,
 } from '../schemas/discount.schema'
+import {
+  GetUsersQuerySchema,
+  GetStoresQuerySchema,
+  GetAdminOrdersQuerySchema,
+  GetDeliveryJobsQuerySchema,
+  GetOverdueOrdersQuerySchema,
+} from '../schemas/admin.schema'
 import * as adminController from '../controllers/admin.controller'
 
 const router = Router()
@@ -321,5 +328,259 @@ router.post('/simulate-next-day', adminController.simulateNextDay)
  *         description: Bukan Admin
  */
 router.post('/process-overdue', adminController.processOverdue)
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Dashboard
+ *     description: Statistik dan monitoring marketplace (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/dashboard/stats:
+ *   get:
+ *     summary: Statistik agregat marketplace
+ *     description: |
+ *       Mengembalikan ringkasan jumlah user (per role), toko, produk,
+ *       pesanan (per status), voucher, promo, delivery job, jumlah pesanan
+ *       overdue, dan offset tanggal sistem saat ini.
+ *     tags: [Admin - Dashboard]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Statistik berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     users:
+ *                       type: object
+ *                       properties:
+ *                         total:   { type: integer, example: 12 }
+ *                         by_role:
+ *                           type: object
+ *                           example: { ADMIN: 1, SELLER: 3, BUYER: 6, DRIVER: 2 }
+ *                     stores:
+ *                       type: object
+ *                       properties:
+ *                         total:  { type: integer, example: 3 }
+ *                         active: { type: integer, example: 3 }
+ *                     products:
+ *                       type: object
+ *                       properties:
+ *                         total:        { type: integer, example: 20 }
+ *                         active:       { type: integer, example: 18 }
+ *                         out_of_stock: { type: integer, example: 2 }
+ *                     orders:
+ *                       type: object
+ *                       properties:
+ *                         total: { type: integer, example: 50 }
+ *                         by_status:
+ *                           type: object
+ *                           example: { SEDANG_DIKEMAS: 5, MENUNGGU_PENGIRIM: 3, SEDANG_DIKIRIM: 2, PESANAN_SELESAI: 38, DIKEMBALIKAN: 2 }
+ *                     vouchers:
+ *                       type: object
+ *                       properties:
+ *                         total:   { type: integer, example: 4 }
+ *                         active:  { type: integer, example: 3 }
+ *                         expired: { type: integer, example: 1 }
+ *                     promos:
+ *                       type: object
+ *                       properties:
+ *                         total:  { type: integer, example: 2 }
+ *                         active: { type: integer, example: 2 }
+ *                     delivery_jobs:
+ *                       type: object
+ *                       properties:
+ *                         total:       { type: integer, example: 40 }
+ *                         available:   { type: integer, example: 3 }
+ *                         in_progress: { type: integer, example: 2 }
+ *                         completed:   { type: integer, example: 35 }
+ *                     overdue_orders:     { type: integer, example: 2 }
+ *                     system_date_offset: { type: integer, example: 0 }
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/dashboard/stats', adminController.getDashboardStats)
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Users
+ *     description: Manajemen dan monitoring user (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/users:
+ *   get:
+ *     summary: Daftar semua user dengan peran masing-masing
+ *     tags: [Admin - Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Daftar user berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/users', validateQuery(GetUsersQuerySchema), adminController.getUsers)
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Stores
+ *     description: Monitoring toko (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/stores:
+ *   get:
+ *     summary: Daftar semua toko dengan info seller
+ *     tags: [Admin - Stores]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Daftar toko berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/stores', validateQuery(GetStoresQuerySchema), adminController.getStores)
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Orders
+ *     description: Monitoring semua pesanan di marketplace (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/orders:
+ *   get:
+ *     summary: Daftar semua pesanan, dapat difilter berdasarkan status
+ *     tags: [Admin - Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [SEDANG_DIKEMAS, MENUNGGU_PENGIRIM, SEDANG_DIKIRIM, PESANAN_SELESAI, DIKEMBALIKAN]
+ *     responses:
+ *       200:
+ *         description: Daftar pesanan berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/orders', validateQuery(GetAdminOrdersQuerySchema), adminController.getOrders)
+
+/**
+ * @swagger
+ * /admin/delivery-jobs:
+ *   get:
+ *     summary: Daftar semua delivery job dengan info pesanan dan driver
+ *     tags: [Admin - Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Daftar delivery job berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/delivery-jobs', validateQuery(GetDeliveryJobsQuerySchema), adminController.getDeliveryJobs)
+
+/**
+ * @swagger
+ * /admin/overdue-orders:
+ *   get:
+ *     summary: Daftar pesanan yang sudah diproses sebagai overdue (status DIKEMBALIKAN)
+ *     tags: [Admin - Overdue]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Daftar pesanan overdue berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/overdue-orders', validateQuery(GetOverdueOrdersQuerySchema), adminController.getOverdueOrders)
 
 export default router

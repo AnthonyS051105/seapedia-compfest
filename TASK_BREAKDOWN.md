@@ -560,7 +560,7 @@
 
 ### TASK-6.2: Admin Dashboard Stats (Backend)
 
-- [ ] `GET /api/admin/dashboard/stats` — aggregate counts
+- [x] `GET /api/admin/dashboard/stats` — aggregate counts
   - users (total, by role)
   - stores (total, active)
   - products (total, active, out-of-stock)
@@ -569,15 +569,16 @@
   - promos (total, active)
   - delivery jobs (total, available, in-progress, completed)
   - overdue orders count
+  - (also includes `system_date_offset`, not originally listed here but required by the admin dashboard UI to show the current simulated day)
 
 ### TASK-6.3: Admin List Endpoints (Backend)
 
-- [ ] `GET /api/admin/users` — paginated user list with roles
-- [ ] `GET /api/admin/stores` — paginated store list
+- [x] `GET /api/admin/users` — paginated user list with roles
+- [x] `GET /api/admin/stores` — paginated store list
 - [ ] `GET /api/admin/products` — paginated product list
-- [ ] `GET /api/admin/orders` — all orders with status filter
-- [ ] `GET /api/admin/delivery-jobs` — all delivery jobs
-- [ ] `GET /api/admin/overdue-orders` — overdue orders
+- [x] `GET /api/admin/orders` — all orders with status filter
+- [x] `GET /api/admin/delivery-jobs` — all delivery jobs
+- [x] `GET /api/admin/overdue-orders` — overdue orders
 
 ### TASK-6.4: Overdue Service (Backend)
 
