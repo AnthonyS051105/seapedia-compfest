@@ -176,6 +176,7 @@ export interface SellerOrderDetail extends SellerOrder {
   discount_type: string | null
   order_items: OrderItem[]
   status_history: OrderStatusHistoryEntry[]
+  driver_info: DriverInfo | null
 }
 
 export interface DeliveryJob {
@@ -325,6 +326,7 @@ export interface DriverInfo {
   name: string
   phone: string | null
   taken_at: string | null
+  completed_at?: string | null
 }
 
 export interface BuyerOrderDetail extends BuyerOrder {

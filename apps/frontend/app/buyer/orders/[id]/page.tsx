@@ -35,11 +35,25 @@ export default function BuyerOrderDetailPage() {
 
   const [order, setOrder] = useState<BuyerOrderDetail | null | undefined>(undefined)
 
-  useEffect(() => {
+  const fetchOrder = () => {
     api
       .get<ApiResponse<BuyerOrderDetail>>(`/buyer/orders/${params.id}`)
       .then((res) => setOrder(res.data.data))
       .catch(() => setOrder(null))
+  }
+
+  useEffect(() => {
+    fetchOrder()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id])
+
+  useEffect(() => {
+    const handler = () => {
+      if (document.visibilityState === 'visible') fetchOrder()
+    }
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id])
 
   if (order === undefined) {

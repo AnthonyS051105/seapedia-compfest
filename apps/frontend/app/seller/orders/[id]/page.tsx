@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import { Truck, AlertTriangle } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
@@ -11,6 +12,16 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { Modal } from '@/components/ui/Modal'
 import { OrderStatusTimeline } from '@/components/OrderStatusTimeline'
 import { ApiErrorResponse, ApiResponse, OrderStatus, SellerOrderDetail } from '@/types'
+
+function formatDateTime(dateString: string): string {
+  return new Date(dateString).toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   SEDANG_DIKEMAS: 'Sedang Dikemas',
@@ -47,6 +58,15 @@ export default function SellerOrderDetailPage() {
 
   useEffect(() => {
     fetchOrder()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id])
+
+  useEffect(() => {
+    const handler = () => {
+      if (document.visibilityState === 'visible') fetchOrder()
+    }
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id])
 
@@ -100,6 +120,39 @@ export default function SellerOrderDetailPage() {
             <h2 className="mb-4 font-semibold text-text">Status Pesanan</h2>
             <OrderStatusTimeline history={order.status_history} currentStatus={order.status} />
           </Card>
+
+          {order.status === 'DIKEMBALIKAN' && (
+            <div className="flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+              <p>Pesanan ini telah dikembalikan karena melewati batas SLA pengiriman.</p>
+            </div>
+          )}
+
+          {(order.status === 'SEDANG_DIKIRIM' || order.status === 'PESANAN_SELESAI') && order.driver_info && (
+            <Card>
+              <h2 className="mb-4 flex items-center gap-2 font-semibold text-text">
+                <Truck className="h-4 w-4" />
+                Informasi Pengiriman
+              </h2>
+              <div className="flex flex-col gap-1 text-sm">
+                <p className="text-text-sub">
+                  Kurir: <span className="font-medium text-text">{order.driver_info.name}</span>
+                </p>
+                {order.driver_info.taken_at && (
+                  <p className="text-text-sub">
+                    Diambil pada:{' '}
+                    <span className="font-medium text-text">{formatDateTime(order.driver_info.taken_at)}</span>
+                  </p>
+                )}
+                {order.status === 'PESANAN_SELESAI' && order.driver_info.completed_at && (
+                  <p className="text-text-sub">
+                    Selesai pada:{' '}
+                    <span className="font-medium text-text">{formatDateTime(order.driver_info.completed_at)}</span>
+                  </p>
+                )}
+              </div>
+            </Card>
+          )}
 
           <Card>
             <h2 className="mb-4 font-semibold text-text">Produk</h2>

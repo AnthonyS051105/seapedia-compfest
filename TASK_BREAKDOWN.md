@@ -546,8 +546,8 @@
 ### TASK-5.5: Delivery Tracking (Frontend)
 
 - [x] Update buyer order detail to show driver info when SEDANG_DIKIRIM (required adding `driver_info` to backend `GET /buyer/orders/:id` response — sourced from `DeliveryJob → DriverProfile → User`; verified live: card appears only while status is SEDANG_DIKIRIM and disappears once PESANAN_SELESAI)
-- [ ] Update seller order detail to show delivery status
-- [ ] Order status timeline auto-updated when polling or navigating (currently fetched once on mount, no polling)
+- [x] Update seller order detail to show delivery status (added `driver_info` to `GET /seller/orders/:id` backend response — `seller.service.ts` now includes `delivery_job.driver_profile.user`; frontend shows "Informasi Pengiriman" card with kurir name + "Diambil pada" while SEDANG_DIKIRIM/PESANAN_SELESAI, plus "Selesai pada" once PESANAN_SELESAI, and a red "Pesanan ini telah dikembalikan..." banner when DIKEMBALIKAN)
+- [x] Order status timeline auto-updated when polling or navigating (implemented as refetch-on-tab-focus via `visibilitychange` listener, not polling — added to both `app/buyer/orders/[id]/page.tsx` and `app/seller/orders/[id]/page.tsx`)
 
 ---
 

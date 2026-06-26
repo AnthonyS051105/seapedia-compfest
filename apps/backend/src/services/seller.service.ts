@@ -80,12 +80,20 @@ export interface IncomeReportResult {
   period_breakdown: IncomeReportPeriodBreakdown[]
 }
 
+export interface DriverInfoResult {
+  name: string
+  phone: string | null
+  taken_at: Date | null
+  completed_at: Date | null
+}
+
 export interface OrderDetailResult extends OrderListItem {
   address_id: string
   discount_code: string | null
   discount_type: string | null
   order_items: OrderItemDetail[]
   status_history: OrderStatusHistoryItem[]
+  driver_info: DriverInfoResult | null
 }
 
 interface ProductRow {
@@ -291,11 +299,24 @@ class SellerService {
         order_items: true,
         status_history: { orderBy: { created_at: 'asc' } },
         buyer_profile: { include: { user: { select: { username: true, full_name: true } } } },
+        delivery_job: {
+          include: { driver_profile: { include: { user: { select: { username: true, full_name: true, phone: true } } } } },
+        },
       },
     })
     if (!order) {
       throw new NotFoundError('Pesanan tidak ditemukan')
     }
+
+    const driver = order.delivery_job?.driver_profile
+    const driverInfo: DriverInfoResult | null = driver
+      ? {
+          name: driver.user.full_name ?? driver.user.username,
+          phone: driver.user.phone,
+          taken_at: order.delivery_job?.taken_at ?? null,
+          completed_at: order.delivery_job?.completed_at ?? null,
+        }
+      : null
 
     return {
       ...this.toOrderListItem(order),
@@ -316,6 +337,7 @@ class SellerService {
         note: h.note,
         created_at: h.created_at,
       })),
+      driver_info: driverInfo,
     }
   }
 
