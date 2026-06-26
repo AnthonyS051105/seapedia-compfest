@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Megaphone } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -107,7 +108,11 @@ function AdminPromosPageContent() {
               <tbody>
                 {promos.map((promo) => (
                   <tr key={promo.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium text-text">{promo.code}</td>
+                    <td className="px-4 py-3 font-medium">
+                      <Link href={`/admin/promos/${promo.id}`} className="text-primary hover:underline">
+                        {promo.code}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-text">{promo.name}</td>
                     <td className="px-4 py-3 text-text-sub">
                       {promo.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}

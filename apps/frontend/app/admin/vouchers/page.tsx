@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Tag } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -107,7 +108,11 @@ function AdminVouchersPageContent() {
               <tbody>
                 {vouchers.map((voucher) => (
                   <tr key={voucher.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium text-text">{voucher.code}</td>
+                    <td className="px-4 py-3 font-medium">
+                      <Link href={`/admin/vouchers/${voucher.id}`} className="text-primary hover:underline">
+                        {voucher.code}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-text-sub">
                       {voucher.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
                     </td>

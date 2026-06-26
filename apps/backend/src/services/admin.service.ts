@@ -5,6 +5,7 @@ import { PaginationMeta } from '../utils/response'
 import {
   GetUsersQueryDto,
   GetStoresQueryDto,
+  GetAdminProductsQueryDto,
   GetAdminOrdersQueryDto,
   GetDeliveryJobsQueryDto,
   GetOverdueOrdersQueryDto,
@@ -75,6 +76,20 @@ export interface AdminStoreListItem {
     id: string
     username: string
     email: string
+  }
+  created_at: Date
+}
+
+export interface AdminProductListItem {
+  id: string
+  name: string
+  price: number
+  stock: number
+  is_active: boolean
+  deleted_at: Date | null
+  store: {
+    id: string
+    name: string
   }
   created_at: Date
 }
@@ -234,6 +249,44 @@ class AdminService {
           email: store.seller_profile.user.email,
         },
         created_at: store.created_at,
+      })),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    }
+  }
+
+  async getProducts(
+    query: GetAdminProductsQueryDto
+  ): Promise<{ data: AdminProductListItem[]; meta: PaginationMeta }> {
+    const { page, limit, search, is_active, has_stock, deleted } = query
+
+    const where: Prisma.ProductWhereInput = {
+      deleted_at: deleted ? { not: null } : null,
+      ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
+      ...(is_active !== undefined ? { is_active } : {}),
+      ...(has_stock !== undefined ? { stock: has_stock ? { gt: 0 } : { equals: 0 } } : {}),
+    }
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { store: { select: { id: true, name: true } } },
+      }),
+      prisma.product.count({ where }),
+    ])
+
+    return {
+      data: products.map((product) => ({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        stock: product.stock,
+        is_active: product.is_active,
+        deleted_at: product.deleted_at,
+        store: { id: product.store.id, name: product.store.name },
+        created_at: product.created_at,
       })),
       meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
     }

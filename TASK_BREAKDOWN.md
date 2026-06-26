@@ -575,7 +575,7 @@
 
 - [x] `GET /api/admin/users` — paginated user list with roles
 - [x] `GET /api/admin/stores` — paginated store list
-- [ ] `GET /api/admin/products` — paginated product list
+- [x] `GET /api/admin/products` — paginated product list (filters: search by name, is_active, has_stock, deleted; excludes soft-deleted by default; added `getProducts` to `admin.service.ts` + `GetAdminProductsQuerySchema` + Swagger annotation)
 - [x] `GET /api/admin/orders` — all orders with status filter
 - [x] `GET /api/admin/delivery-jobs` — all delivery jobs
 - [x] `GET /api/admin/overdue-orders` — overdue orders
@@ -609,10 +609,10 @@
 
 ### TASK-6.7: Voucher & Promo Management UI (Frontend)
 
-- [x] `app/admin/vouchers/page.tsx` — list + create form modal
-- [ ] `app/admin/vouchers/[id]/page.tsx` — detail view
-- [x] `app/admin/promos/page.tsx` — list + create form modal
-- [ ] `app/admin/promos/[id]/page.tsx` — detail view
+- [x] `app/admin/vouchers/page.tsx` — list + create form modal (code cell now links to `/admin/vouchers/:id`)
+- [x] `app/admin/vouchers/[id]/page.tsx` — detail view (kode, tipe, nilai diskon, maks diskon, min order, kadaluarsa with "Aktif (X hari lagi)"/"Kadaluarsa" badge, usage progress bar, active/inactive status, back link, not-found empty state)
+- [x] `app/admin/promos/page.tsx` — list + create form modal (code cell now links to `/admin/promos/:id`)
+- [x] `app/admin/promos/[id]/page.tsx` — detail view (same layout as voucher detail, plus nama/deskripsi fields, no usage/limit fields since promos have no max_usage)
 
 ---
 

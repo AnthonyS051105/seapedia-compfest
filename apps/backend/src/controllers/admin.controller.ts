@@ -7,6 +7,7 @@ import { CreateVoucherDto, CreatePromoDto, GetDiscountsQueryDto } from '../schem
 import {
   GetUsersQueryDto,
   GetStoresQueryDto,
+  GetAdminProductsQueryDto,
   GetAdminOrdersQueryDto,
   GetDeliveryJobsQueryDto,
   GetOverdueOrdersQueryDto,
@@ -113,6 +114,16 @@ export const getStores = async (req: Request, res: Response, next: NextFunction)
   try {
     const query = req.query as unknown as GetStoresQueryDto
     const { data, meta } = await adminService.getStores(query)
+    paginated(res, data, meta)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const query = req.query as unknown as GetAdminProductsQueryDto
+    const { data, meta } = await adminService.getProducts(query)
     paginated(res, data, meta)
   } catch (error) {
     next(error)

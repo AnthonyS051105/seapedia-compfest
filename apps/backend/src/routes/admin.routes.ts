@@ -10,6 +10,7 @@ import {
 import {
   GetUsersQuerySchema,
   GetStoresQuerySchema,
+  GetAdminProductsQuerySchema,
   GetAdminOrdersQuerySchema,
   GetDeliveryJobsQuerySchema,
   GetOverdueOrdersQuerySchema,
@@ -483,6 +484,57 @@ router.get('/users', validateQuery(GetUsersQuerySchema), adminController.getUser
  *         description: Bukan Admin
  */
 router.get('/stores', validateQuery(GetStoresQuerySchema), adminController.getStores)
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin - Products
+ *     description: Monitoring produk lintas toko (Admin only)
+ */
+
+/**
+ * @swagger
+ * /admin/products:
+ *   get:
+ *     summary: Daftar semua produk lintas toko
+ *     tags: [Admin - Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 10, maximum: 100 }
+ *       - in: query
+ *         name: search
+ *         description: Cari berdasarkan nama produk
+ *         schema: { type: string }
+ *       - in: query
+ *         name: is_active
+ *         schema: { type: boolean }
+ *       - in: query
+ *         name: has_stock
+ *         description: true = hanya produk dengan stok > 0, false = hanya stok habis
+ *         schema: { type: boolean }
+ *       - in: query
+ *         name: deleted
+ *         description: true = hanya tampilkan produk yang sudah dihapus (soft delete)
+ *         schema: { type: boolean, default: false }
+ *     responses:
+ *       200:
+ *         description: Daftar produk berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Bukan Admin
+ */
+router.get('/products', validateQuery(GetAdminProductsQuerySchema), adminController.getProducts)
 
 /**
  * @swagger
