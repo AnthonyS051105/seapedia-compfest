@@ -1,0 +1,111 @@
+'use client'
+
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Store } from 'lucide-react'
+import { api } from '@/lib/api'
+import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Pagination } from '@/components/ui/Pagination'
+import { AdminStoreListItem, PaginatedResponse } from '@/types'
+
+function formatDate(value: string): string {
+  return new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+export default function AdminStoresPage() {
+  return (
+    <Suspense>
+      <AdminStoresPageContent />
+    </Suspense>
+  )
+}
+
+function AdminStoresPageContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const page = Number(searchParams.get('page') ?? '1')
+
+  const [result, setResult] = useState<{
+    key: number
+    stores: AdminStoreListItem[]
+    meta: { totalPages: number }
+  } | null>(null)
+
+  useEffect(() => {
+    api
+      .get<PaginatedResponse<AdminStoreListItem>>('/admin/stores', { params: { page, limit: 10 } })
+      .then((res) => {
+        setResult({ key: page, stores: res.data.data, meta: { totalPages: res.data.meta.totalPages } })
+      })
+      .catch(() => {
+        setResult({ key: page, stores: [], meta: { totalPages: 0 } })
+      })
+  }, [page])
+
+  const isLoading = result?.key !== page
+  const stores = isLoading ? null : result.stores
+  const meta = isLoading ? null : result.meta
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-text">Toko</h1>
+        <p className="text-text-sub">Daftar semua toko di SEAPEDIA</p>
+      </div>
+
+      {isLoading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} height={56} />
+          ))}
+        </div>
+      ) : !stores || stores.length === 0 ? (
+        <EmptyState icon={Store} title="Belum ada toko" description="Belum ada toko yang dibuat." />
+      ) : (
+        <>
+          <Card className="overflow-x-auto p-0">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-text-sub">
+                  <th className="px-4 py-3 font-medium">Nama Toko</th>
+                  <th className="px-4 py-3 font-medium">Seller</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Dibuat</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stores.map((store) => (
+                  <tr key={store.id} className="border-b border-border last:border-0">
+                    <td className="px-4 py-3 font-medium text-text">{store.name}</td>
+                    <td className="px-4 py-3 text-text-sub">
+                      {store.seller.username}
+                      <span className="block text-xs text-text-sub">{store.seller.email}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={store.is_active ? 'green' : 'gray'}>
+                        {store.is_active ? 'Aktif' : 'Nonaktif'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-text-sub">{formatDate(store.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+
+          {meta && meta.totalPages > 1 && (
+            <Pagination
+              page={page}
+              totalPages={meta.totalPages}
+              onPageChange={(nextPage) => router.push(`/admin/stores?page=${nextPage}`)}
+              className="mt-6"
+            />
+          )}
+        </>
+      )}
+    </div>
+  )
+}

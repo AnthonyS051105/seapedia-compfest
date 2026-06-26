@@ -596,15 +596,16 @@
 
 ### TASK-6.6: Admin Dashboard Pages (Frontend)
 
-- [ ] `app/admin/dashboard/page.tsx` — stat cards + charts
+- [x] `app/admin/dashboard/page.tsx` — stat cards + charts
   - System date display with "Simulate Next Day" button
   - Overdue orders count card (highlighted in red)
+  - (replaced the pre-existing static placeholder page with real data wired to `GET /admin/dashboard/stats` and `POST /admin/simulate-next-day`; verified live via Playwright — simulating 3 days correctly moved a fresh order from SEDANG_DIKEMAS to DIKEMBALIKAN and incremented the overdue count)
 
-- [ ] `app/admin/users/page.tsx` — user table
-- [ ] `app/admin/stores/page.tsx` — store table
-- [ ] `app/admin/orders/page.tsx` — orders table with status filter
-- [ ] `app/admin/delivery-jobs/page.tsx` — delivery jobs table
-- [ ] `app/admin/overdue/page.tsx` — overdue orders + processing button
+- [x] `app/admin/users/page.tsx` — user table
+- [x] `app/admin/stores/page.tsx` — store table (shows seller info; backend does not return a products-count field per store, so that column was not invented)
+- [x] `app/admin/orders/page.tsx` — orders table with status filter (verified live: selecting "Dikembalikan" correctly filtered to only DIKEMBALIKAN orders and updated the URL query param)
+- [x] `app/admin/delivery-jobs/page.tsx` — delivery jobs table (driver shown by ID since backend list endpoint doesn't join driver name; earnings verified to match the 80%-of-delivery-fee rule per method)
+- [x] `app/admin/overdue/page.tsx` — overdue orders + processing button
 
 ### TASK-6.7: Voucher & Promo Management UI (Frontend)
 

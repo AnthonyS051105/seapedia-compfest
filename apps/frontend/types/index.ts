@@ -382,3 +382,97 @@ export interface ApiErrorResponse {
   message: string
   errors?: FieldError[]
 }
+
+export interface AdminDashboardStats {
+  users: {
+    total: number
+    by_role: Record<string, number>
+  }
+  stores: {
+    total: number
+    active: number
+  }
+  products: {
+    total: number
+    active: number
+    out_of_stock: number
+  }
+  orders: {
+    total: number
+    by_status: Record<string, number>
+  }
+  vouchers: {
+    total: number
+    active: number
+    expired: number
+  }
+  promos: {
+    total: number
+    active: number
+  }
+  delivery_jobs: {
+    total: number
+    available: number
+    in_progress: number
+    completed: number
+  }
+  overdue_orders: number
+  system_date_offset: number
+}
+
+export interface AdminUserListItem {
+  id: string
+  username: string
+  email: string
+  full_name: string | null
+  phone: string | null
+  roles: Role[]
+  created_at: string
+}
+
+export interface AdminStoreSellerSummary {
+  id: string
+  username: string
+  email: string
+}
+
+export interface AdminStoreListItem {
+  id: string
+  name: string
+  description: string | null
+  is_active: boolean
+  seller: AdminStoreSellerSummary
+  created_at: string
+}
+
+export interface AdminOrderListItem {
+  id: string
+  buyer_id: string
+  store_id: string
+  status: OrderStatus
+  delivery_method: DeliveryMethod
+  final_total: number
+  is_overdue_processed: boolean
+  created_at: string
+}
+
+export interface AdminDeliveryJobListItem {
+  id: string
+  order_id: string
+  driver_id: string | null
+  status: OrderStatus
+  delivery_method: DeliveryMethod
+  earning: number | null
+  taken_at: string | null
+  completed_at: string | null
+  created_at: string
+}
+
+export interface SimulateNextDayResult {
+  new_offset: number
+  processed_count: number
+}
+
+export interface ProcessOverdueResult {
+  processed_count: number
+}
