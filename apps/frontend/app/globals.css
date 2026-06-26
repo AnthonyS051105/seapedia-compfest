@@ -1,30 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+@theme {
+  /* Brand — Teal, not blue */
+  --color-brand-50:  #E0FAF7;
+  --color-brand-100: #B3F3EC;
+  --color-brand-200: #7DEADE;
+  --color-brand-400: #2DD4C4;
+  --color-brand-500: #00BFA8;
+  --color-brand-600: #00A391;
+  --color-brand-700: #007D70;
+  --color-brand-800: #005A50;
+  --color-brand-900: #003D37;
+
+  /* Accent amber */
+  --color-accent-300: #FDE68A;
+  --color-accent-400: #FBBF24;
+  --color-accent-500: #F59E0B;
+
+  /* Semantic */
+  --color-success-50:  #ECFDF5;
+  --color-success-500: #10B981;
+  --color-success-700: #047857;
+  --color-danger-50:   #FEF2F2;
+  --color-danger-500:  #EF4444;
+  --color-danger-700:  #B91C1C;
+
+  /* Neutrals — warm zinc */
+  --color-zinc-950: #09090B;
+  --color-zinc-900: #18181B;
+  --color-zinc-800: #27272A;
+  --color-zinc-700: #3F3F46;
+  --color-zinc-600: #52525B;
+  --color-zinc-500: #71717A;
+  --color-zinc-400: #A1A1AA;
+  --color-zinc-300: #D4D4D8;
+  --color-zinc-200: #E4E4E7;
+  --color-zinc-100: #F4F4F5;
+  --color-zinc-50:  #FAFAFA;
+
+  /* Surface */
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FFFFFF;
+
+  /* Font families */
+  --font-family-display: 'Plus Jakarta Sans', sans-serif;
+  --font-family-body: 'Inter', sans-serif;
+
+  /* Border radius */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+}
+
+/* Shadows — rgba cannot go in @theme */
 :root {
-  --background: #f9fafb;
-  --foreground: #111827;
+  --shadow-xs:    0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm:    0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  --shadow-md:    0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg:    0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-xl:    0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --shadow-brand: 0 4px 20px 0 rgb(0 191 168 / 0.3);
+  --shadow-card:  0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 8px 0 rgb(0 0 0 / 0.06);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* SEAPEDIA design tokens — see UI_UX_FLOW.md section 1.1 */
-  --color-primary: #3b82f6;
-  --color-primary-dark: #1d4ed8;
-  --color-secondary: #10b981;
-  --color-accent: #f59e0b;
-  --color-danger: #ef4444;
-  --color-surface: #ffffff;
-  --color-border: #e5e7eb;
-  --color-text: #111827;
-  --color-text-sub: #6b7280;
-}
-
+/* Base styles */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  color: #3F3F46;
+  background: #FAFAFA;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display, 'Plus Jakarta Sans', sans-serif);
+  font-weight: 700;
+  color: #09090B;
+  letter-spacing: -0.02em;
+}
+
+/* Page container */
+.container-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .container-page { padding-left: 40px; padding-right: 40px; }
+}
+
+/* Animation keyframes */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-marquee { animation: marquee 25s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.5s ease-out forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-float,
+  .animate-fade-up { animation: none; }
+}
+
+/* Micro-interactions */
+.card-interactive {
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+button:active { transform: scale(0.98); }
+
+.link-underline {
+  background: linear-gradient(currentColor, currentColor) no-repeat left bottom;
+  background-size: 0% 1px;
+  transition: background-size 200ms ease;
+}
+.link-underline:hover { background-size: 100% 1px; }
