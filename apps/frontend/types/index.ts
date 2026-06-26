@@ -230,6 +230,39 @@ export interface IncomeReport {
   period_breakdown: IncomeReportPeriodBreakdown[]
 }
 
+export interface SpendingReportOrdersByStatus {
+  SEDANG_DIKEMAS: number
+  MENUNGGU_PENGIRIM: number
+  SEDANG_DIKIRIM: number
+  PESANAN_SELESAI: number
+  DIKEMBALIKAN: number
+}
+
+export interface SpendingReportMonthlyBreakdown {
+  month: string
+  total_spent: number
+  order_count: number
+}
+
+export interface SpendingReportOrder {
+  id: string
+  store_id: string
+  store_name: string
+  status: OrderStatus
+  final_total: number
+  created_at: string
+}
+
+export interface SpendingReport {
+  total_spent: number
+  order_count: number
+  orders_by_status: SpendingReportOrdersByStatus
+  monthly_breakdown: SpendingReportMonthlyBreakdown[]
+  from_date: string | null
+  to_date: string | null
+  orders: SpendingReportOrder[]
+}
+
 export interface Review {
   id: string
   reviewer_name: string

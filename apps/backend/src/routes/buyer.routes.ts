@@ -5,7 +5,7 @@ import { validateBody, validateQuery } from '../middleware/validate'
 import { TopUpSchema, CreateAddressSchema, UpdateAddressSchema } from '../schemas/buyer.schema'
 import { AddToCartSchema, UpdateCartItemSchema } from '../schemas/cart.schema'
 import { CheckoutSchema } from '../schemas/checkout.schema'
-import { GetOrdersQuerySchema } from '../schemas/order.schema'
+import { GetOrdersQuerySchema, GetSpendingReportQuerySchema } from '../schemas/order.schema'
 import { paginationSchema } from '../schemas/utils'
 import * as buyerController from '../controllers/buyer.controller'
 
@@ -22,6 +22,8 @@ const router = Router()
  *     description: Keranjang belanja pembeli (aturan single-store)
  *   - name: Buyer - Checkout
  *     description: Checkout dan riwayat pesanan pembeli
+ *   - name: Buyer - Reports
+ *     description: Laporan pengeluaran pembeli
  */
 
 /**
@@ -766,5 +768,83 @@ router.get(
  *         description: Pesanan tidak ditemukan atau bukan milik pembeli ini
  */
 router.get('/orders/:id', authenticate, requireRole('BUYER'), buyerController.getOrderDetail)
+
+/**
+ * @swagger
+ * /buyer/reports:
+ *   get:
+ *     summary: Laporan pengeluaran pembeli
+ *     description: |
+ *       Menghitung total pengeluaran dari transaksi dompet bertipe `PAYMENT`,
+ *       breakdown pesanan per status, dan breakdown pengeluaran bulanan.
+ *     tags: [Buyer - Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: from_date
+ *         schema: { type: string, format: date-time }
+ *         description: Filter dari tanggal ini (ISO 8601)
+ *       - in: query
+ *         name: to_date
+ *         schema: { type: string, format: date-time }
+ *         description: Filter sampai tanggal ini (ISO 8601)
+ *     responses:
+ *       200:
+ *         description: Laporan pengeluaran berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean, example: true }
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     total_spent: { type: number, example: 1250000 }
+ *                     order_count: { type: integer, example: 5 }
+ *                     orders_by_status:
+ *                       type: object
+ *                       properties:
+ *                         SEDANG_DIKEMAS: { type: integer, example: 1 }
+ *                         MENUNGGU_PENGIRIM: { type: integer, example: 0 }
+ *                         SEDANG_DIKIRIM: { type: integer, example: 1 }
+ *                         PESANAN_SELESAI: { type: integer, example: 3 }
+ *                         DIKEMBALIKAN: { type: integer, example: 0 }
+ *                     monthly_breakdown:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           month: { type: string, example: "2025-06" }
+ *                           total_spent: { type: number, example: 350000 }
+ *                           order_count: { type: integer, example: 3 }
+ *                     from_date: { type: string, nullable: true }
+ *                     to_date: { type: string, nullable: true }
+ *                     orders:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:          { type: string, format: uuid }
+ *                           store_id:    { type: string, format: uuid }
+ *                           store_name:  { type: string, example: "Toko Elektronik Maju" }
+ *                           status:      { type: string, example: PESANAN_SELESAI }
+ *                           final_total: { type: number, example: 250000 }
+ *                           created_at:  { type: string, format: date-time }
+ *       400:
+ *         description: Validasi gagal, atau akun ini tidak memiliki profil pembeli
+ *       401:
+ *         description: Tidak terautentikasi
+ *       403:
+ *         description: Active role bukan BUYER
+ */
+router.get(
+  '/reports',
+  authenticate,
+  requireRole('BUYER'),
+  validateQuery(GetSpendingReportQuerySchema),
+  buyerController.getSpendingReport
+)
 
 export default router

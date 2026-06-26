@@ -4,11 +4,12 @@ import { walletService } from '../services/wallet.service'
 import { addressService } from '../services/address.service'
 import { cartService } from '../services/cart.service'
 import { checkoutService } from '../services/checkout.service'
+import { reportService } from '../services/report.service'
 import { success, paginated } from '../utils/response'
 import { TopUpDto, CreateAddressDto, UpdateAddressDto } from '../schemas/buyer.schema'
 import { AddToCartDto, UpdateCartItemDto } from '../schemas/cart.schema'
 import { CheckoutDto } from '../schemas/checkout.schema'
-import { GetOrdersQueryDto } from '../schemas/order.schema'
+import { GetOrdersQueryDto, GetSpendingReportQueryDto } from '../schemas/order.schema'
 
 interface PaginationQueryDto {
   page: number
@@ -185,6 +186,17 @@ export const getOrderDetail = async (req: Request, res: Response, next: NextFunc
     const { id } = req.params
     const order = await checkoutService.getOrderDetail(userId, id)
     success(res, order)
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const getSpendingReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as AuthRequest).user.sub
+    const query = req.query as unknown as GetSpendingReportQueryDto
+    const report = await reportService.getSpendingReport(userId, query)
+    success(res, report)
   } catch (error) {
     next(error)
   }

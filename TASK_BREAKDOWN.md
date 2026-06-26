@@ -450,7 +450,7 @@
 
 ### TASK-4.5: Reports Endpoints (Backend)
 
-- [ ] `GET /api/buyer/reports` — spending summary
+- [x] `GET /api/buyer/reports` — spending summary
   - Total spent, orders count, by status breakdown
   - Date range filter (from_date, to_date)
 
@@ -474,7 +474,7 @@
 
 ### TASK-4.8: Reports Pages (Frontend)
 
-- [ ] `app/buyer/reports/page.tsx` — spending summary with charts
+- [x] `app/buyer/reports/page.tsx` — spending summary with charts (date range filter, 4 stat cards, monthly bar chart via native divs, orders table with status badges; "Laporan" sidebar link already existed in `app/buyer/layout.tsx`)
 - [x] `app/seller/reports/page.tsx` — income summary with charts
   - Simple bar chart for monthly income (use recharts or native SVG) (implemented with native SVG/divs, no recharts dependency added)
 

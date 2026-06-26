@@ -18,5 +18,11 @@ export const GetIncomeReportQuerySchema = z.object({
   to_date: z.string().datetime({ message: 'Format to_date tidak valid (gunakan ISO 8601)' }).optional(),
 })
 
+export const GetSpendingReportQuerySchema = z.object({
+  from_date: z.string().datetime({ message: 'Format from_date tidak valid (gunakan ISO 8601)' }).optional(),
+  to_date: z.string().datetime({ message: 'Format to_date tidak valid (gunakan ISO 8601)' }).optional(),
+})
+
 export type GetOrdersQueryDto = z.infer<typeof GetOrdersQuerySchema>
 export type GetIncomeReportQueryDto = z.infer<typeof GetIncomeReportQuerySchema>
+export type GetSpendingReportQueryDto = z.infer<typeof GetSpendingReportQuerySchema>
