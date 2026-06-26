@@ -234,7 +234,7 @@
 - [x] `Badge.tsx` — status badge with color variants
 - [x] `Modal.tsx` — dialog with backdrop
 - [x] `Toast.tsx` — using react-hot-toast (configured in `app/providers.tsx`)
-- [ ] `Spinner.tsx` — loading indicator
+- [x] `Spinner.tsx` — loading indicator
 - [x] `Skeleton.tsx` — loading skeleton
 - [x] `StarRating.tsx` — interactive + display-only star rating
 - [x] `Pagination.tsx` — page number controls
@@ -284,7 +284,7 @@
 
 ### TASK-2.3: Seller Dashboard Pages (Frontend)
 
-- [ ] `app/seller/dashboard/page.tsx` — stats + recent orders summary (still placeholder stat cards, not wired to real data)
+- [x] `app/seller/dashboard/page.tsx` — stats + recent orders summary (wired to `GET /seller/store`, `/seller/products`, `/seller/orders`, `/seller/reports/income`; Skeleton while loading, EmptyState for no orders, "Buat Toko" CTA when no store)
 - [x] `app/seller/store/page.tsx` — store profile form (create/edit)
   - Check if store exists on mount
   - If no store → show create form
