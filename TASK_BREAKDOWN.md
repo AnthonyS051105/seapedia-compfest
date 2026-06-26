@@ -620,51 +620,51 @@
 
 ### TASK-7.1: SQL Injection Prevention Audit (Backend)
 
-- [ ] Audit all Prisma queries — ensure no raw SQL with string interpolation
-- [ ] Any `$queryRaw` must use tagged template literals (parameterized)
+- [x] Audit all Prisma queries — ensure no raw SQL with string interpolation (audited 2026-06-26: only one `$queryRaw` call exists, in `driver.service.ts:197` for `SELECT ... FOR UPDATE SKIP LOCKED`, and it uses a tagged template literal correctly)
+- [x] Any `$queryRaw` must use tagged template literals (parameterized) (verified — no string-interpolated raw SQL found anywhere)
 - [ ] Document in README: "All queries use Prisma ORM which parameterizes automatically"
 
 ### TASK-7.2: XSS Prevention (Backend + Frontend)
 
 - [x] Backend: Add `sanitize-html` to review submit handler (done in TASK-1.5, verified with live `<script>`/`onerror` XSS payload via curl — both stripped)
-- [ ] Backend: Add sanitization to any other user-submitted text fields (store.name, product.description, etc.)
-- [ ] Frontend: Ensure all user-generated content rendered with React (JSX auto-escapes)
-- [ ] Frontend: Never use `dangerouslySetInnerHTML` for user content
+- [x] Backend: Add sanitization to any other user-submitted text fields (store.name, product.description, etc.) (audited 2026-06-26: confirmed `sanitizeText()` already applied to AppReview, Store, Product, DeliveryAddress fields; found and fixed two gaps — `Promo.name`/`Promo.description` in `discount.service.ts` and `User.full_name` in `auth.service.ts` — were being saved unsanitized)
+- [x] Frontend: Ensure all user-generated content rendered with React (JSX auto-escapes) (verified — no raw HTML injection points found)
+- [x] Frontend: Never use `dangerouslySetInnerHTML` for user content (audited 2026-06-26: zero usages of `dangerouslySetInnerHTML` anywhere in `apps/frontend`)
 - [ ] Test: submit `<script>alert('xss')</script>` in review form → should render as plain text
 
 ### TASK-7.3: Input Validation Hardening (Backend)
 
-- [ ] Review all Zod schemas — ensure all required fields are validated
-- [ ] Add validations: email format, phone format (Indonesian), price > 0, stock >= 0, rating 1-5
-- [ ] Return 400 with field-level error details for validation failures
-- [ ] Reject oversized payloads (set Express body size limit: 10mb)
+- [x] Review all Zod schemas — ensure all required fields are validated (audited 2026-06-26: every POST/PUT route across auth/buyer/seller/driver/admin routers has `validateBody()` wired with a matching Zod schema; no gaps found)
+- [x] Add validations: email format, phone format (Indonesian), price > 0, stock >= 0, rating 1-5 (pre-existing in `schemas/utils.ts` and domain schemas — confirmed still correct)
+- [x] Return 400 with field-level error details for validation failures (confirmed in `middleware/validate.ts`)
+- [x] Reject oversized payloads (set Express body size limit: 10mb) (confirmed in `app.ts`: `express.json({ limit: '10mb' })`)
 
 ### TASK-7.4: Session & Token Security (Backend)
 
-- [ ] Verify refresh token revocation on logout works correctly
-- [ ] Verify expired access tokens are rejected
-- [ ] Add token cleanup job: `DELETE FROM RefreshToken WHERE expires_at < NOW()`
-  - Can be triggered manually or on startup
+- [x] Verify refresh token revocation on logout works correctly (audited 2026-06-26: `authService.logout()` sets `is_revoked = true` via `updateMany` scoped to the exact token)
+- [x] Verify expired access tokens are rejected (`authenticate` middleware verifies JWT signature + expiry via `jsonwebtoken`, returns 401 on failure)
+- [x] Add token cleanup job: `DELETE FROM RefreshToken WHERE expires_at < NOW()` (added `authService.cleanupExpiredRefreshTokens()` in `auth.service.ts`, invoked once on server startup in `server.ts` before `app.listen()`)
+  - Triggered on startup
 
 - [ ] Document token expiry behavior in README
 
 ### TASK-7.5: RBAC Audit (Backend)
 
-- [ ] Go through ALL protected endpoints and verify `requireRole()` middleware is applied
-- [ ] Verify resource ownership checks exist on all mutating endpoints:
-  - Seller: products, orders, store
-  - Buyer: cart, orders, addresses, wallet
-  - Driver: delivery jobs
-- [ ] Admin endpoints: verify no non-admin can access
+- [x] Go through ALL protected endpoints and verify `requireRole()` middleware is applied (audited 2026-06-26: every route in `buyer.routes.ts`, `seller.routes.ts`, `driver.routes.ts` has explicit `authenticate, requireRole(...)`; `admin.routes.ts` applies both globally via `router.use(authenticate, requireRole('ADMIN'))` — no gaps found)
+- [x] Verify resource ownership checks exist on all mutating endpoints (audited 2026-06-26 — all confirmed present):
+  - Seller: products (`getOwnedProductOrThrow`), orders (`store_id` scoped lookups), store (`getOwnStoreOrThrow`)
+  - Buyer: cart (`getOwnedCartItemOrThrow`), orders (`buyer_id` scoped), addresses (`getOwnedAddressOrThrow`), wallet (scoped to own `buyerProfile.id`)
+  - Driver: delivery jobs (`driver_id` ownership checks in `takeJob`/`completeJob`/`getJobDetail`)
+- [x] Admin endpoints: verify no non-admin can access (enforced by router-level `requireRole('ADMIN')` in `admin.routes.ts`)
 
 ### TASK-7.6: Rate Limiting (Backend)
 
-- [ ] Apply rate limiter to auth endpoints: 10 requests/minute per IP
-- [ ] Apply general rate limiter: 100 requests/minute per IP
+- [x] Apply rate limiter to auth endpoints: 10 requests/minute per IP (confirmed in `app.ts`: `authRateLimiter` with `max: 10` mounted on `/api/auth`, covering login/register/refresh)
+- [x] Apply general rate limiter: 100 requests/minute per IP (confirmed in `app.ts`: `generalRateLimiter` with `max: 100` applied globally)
 
 ### TASK-7.7: Helmet Security Headers (Backend)
 
-- [ ] Verify `helmet()` is applied in app.ts
+- [x] Verify `helmet()` is applied in app.ts (confirmed: `app.use(helmet())` present)
 - [ ] Configure CSP if needed
 
 ### TASK-7.8: Seed Data (Backend)

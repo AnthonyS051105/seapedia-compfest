@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 import { prisma } from '../prisma/client'
 import { applyDiscount } from '../utils/pricing'
+import { sanitizeText } from '../utils/sanitize'
 import { BadRequestError, ConflictError, NotFoundError } from '../utils/errors'
 import { CreateVoucherDto, CreatePromoDto, GetDiscountsQueryDto } from '../schemas/discount.schema'
 import { PaginationMeta } from '../utils/response'
@@ -123,8 +124,8 @@ class DiscountService {
     const promo = await prisma.promo.create({
       data: {
         code: dto.code,
-        name: dto.name,
-        description: dto.description,
+        name: sanitizeText(dto.name),
+        description: dto.description ? sanitizeText(dto.description) : undefined,
         discount_type: dto.discount_type,
         discount_value: dto.discount_value,
         max_discount_amount: dto.max_discount_amount,

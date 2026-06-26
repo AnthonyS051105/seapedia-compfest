@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import { prisma } from '../prisma/client'
 import { hashPassword, comparePassword } from '../utils/bcrypt'
+import { sanitizeText } from '../utils/sanitize'
 import {
   signAccessToken,
   signRefreshToken,
@@ -66,7 +67,7 @@ class AuthService {
           username: dto.username,
           email: dto.email,
           password: hashed,
-          full_name: dto.full_name,
+          full_name: dto.full_name ? sanitizeText(dto.full_name) : undefined,
           phone: dto.phone,
           user_roles: {
             create: dto.roles.map((role) => ({ role })),
@@ -260,6 +261,13 @@ class AuthService {
       return roles[0]
     }
     return null
+  }
+
+  async cleanupExpiredRefreshTokens(): Promise<number> {
+    const result = await prisma.refreshToken.deleteMany({
+      where: { expires_at: { lt: new Date() } },
+    })
+    return result.count
   }
 }
 
