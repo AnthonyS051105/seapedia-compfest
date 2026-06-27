@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Package, PackageX, ClipboardList, Wallet, Store as StoreIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Store as StoreIcon } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
-import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -25,6 +25,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 export default function SellerDashboardPage() {
+  const router = useRouter()
   const user = useAuthStore((state) => state.user)
 
   const [store, setStore] = useState<Store | null | undefined>(undefined)
@@ -77,116 +78,121 @@ export default function SellerDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-text">Dashboard Penjual</h1>
-        <p className="text-text-sub">Selamat datang, {user?.username}!</p>
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Dashboard Penjual</h1>
+        <p className="text-zinc-500">Selamat datang, {user?.username}!</p>
       </div>
 
       {store === undefined ? (
-        <Skeleton className="h-16 w-full" />
+        <Skeleton height={64} className="rounded-xl" />
       ) : store === null ? (
-        <Card>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <StoreIcon className="h-5 w-5 text-text-sub" />
-              <p className="text-sm text-text-sub">Kamu belum memiliki toko. Buat toko untuk mulai berjualan.</p>
-            </div>
-            <Link href="/seller/store">
-              <Button>Buat Toko</Button>
-            </Link>
-          </div>
-        </Card>
-      ) : (
-        <Card>
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-2">
-            <StoreIcon className="h-5 w-5 text-text-sub" />
-            <p className="font-semibold text-text">{store.name}</p>
+            <StoreIcon className="h-5 w-5 text-zinc-400" />
+            <p className="text-sm text-zinc-500">Kamu belum memiliki toko. Buat toko untuk mulai berjualan.</p>
           </div>
-        </Card>
+          <Link href="/seller/store">
+            <Button size="sm">Buat Toko</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+          <StoreIcon className="h-5 w-5 text-zinc-400" />
+          <p className="font-semibold text-zinc-900 dark:text-zinc-100">{store.name}</p>
+        </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card>
-          <div className="flex items-center gap-2 text-text-sub">
-            <Package className="h-4 w-4" />
-            <p className="text-sm">Total Produk</p>
-          </div>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           {productCount === null ? (
-            <Skeleton className="mt-2 h-7 w-12" />
+            <Skeleton height={32} width="50%" />
           ) : (
-            <p className="mt-1 text-xl font-bold text-text">{productCount}</p>
+            <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">{productCount}</p>
           )}
-        </Card>
-        <Card>
-          <div className="flex items-center gap-2 text-text-sub">
-            <PackageX className="h-4 w-4" />
-            <p className="text-sm">Stok Habis</p>
-          </div>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">Total Produk</p>
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           {outOfStockCount === null ? (
-            <Skeleton className="mt-2 h-7 w-12" />
+            <Skeleton height={32} width="50%" />
           ) : (
-            <p className="mt-1 text-xl font-bold text-text">{outOfStockCount}</p>
+            <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">{outOfStockCount}</p>
           )}
-        </Card>
-        <Card>
-          <div className="flex items-center gap-2 text-text-sub">
-            <ClipboardList className="h-4 w-4" />
-            <p className="text-sm">Perlu Diproses</p>
-          </div>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">Stok Habis</p>
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           {pendingOrders === null ? (
-            <Skeleton className="mt-2 h-7 w-12" />
+            <Skeleton height={32} width="50%" />
           ) : (
-            <p className="mt-1 text-xl font-bold text-text">{pendingOrders}</p>
+            <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">{pendingOrders}</p>
           )}
-          <p className="mt-1 text-xs text-text-sub">{totalOrders ?? '—'} total pesanan</p>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-2 text-text-sub">
-            <Wallet className="h-4 w-4" />
-            <p className="text-sm">Total Pendapatan</p>
-          </div>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Perlu Diproses · {totalOrders ?? '—'} total
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           {income === undefined ? (
-            <Skeleton className="mt-2 h-7 w-24" />
+            <Skeleton height={32} width="70%" />
           ) : (
-            <p className="mt-1 text-xl font-bold text-text">{formatRupiah(income?.total_income ?? 0)}</p>
+            <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
+              {formatRupiah(income?.total_income ?? 0)}
+            </p>
           )}
-        </Card>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">Total Pendapatan</p>
+        </div>
       </div>
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-text">Pesanan Terbaru</h2>
-          <Link href="/seller/orders" className="text-sm text-primary hover:underline">
+          <h2 className="font-display text-lg font-semibold text-zinc-950 dark:text-zinc-50">Pesanan Terbaru</h2>
+          <Link href="/seller/orders" className="text-sm text-brand-600 hover:underline dark:text-brand-400">
             Lihat Semua
           </Link>
         </div>
 
         {recentOrders === null ? (
-          <div className="flex flex-col gap-3">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </div>
+          <Skeleton height={200} className="rounded-xl" />
         ) : recentOrders.length === 0 ? (
           <EmptyState title="Belum ada pesanan" description="Pesanan dari pembeli akan muncul di sini." />
         ) : (
-          <div className="flex flex-col gap-3">
-            {recentOrders.map((order) => (
-              <Link key={order.id} href={`/seller/orders/${order.id}`}>
-                <Card variant="hover">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-text">
-                        #{order.id.slice(0, 8).toUpperCase()} — {order.buyer_name}
-                      </p>
-                      <p className="text-sm text-text-sub">{formatRupiah(order.final_total)}</p>
-                    </div>
-                    <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
-                      {STATUS_LABELS[order.status] ?? order.status}
-                    </Badge>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+          <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+            <table className="w-full text-left">
+              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                <tr>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Pesanan
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Pembeli
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Total</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    onClick={() => router.push(`/seller/orders/${order.id}`)}
+                    className="cursor-pointer border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-400">
+                      #{order.id.slice(0, 8).toUpperCase()}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">{order.buyer_name}</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                      {formatRupiah(order.final_total)}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
+                        {STATUS_LABELS[order.status] ?? order.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

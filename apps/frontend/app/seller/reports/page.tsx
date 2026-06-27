@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
-import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -60,25 +59,12 @@ export default function SellerReportsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Laporan Pendapatan</h1>
+      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Laporan Pendapatan</h1>
 
-      <Card className="mb-6">
-        <h2 className="mb-4 font-semibold text-text">Rentang Tanggal</h2>
-        <div className="flex flex-wrap gap-4">
-          <Input
-            type="date"
-            label="Dari Tanggal"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-          <Input
-            type="date"
-            label="Sampai Tanggal"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </div>
-      </Card>
+      <div className="mb-8 flex flex-wrap gap-3">
+        <Input type="date" label="Dari Tanggal" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+        <Input type="date" label="Sampai Tanggal" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+      </div>
 
       {report === undefined ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -94,41 +80,49 @@ export default function SellerReportsPage() {
         />
       ) : (
         <>
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Card>
-              <p className="text-sm text-text-sub">Total Pendapatan</p>
-              <p className="mt-1 text-xl font-bold text-text">{formatRupiah(report.total_income)}</p>
-            </Card>
-            <Card>
-              <p className="text-sm text-text-sub">Jumlah Pesanan</p>
-              <p className="mt-1 text-xl font-bold text-text">{report.order_count}</p>
-            </Card>
-            <Card>
-              <p className="text-sm text-text-sub">Rata-rata per Pesanan</p>
-              <p className="mt-1 text-xl font-bold text-text">{formatRupiah(report.average_order_value)}</p>
-            </Card>
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+              <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
+                {formatRupiah(report.total_income)}
+              </p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">Total Pendapatan</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+              <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">{report.order_count}</p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">Jumlah Pesanan</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+              <p className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
+                {formatRupiah(report.average_order_value)}
+              </p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                Rata-rata per Pesanan
+              </p>
+            </div>
           </div>
 
-          <Card>
-            <h2 className="mb-4 font-semibold text-text">Pendapatan per Bulan</h2>
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Pendapatan per Bulan</h2>
             {report.period_breakdown.length === 0 ? (
-              <p className="text-sm text-text-sub">Belum ada pesanan selesai pada rentang ini.</p>
+              <p className="text-sm text-zinc-500">Belum ada pesanan selesai pada rentang ini.</p>
             ) : (
-              <div className="flex items-end gap-4 overflow-x-auto pb-2" style={{ minHeight: 180 }}>
+              <div className="flex items-end gap-6 overflow-x-auto pb-2" style={{ minHeight: 180 }}>
                 {report.period_breakdown.map((entry) => (
-                  <div key={entry.period} className="flex w-16 shrink-0 flex-col items-center gap-2">
-                    <p className="text-xs font-medium text-text">{formatRupiah(entry.income)}</p>
+                  <div key={entry.period} className="flex w-12 shrink-0 flex-col items-center gap-2">
+                    <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                      {formatRupiah(entry.income)}
+                    </p>
                     <div
-                      className="w-10 rounded-t-md bg-primary"
+                      className="w-8 rounded-t-md bg-brand-500"
                       style={{ height: Math.max(8, (entry.income / maxIncome) * 120) }}
                       title={`${entry.order_count} pesanan`}
                     />
-                    <p className="text-xs text-text-sub">{formatPeriodLabel(entry.period)}</p>
+                    <p className="text-xs text-zinc-500">{formatPeriodLabel(entry.period)}</p>
                   </div>
                 ))}
               </div>
             )}
-          </Card>
+          </div>
         </>
       )}
     </div>

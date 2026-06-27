@@ -8,8 +8,6 @@ import toast from 'react-hot-toast'
 import { Package, Plus, Pencil, Trash2, ImageOff } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
@@ -18,6 +16,16 @@ import { ApiErrorResponse, PaginatedResponse, SellerProduct } from '@/types'
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
+}
+
+function StockLabel({ stock }: { stock: number }) {
+  if (stock === 0) {
+    return <span className="text-xs font-medium text-danger-600 dark:text-danger-500">Habis</span>
+  }
+  if (stock <= 10) {
+    return <span className="text-xs font-medium text-amber-600 dark:text-amber-500">Menipis ({stock})</span>
+  }
+  return <span className="text-xs font-medium text-success-600 dark:text-success-500">{stock} tersedia</span>
 }
 
 export default function SellerProductsPage() {
@@ -94,9 +102,9 @@ function SellerProductsPageContent() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Produk Saya</h1>
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Produk Saya</h1>
         <Link href="/seller/products/new">
-          <Button>
+          <Button size="sm">
             <Plus className="h-4 w-4" />
             Tambah Produk
           </Button>
@@ -104,11 +112,7 @@ function SellerProductsPageContent() {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} height={88} />
-          ))}
-        </div>
+        <Skeleton height={400} className="rounded-xl" />
       ) : !products || products.length === 0 ? (
         <EmptyState
           icon={Package}
@@ -116,53 +120,71 @@ function SellerProductsPageContent() {
           description="Mulai jual produk pertamamu di SEAPEDIA."
           action={
             <Link href="/seller/products/new">
-              <Button>Buat Produk Pertama</Button>
+              <Button size="sm">Buat Produk Pertama</Button>
             </Link>
           }
         />
       ) : (
         <>
-          <div className="flex flex-col gap-3">
-            {products.map((product) => (
-              <Card key={product.id} className="flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
-                  {product.images[0] ? (
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      width={64}
-                      height={64}
-                      className="h-full w-full object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <ImageOff className="h-6 w-6 text-text-sub" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <h3 className="font-semibold text-text">{product.name}</h3>
-                  <p className="text-sm text-text-sub">{formatRupiah(product.price)}</p>
-                </div>
-
-                <div className="flex flex-col items-end gap-1">
-                  <Badge variant={product.stock > 0 ? 'green' : 'red'}>
-                    {product.stock > 0 ? `Stok: ${product.stock}` : 'Stok Habis'}
-                  </Badge>
-                </div>
-
-                <div className="flex gap-2">
-                  <Link href={`/seller/products/${product.id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Button variant="danger" size="sm" onClick={() => setDeleteTarget(product)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))}
+          <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+            <table className="w-full text-left">
+              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                <tr>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Produk
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Harga</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Stok</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr
+                    key={product.id}
+                    className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                          {product.images[0] ? (
+                            <Image
+                              src={product.images[0]}
+                              alt={product.name}
+                              width={48}
+                              height={48}
+                              className="h-full w-full object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            <ImageOff className="h-5 w-5 text-zinc-400" />
+                          )}
+                        </div>
+                        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{product.name}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                      {formatRupiah(product.price)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StockLabel stock={product.stock} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <Link href={`/seller/products/${product.id}/edit`}>
+                          <Button variant="outline" size="sm">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button variant="danger" size="sm" onClick={() => setDeleteTarget(product)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           {meta && meta.totalPages > 1 && (
@@ -172,9 +194,9 @@ function SellerProductsPageContent() {
       )}
 
       <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Hapus Produk?">
-        <p className="text-sm text-text-sub">
-          Produk <span className="font-medium text-text">{deleteTarget?.name}</span> akan dihapus dan tidak
-          akan tampil lagi di katalog. Tindakan ini tidak dapat dibatalkan.
+        <p className="text-sm text-zinc-500">
+          Produk <span className="font-medium text-zinc-900 dark:text-zinc-100">{deleteTarget?.name}</span> akan
+          dihapus dan tidak akan tampil lagi di katalog. Tindakan ini tidak dapat dibatalkan.
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
