@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, useReducedMotion, Variants } from 'framer-motion'
 import { Truck } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Card } from '@/components/ui/Card'
@@ -9,7 +10,13 @@ import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal } from '@/components/ui/Reveal'
 import { AdminDeliveryJobListItem, PaginatedResponse } from '@/types'
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
@@ -28,6 +35,7 @@ export default function AdminDeliveryJobsPage() {
 }
 
 function AdminDeliveryJobsPageContent() {
+  const reduceMotion = useReducedMotion()
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
@@ -55,10 +63,12 @@ function AdminDeliveryJobsPageContent() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengiriman</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Daftar semua delivery job</p>
-      </div>
+      <Reveal>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengiriman</h1>
+          <p className="text-zinc-600 dark:text-zinc-400">Daftar semua delivery job</p>
+        </div>
+      </Reveal>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -82,9 +92,18 @@ function AdminDeliveryJobsPageContent() {
                   <th className="px-4 py-3 font-medium">Dibuat</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial={reduceMotion ? undefined : 'hidden'}
+                whileInView={reduceMotion ? undefined : 'visible'}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ staggerChildren: 0.04 }}
+              >
                 {jobs.map((job) => (
-                  <tr key={job.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                  <motion.tr
+                    key={job.id}
+                    variants={rowVariants}
+                    className="border-b border-zinc-200 dark:border-zinc-800 last:border-0"
+                  >
                     <td className="px-4 py-3 font-mono text-xs text-zinc-950 dark:text-zinc-50">{job.order_id.slice(0, 8)}…</td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {job.driver_id ? (
@@ -101,9 +120,9 @@ function AdminDeliveryJobsPageContent() {
                     </td>
                     <td className="px-4 py-3 text-zinc-950 dark:text-zinc-50">{job.earning !== null ? formatRupiah(job.earning) : '—'}</td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(job.created_at)}</td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           </Card>
 

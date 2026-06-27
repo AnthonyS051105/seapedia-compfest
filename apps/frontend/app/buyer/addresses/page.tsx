@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { createResolver } from '@/lib/validation/resolver'
 import { AddressFormSchema, AddressFormData } from '@/lib/validation/buyer.schema'
 import { ApiErrorResponse, ApiResponse, DeliveryAddress } from '@/types'
@@ -82,10 +84,14 @@ export default function BuyerAddressesPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Alamat Pengiriman</h1>
-        <Button onClick={openCreateForm}>+ Tambah Alamat</Button>
-      </div>
+      <Reveal>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Alamat Pengiriman</h1>
+          <Magnetic>
+            <Button onClick={openCreateForm}>+ Tambah Alamat</Button>
+          </Magnetic>
+        </div>
+      </Reveal>
 
       {addresses === undefined ? (
         <div className="flex flex-col gap-3">
@@ -101,51 +107,53 @@ export default function BuyerAddressesPage() {
           action={<Button onClick={openCreateForm}>+ Tambah Alamat</Button>}
         />
       ) : (
-        <div className="flex flex-col gap-3">
+        <Reveal stagger staggerGap={0.06} className="flex flex-col gap-3">
           {addresses.map((address) => (
-            <Card key={address.id}>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-zinc-950 dark:text-zinc-50">{address.label}</p>
-                    {address.is_default && <Badge variant="blue">Default</Badge>}
+            <RevealItem key={address.id}>
+              <Card>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-zinc-950 dark:text-zinc-50">{address.label}</p>
+                      {address.is_default && <Badge variant="blue">Default</Badge>}
+                    </div>
+                    <p className="mt-1 text-sm text-zinc-950 dark:text-zinc-50">
+                      {address.recipient_name} — {address.phone}
+                    </p>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {address.street}, {address.city}, {address.province} {address.postal_code}
+                    </p>
                   </div>
-                  <p className="mt-1 text-sm text-zinc-950 dark:text-zinc-50">
-                    {address.recipient_name} — {address.phone}
-                  </p>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    {address.street}, {address.city}, {address.province} {address.postal_code}
-                  </p>
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(address)}
+                      aria-label="Hapus alamat"
+                      className="rounded-full p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-gray-100 hover:text-danger-600 dark:hover:text-danger-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex shrink-0 flex-col items-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(address)}
-                    aria-label="Hapus alamat"
-                    className="rounded-full p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-gray-100 hover:text-danger-600 dark:hover:text-danger-500"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              <div className="mt-3 flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => openEditForm(address)}>
-                  Edit
-                </Button>
-                {!address.is_default && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSetDefault(address)}
-                    isLoading={settingDefaultId === address.id}
-                  >
-                    <Star className="h-4 w-4" /> Jadikan Default
+                <div className="mt-3 flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => openEditForm(address)}>
+                    Edit
                   </Button>
-                )}
-              </div>
-            </Card>
+                  {!address.is_default && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSetDefault(address)}
+                      isLoading={settingDefaultId === address.id}
+                    >
+                      <Star className="h-4 w-4" /> Jadikan Default
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            </RevealItem>
           ))}
-        </div>
+        </Reveal>
       )}
 
       <AddressFormModal

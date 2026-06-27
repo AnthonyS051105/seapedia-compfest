@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
 import { Modal } from '@/components/ui/Modal'
+import { Reveal } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { ApiErrorResponse, PaginatedResponse, SellerProduct } from '@/types'
 
 function formatRupiah(amount: number): string {
@@ -101,15 +103,17 @@ function SellerProductsPageContent() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <Reveal className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Produk Saya</h1>
-        <Link href="/seller/products/new">
-          <Button size="sm">
-            <Plus className="h-4 w-4" />
-            Tambah Produk
-          </Button>
-        </Link>
-      </div>
+        <Magnetic>
+          <Link href="/seller/products/new">
+            <Button size="sm">
+              <Plus className="h-4 w-4" />
+              Tambah Produk
+            </Button>
+          </Link>
+        </Magnetic>
+      </Reveal>
 
       {isLoading ? (
         <Skeleton height={400} className="rounded-xl" />
@@ -139,10 +143,11 @@ function SellerProductsPageContent() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
+                {products.map((product, index) => (
                   <tr
                     key={product.id}
-                    className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                    className="motion-safe:animate-fade-up border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">

@@ -10,6 +10,8 @@ import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { ApiErrorResponse, ApiResponse, AvailableJob, DeliveryMethod, JobDetail, PaginatedResponse } from '@/types'
 
 const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
@@ -94,7 +96,9 @@ export default function DriverJobsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pekerjaan Tersedia</h1>
+      <Reveal>
+        <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pekerjaan Tersedia</h1>
+      </Reveal>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -110,39 +114,38 @@ export default function DriverJobsPage() {
         />
       ) : (
         <>
-          <div>
+          <Reveal stagger staggerGap={0.06}>
             {jobs.map((job) => (
-              <div
-                key={job.id}
-                className="mb-3 rounded-xl border border-zinc-200 bg-white p-5 card-interactive dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${METHOD_BADGE_CLASSES[job.delivery_method]}`}
-                      >
-                        {DELIVERY_METHOD_LABELS[job.delivery_method]}
-                      </span>
-                      <span className="font-mono text-xs text-zinc-400">
-                        #{job.order_id.slice(0, 8).toUpperCase()}
-                      </span>
+              <RevealItem key={job.id} className="mb-3">
+                <div className="rounded-xl border border-zinc-200 bg-white p-5 card-interactive dark:border-zinc-800 dark:bg-zinc-900">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${METHOD_BADGE_CLASSES[job.delivery_method]}`}
+                        >
+                          {DELIVERY_METHOD_LABELS[job.delivery_method]}
+                        </span>
+                        <span className="font-mono text-xs text-zinc-400">
+                          #{job.order_id.slice(0, 8).toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="mt-2 flex items-center gap-1.5 text-base font-semibold text-zinc-950 dark:text-zinc-50">
+                        <MapPin className="h-4 w-4 text-zinc-400" />
+                        {job.destination_city}
+                      </p>
+                      <p className="mt-1 font-display text-xl font-bold text-brand-600 dark:text-brand-400">
+                        {formatRupiah(job.estimated_earning)}
+                      </p>
                     </div>
-                    <p className="mt-2 flex items-center gap-1.5 text-base font-semibold text-zinc-950 dark:text-zinc-50">
-                      <MapPin className="h-4 w-4 text-zinc-400" />
-                      {job.destination_city}
-                    </p>
-                    <p className="mt-1 font-display text-xl font-bold text-brand-600 dark:text-brand-400">
-                      {formatRupiah(job.estimated_earning)}
-                    </p>
+                    <Button size="sm" onClick={() => setSelectedJob(job)}>
+                      Ambil Pekerjaan
+                    </Button>
                   </div>
-                  <Button size="sm" onClick={() => setSelectedJob(job)}>
-                    Ambil Pekerjaan
-                  </Button>
                 </div>
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </Reveal>
 
           {meta && meta.totalPages > 1 && (
             <Pagination page={page} totalPages={meta.totalPages} onPageChange={updatePage} className="mt-6" />
@@ -181,9 +184,11 @@ export default function DriverJobsPage() {
           <Button variant="outline" onClick={() => setSelectedJob(null)} disabled={isTaking}>
             Batal
           </Button>
-          <Button onClick={handleTakeJob} isLoading={isTaking}>
-            Ya, Ambil
-          </Button>
+          <Magnetic>
+            <Button onClick={handleTakeJob} isLoading={isTaking}>
+              Ya, Ambil
+            </Button>
+          </Magnetic>
         </div>
       </Modal>
     </div>

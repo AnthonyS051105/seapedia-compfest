@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
 import { cn } from '@/lib/utils'
 import { OrderStatus, PaginatedResponse, SellerOrder } from '@/types'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
 
 type TabValue = 'ALL' | OrderStatus
 
@@ -111,7 +112,9 @@ function SellerOrdersPageContent() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Masuk</h1>
+      <Reveal>
+        <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Masuk</h1>
+      </Reveal>
 
       <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
         {TABS.map((t) => (
@@ -121,7 +124,9 @@ function SellerOrdersPageContent() {
             onClick={() => updateParams({ status: t.value === 'ALL' ? undefined : t.value, page: undefined })}
             className={cn(
               'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-              tab === t.value ? 'bg-primary text-white' : 'bg-gray-100 text-zinc-600 dark:text-zinc-400 hover:bg-gray-200'
+              tab === t.value
+                ? 'bg-brand-600 text-white dark:bg-brand-500'
+                : 'bg-gray-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-700'
             )}
           >
             {t.label}
@@ -139,27 +144,29 @@ function SellerOrdersPageContent() {
         <EmptyState icon={ClipboardList} title="Belum ada pesanan" description="Pesanan masuk akan tampil di sini." />
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <Reveal stagger staggerGap={0.06} className="flex flex-col gap-3">
             {orders.map((order) => (
-              <Link key={order.id} href={`/seller/orders/${order.id}`}>
-                <Card variant="hover" className="cursor-pointer">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-zinc-950 dark:text-zinc-50">#{order.id.slice(0, 8).toUpperCase()}</p>
-                      <p className="text-sm text-zinc-600 dark:text-zinc-400">{order.buyer_name}</p>
-                      <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">{formatTimestamp(order.created_at)}</p>
+              <RevealItem key={order.id}>
+                <Link href={`/seller/orders/${order.id}`}>
+                  <Card variant="hover" className="cursor-pointer">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-semibold text-zinc-950 dark:text-zinc-50">#{order.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400">{order.buyer_name}</p>
+                        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">{formatTimestamp(order.created_at)}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
+                          {STATUS_LABELS[order.status]}
+                        </Badge>
+                        <p className="font-semibold text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
-                        {STATUS_LABELS[order.status]}
-                      </Badge>
-                      <p className="font-semibold text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</p>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
+                  </Card>
+                </Link>
+              </RevealItem>
             ))}
-          </div>
+          </Reveal>
 
           {meta && meta.totalPages > 1 && (
             <Pagination

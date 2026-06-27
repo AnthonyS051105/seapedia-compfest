@@ -11,6 +11,8 @@ import { Card } from '@/components/ui/Card'
 import { createResolver } from '@/lib/validation/resolver'
 import { ProductFormSchema, ProductFormData } from '@/lib/validation/product.schema'
 import { ApiErrorResponse, ApiResponse, SellerProduct } from '@/types'
+import { Reveal } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 
 function parseImageUrls(input: string): string[] {
   return input
@@ -58,8 +60,11 @@ export default function NewProductPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Tambah Produk</h1>
+      <Reveal>
+        <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Tambah Produk</h1>
+      </Reveal>
 
+      <Reveal delay={0.08}>
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input
@@ -98,15 +103,18 @@ export default function NewProductPage() {
           {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
           <div className="mt-2 flex gap-3">
-            <Button type="submit" isLoading={isSubmitting}>
-              Simpan Produk
-            </Button>
+            <Magnetic>
+              <Button type="submit" isLoading={isSubmitting}>
+                Simpan Produk
+              </Button>
+            </Magnetic>
             <Button type="button" variant="outline" onClick={() => router.push('/seller/products')} disabled={isSubmitting}>
               Batal
             </Button>
           </div>
         </form>
       </Card>
+      </Reveal>
     </div>
   )
 }

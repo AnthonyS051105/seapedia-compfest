@@ -7,6 +7,7 @@ import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { createResolver } from '@/lib/validation/resolver'
 import { TopUpFormSchema, TopUpFormData } from '@/lib/validation/buyer.schema'
 import { ApiErrorResponse } from '@/types'
@@ -92,9 +93,11 @@ export function TopUpModal({
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>
             Batal
           </Button>
-          <Button type="submit" isLoading={isSubmitting}>
-            Top Up
-          </Button>
+          <Magnetic>
+            <Button type="submit" isLoading={isSubmitting}>
+              Top Up
+            </Button>
+          </Magnetic>
         </div>
       </form>
     </Modal>

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, useReducedMotion, Variants } from 'framer-motion'
 import { Tag } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
@@ -14,9 +15,16 @@ import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { createResolver } from '@/lib/validation/resolver'
 import { CreateVoucherFormSchema, CreateVoucherFormData } from '@/lib/validation/discount.schema'
 import { ApiErrorResponse, FieldError, PaginatedResponse, Voucher } from '@/types'
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
@@ -39,6 +47,7 @@ export default function AdminVouchersPage() {
 }
 
 function AdminVouchersPageContent() {
+  const reduceMotion = useReducedMotion()
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
@@ -77,12 +86,16 @@ function AdminVouchersPageContent() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Voucher</h1>
-        <Button size="sm" onClick={() => setIsModalOpen(true)}>
-          + Buat Voucher
-        </Button>
-      </div>
+      <Reveal>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Voucher</h1>
+          <Magnetic strength={0.3}>
+            <Button size="sm" onClick={() => setIsModalOpen(true)}>
+              + Buat Voucher
+            </Button>
+          </Magnetic>
+        </div>
+      </Reveal>
 
       {isLoading ? (
         <Skeleton height={300} className="rounded-xl" />
@@ -106,14 +119,20 @@ function AdminVouchersPageContent() {
                   <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial={reduceMotion ? undefined : 'hidden'}
+                whileInView={reduceMotion ? undefined : 'visible'}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ staggerChildren: 0.04 }}
+              >
                 {vouchers.map((voucher) => {
                   const usagePercent =
                     voucher.max_usage > 0 ? Math.min(100, (voucher.current_usage / voucher.max_usage) * 100) : 0
 
                   return (
-                    <tr
+                    <motion.tr
                       key={voucher.id}
+                      variants={rowVariants}
                       className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
                     >
                       <td className="px-4 py-3">
@@ -147,10 +166,10 @@ function AdminVouchersPageContent() {
                           {voucher.is_active ? 'Aktif' : 'Nonaktif'}
                         </Badge>
                       </td>
-                    </tr>
+                    </motion.tr>
                   )
                 })}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
 

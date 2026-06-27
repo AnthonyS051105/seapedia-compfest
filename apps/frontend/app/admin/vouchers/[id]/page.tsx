@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Reveal } from '@/components/ui/Reveal'
 import { ApiResponse, Voucher } from '@/types'
 
 function formatRupiah(amount: number): string {
@@ -78,6 +79,7 @@ export default function AdminVoucherDetailPage() {
         Kembali ke Daftar Voucher
       </Link>
 
+      <Reveal>
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-6 flex items-start justify-between">
           <div>
@@ -133,6 +135,7 @@ export default function AdminVoucherDetailPage() {
           </div>
         </div>
       </div>
+      </Reveal>
     </div>
   )
 }

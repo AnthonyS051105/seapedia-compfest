@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { OrderStatusTimeline } from '@/components/OrderStatusTimeline'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { TiltCard } from '@/components/ui/TiltCard'
 import { ApiResponse, BuyerOrderDetail, OrderStatus } from '@/types'
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -86,15 +88,17 @@ export default function BuyerOrderDetailPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
-          #{order.id.slice(0, 8).toUpperCase()}
-        </h1>
-        <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>{STATUS_LABELS[order.status]}</Badge>
-      </div>
+      <Reveal>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
+            #{order.id.slice(0, 8).toUpperCase()}
+          </h1>
+          <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>{STATUS_LABELS[order.status]}</Badge>
+        </div>
+      </Reveal>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
+        <Reveal delay={0.05} className="flex flex-col gap-6 lg:col-span-2">
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Status Pesanan</h2>
             <OrderStatusTimeline history={order.status_history} currentStatus={order.status} />
@@ -119,61 +123,62 @@ export default function BuyerOrderDetailPage() {
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
             <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Produk</h2>
-            <div>
+            <Reveal stagger staggerGap={0.05}>
               {order.order_items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between border-b border-zinc-100 py-3 text-sm last:border-0 dark:border-zinc-800"
-                >
-                  <div>
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{item.product_name}</p>
-                    <p className="text-zinc-500">
-                      {formatRupiah(item.product_price)} × {item.quantity}
-                    </p>
+                <RevealItem key={item.id}>
+                  <div className="flex items-center justify-between border-b border-zinc-100 py-3 text-sm last:border-0 dark:border-zinc-800">
+                    <div>
+                      <p className="font-medium text-zinc-900 dark:text-zinc-100">{item.product_name}</p>
+                      <p className="text-zinc-500">
+                        {formatRupiah(item.product_price)} × {item.quantity}
+                      </p>
+                    </div>
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{formatRupiah(item.subtotal)}</p>
                   </div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{formatRupiah(item.subtotal)}</p>
-                </div>
+                </RevealItem>
               ))}
-            </div>
+            </Reveal>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="lg:sticky lg:top-24 lg:col-span-1 lg:self-start">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Rincian Biaya</h2>
-            <div className="flex flex-col">
-              <div className="flex justify-between py-1.5 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-400">Subtotal</span>
-                <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.subtotal)}</span>
-              </div>
-              {order.discount_amount > 0 && (
+        <Reveal delay={0.1} className="lg:sticky lg:top-24 lg:col-span-1 lg:self-start">
+          <TiltCard radiusClassName="rounded-2xl">
+            <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+              <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Rincian Biaya</h2>
+              <div className="flex flex-col">
                 <div className="flex justify-between py-1.5 text-sm">
-                  <span className="text-success-600 dark:text-success-500">
-                    Diskon {order.discount_code ? `(${order.discount_code})` : ''}
-                  </span>
-                  <span className="text-success-600 dark:text-success-500">
-                    -{formatRupiah(order.discount_amount)}
-                  </span>
+                  <span className="text-zinc-600 dark:text-zinc-400">Subtotal</span>
+                  <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.subtotal)}</span>
                 </div>
-              )}
-              <div className="flex justify-between py-1.5 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-400">
-                  Ongkos Kirim ({DELIVERY_METHOD_LABELS[order.delivery_method] ?? order.delivery_method})
-                </span>
-                <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.delivery_fee)}</span>
+                {order.discount_amount > 0 && (
+                  <div className="flex justify-between py-1.5 text-sm">
+                    <span className="text-success-600 dark:text-success-500">
+                      Diskon {order.discount_code ? `(${order.discount_code})` : ''}
+                    </span>
+                    <span className="text-success-600 dark:text-success-500">
+                      -{formatRupiah(order.discount_amount)}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between py-1.5 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">
+                    Ongkos Kirim ({DELIVERY_METHOD_LABELS[order.delivery_method] ?? order.delivery_method})
+                  </span>
+                  <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.delivery_fee)}</span>
+                </div>
+                <div className="flex justify-between py-1.5 text-sm">
+                  <span className="text-zinc-600 dark:text-zinc-400">PPN 12%</span>
+                  <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.ppn_amount)}</span>
+                </div>
               </div>
-              <div className="flex justify-between py-1.5 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-400">PPN 12%</span>
-                <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(order.ppn_amount)}</span>
+              <div className="my-3 h-px bg-zinc-100 dark:bg-zinc-800" />
+              <div className="flex justify-between font-display text-lg font-bold text-zinc-950 dark:text-zinc-50">
+                <span>Total</span>
+                <span>{formatRupiah(order.final_total)}</span>
               </div>
             </div>
-            <div className="my-3 h-px bg-zinc-100 dark:bg-zinc-800" />
-            <div className="flex justify-between font-display text-lg font-bold text-zinc-950 dark:text-zinc-50">
-              <span>Total</span>
-              <span>{formatRupiah(order.final_total)}</span>
-            </div>
-          </div>
-        </div>
+          </TiltCard>
+        </Reveal>
       </div>
     </div>
   )

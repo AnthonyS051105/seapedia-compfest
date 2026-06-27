@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Reveal } from '@/components/ui/Reveal'
 import { ApiResponse, Promo } from '@/types'
 
 function formatRupiah(amount: number): string {
@@ -72,6 +73,7 @@ export default function AdminPromoDetailPage() {
         Kembali ke Daftar Promo
       </Link>
 
+      <Reveal>
       <Card>
         <div className="mb-6 flex items-start justify-between">
           <div>
@@ -81,7 +83,7 @@ export default function AdminPromoDetailPage() {
           <Badge variant={promo.is_active ? 'green' : 'gray'}>{promo.is_active ? 'Active' : 'Inactive'}</Badge>
         </div>
 
-        <dl className="flex flex-col divide-y divide-border text-sm">
+        <dl className="flex flex-col divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">
           <div className="flex items-center justify-between py-3">
             <dt className="text-zinc-600 dark:text-zinc-400">Nama Promo</dt>
             <dd className="font-medium text-zinc-950 dark:text-zinc-50">{promo.name}</dd>
@@ -121,6 +123,7 @@ export default function AdminPromoDetailPage() {
           </div>
         </dl>
       </Card>
+      </Reveal>
     </div>
   )
 }

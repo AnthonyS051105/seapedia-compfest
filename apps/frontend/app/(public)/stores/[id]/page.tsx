@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
 import { ProductCard } from '@/components/public/ProductCard'
 import { ApiResponse, StoreDetail } from '@/types'
 
@@ -61,7 +62,7 @@ function StoreDetailPageContent() {
 
   return (
     <div className="container-page py-8">
-      <div className="mb-8 flex flex-col items-center gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-8 text-center sm:flex-row sm:text-left dark:border-zinc-800 dark:bg-zinc-950">
+      <Reveal className="mb-8 flex flex-col items-center gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-8 text-center sm:flex-row sm:text-left dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-50 dark:bg-brand-500/10">
           {store.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -75,7 +76,7 @@ function StoreDetailPageContent() {
           {store.address && <p className="mt-1 text-sm text-zinc-500">{store.address}</p>}
           {store.description && <p className="mt-1 text-zinc-600 dark:text-zinc-400">{store.description}</p>}
         </div>
-      </div>
+      </Reveal>
 
       <h2 className="mb-4 font-display text-lg font-semibold text-zinc-950 dark:text-zinc-50">
         Produk dari {store.name}
@@ -85,11 +86,13 @@ function StoreDetailPageContent() {
         <EmptyState icon={PackageX} title="Toko ini belum memiliki produk" />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          <Reveal stagger staggerGap={0.05} className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
             {store.products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <RevealItem key={product.id}>
+                <ProductCard product={product} />
+              </RevealItem>
             ))}
-          </div>
+          </Reveal>
 
           {store.products_meta.totalPages > 1 && (
             <Pagination

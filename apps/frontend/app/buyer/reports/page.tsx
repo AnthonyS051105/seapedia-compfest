@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { TiltCard } from '@/components/ui/TiltCard'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { FileBarChart } from 'lucide-react'
 import { ApiResponse, SpendingReport } from '@/types'
 
@@ -76,33 +79,37 @@ export default function BuyerReportsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Laporan Pengeluaran</h1>
+      <Reveal>
+        <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Laporan Pengeluaran</h1>
 
-      <Card className="mb-6">
-        <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Rentang Tanggal</h2>
-        <div className="flex flex-wrap items-end gap-4">
-          <Input
-            type="date"
-            label="Dari Tanggal"
-            value={fromDateInput}
-            onChange={(e) => setFromDateInput(e.target.value)}
-          />
-          <Input
-            type="date"
-            label="Sampai Tanggal"
-            value={toDateInput}
-            onChange={(e) => setToDateInput(e.target.value)}
-          />
-          <Button
-            onClick={() => {
-              setAppliedFromDate(fromDateInput)
-              setAppliedToDate(toDateInput)
-            }}
-          >
-            Terapkan Filter
-          </Button>
-        </div>
-      </Card>
+        <Card className="mb-6">
+          <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Rentang Tanggal</h2>
+          <div className="flex flex-wrap items-end gap-4">
+            <Input
+              type="date"
+              label="Dari Tanggal"
+              value={fromDateInput}
+              onChange={(e) => setFromDateInput(e.target.value)}
+            />
+            <Input
+              type="date"
+              label="Sampai Tanggal"
+              value={toDateInput}
+              onChange={(e) => setToDateInput(e.target.value)}
+            />
+            <Magnetic>
+              <Button
+                onClick={() => {
+                  setAppliedFromDate(fromDateInput)
+                  setAppliedToDate(toDateInput)
+                }}
+              >
+                Terapkan Filter
+              </Button>
+            </Magnetic>
+          </div>
+        </Card>
+      </Reveal>
 
       {report === undefined ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
@@ -118,83 +125,97 @@ export default function BuyerReportsPage() {
         />
       ) : (
         <>
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-            <Card>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Total Pengeluaran</p>
-              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{formatRupiah(report.total_spent)}</p>
-            </Card>
-            <Card>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Jumlah Pesanan</p>
-              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.order_count}</p>
-            </Card>
-            <Card>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Pesanan Selesai</p>
-              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.PESANAN_SELESAI}</p>
-            </Card>
-            <Card>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Dana Dikembalikan</p>
-              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.DIKEMBALIKAN}</p>
-            </Card>
-          </div>
+          <Reveal stagger staggerGap={0.06} className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <RevealItem>
+              <TiltCard>
+                <Card>
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400">Total Pengeluaran</p>
+                  <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{formatRupiah(report.total_spent)}</p>
+                </Card>
+              </TiltCard>
+            </RevealItem>
+            <RevealItem>
+              <Card>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Jumlah Pesanan</p>
+                <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.order_count}</p>
+              </Card>
+            </RevealItem>
+            <RevealItem>
+              <Card>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Pesanan Selesai</p>
+                <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.PESANAN_SELESAI}</p>
+              </Card>
+            </RevealItem>
+            <RevealItem>
+              <Card>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Dana Dikembalikan</p>
+                <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.DIKEMBALIKAN}</p>
+              </Card>
+            </RevealItem>
+          </Reveal>
 
-          <Card className="mb-6">
-            <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Pengeluaran per Bulan</h2>
-            {report.monthly_breakdown.length === 0 ? (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">Belum ada pesanan pada rentang ini.</p>
-            ) : (
-              <div className="flex items-end gap-4 overflow-x-auto pb-2" style={{ minHeight: 180 }}>
-                {report.monthly_breakdown.map((entry) => (
-                  <div key={entry.month} className="flex w-16 shrink-0 flex-col items-center gap-2">
-                    <p className="text-xs font-medium text-zinc-950 dark:text-zinc-50">{formatRupiah(entry.total_spent)}</p>
-                    <div
-                      className="w-10 rounded-t-md bg-brand-500"
-                      style={{ height: Math.max(8, (entry.total_spent / maxSpending) * 120) }}
-                      title={`${entry.order_count} pesanan`}
-                    />
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400">{formatMonthLabel(entry.month)}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+          <Reveal delay={0.05}>
+            <Card className="mb-6">
+              <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Pengeluaran per Bulan</h2>
+              {report.monthly_breakdown.length === 0 ? (
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Belum ada pesanan pada rentang ini.</p>
+              ) : (
+                <div className="flex items-end gap-4 overflow-x-auto pb-2" style={{ minHeight: 180 }}>
+                  {report.monthly_breakdown.map((entry) => (
+                    <div key={entry.month} className="flex w-16 shrink-0 flex-col items-center gap-2">
+                      <p className="text-xs font-medium text-zinc-950 dark:text-zinc-50">{formatRupiah(entry.total_spent)}</p>
+                      <div
+                        className="w-10 rounded-t-md bg-brand-500"
+                        style={{ height: Math.max(8, (entry.total_spent / maxSpending) * 120) }}
+                        title={`${entry.order_count} pesanan`}
+                      />
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400">{formatMonthLabel(entry.month)}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </Reveal>
 
-          <Card>
-            <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Daftar Pesanan</h2>
-            {report.orders.length === 0 ? (
-              <EmptyState title="Belum ada pesanan" description="Pesananmu akan muncul di sini." />
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
-                      <th className="py-2 pr-4 font-medium">Order ID</th>
-                      <th className="py-2 pr-4 font-medium">Tanggal</th>
-                      <th className="py-2 pr-4 font-medium">Toko</th>
-                      <th className="py-2 pr-4 font-medium">Total</th>
-                      <th className="py-2 pr-4 font-medium">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {report.orders.map((order) => (
-                      <tr key={order.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
-                        <td className="py-3 pr-4 font-medium text-zinc-950 dark:text-zinc-50">
-                          #{order.id.slice(0, 8).toUpperCase()}
-                        </td>
-                        <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{formatDate(order.created_at)}</td>
-                        <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{order.store_name}</td>
-                        <td className="py-3 pr-4 text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</td>
-                        <td className="py-3 pr-4">
-                          <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
-                            {STATUS_LABELS[order.status] ?? order.status}
-                          </Badge>
-                        </td>
+          <Reveal delay={0.1}>
+            <Card>
+              <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Daftar Pesanan</h2>
+              {report.orders.length === 0 ? (
+                <EmptyState title="Belum ada pesanan" description="Pesananmu akan muncul di sini." />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
+                        <th className="py-2 pr-4 font-medium">Order ID</th>
+                        <th className="py-2 pr-4 font-medium">Tanggal</th>
+                        <th className="py-2 pr-4 font-medium">Toko</th>
+                        <th className="py-2 pr-4 font-medium">Total</th>
+                        <th className="py-2 pr-4 font-medium">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
+                    </thead>
+                    <tbody>
+                      {report.orders.map((order) => (
+                        <tr key={order.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                          <td className="py-3 pr-4 font-medium text-zinc-950 dark:text-zinc-50">
+                            #{order.id.slice(0, 8).toUpperCase()}
+                          </td>
+                          <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{formatDate(order.created_at)}</td>
+                          <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{order.store_name}</td>
+                          <td className="py-3 pr-4 text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</td>
+                          <td className="py-3 pr-4">
+                            <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
+                              {STATUS_LABELS[order.status] ?? order.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </Reveal>
         </>
       )}
     </div>

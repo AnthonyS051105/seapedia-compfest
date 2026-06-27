@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, useReducedMotion, Variants } from 'framer-motion'
 import { AlertCircle, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
@@ -10,7 +11,14 @@ import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal } from '@/components/ui/Reveal'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { AdminOrderListItem, ApiResponse, PaginatedResponse, ProcessOverdueResult } from '@/types'
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
@@ -29,6 +37,7 @@ export default function AdminOverduePage() {
 }
 
 function AdminOverduePageContent() {
+  const reduceMotion = useReducedMotion()
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
@@ -79,24 +88,30 @@ function AdminOverduePageContent() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Overdue</h1>
-        <p className="text-zinc-500">Pesanan yang melewati SLA pengiriman dan dikembalikan otomatis</p>
-      </div>
+      <Reveal>
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Overdue</h1>
+          <p className="text-zinc-500">Pesanan yang melewati SLA pengiriman dan dikembalikan otomatis</p>
+        </div>
+      </Reveal>
 
       {meta && meta.total > 0 && (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-500/30 dark:bg-danger-500/10">
-          <div className="flex items-center gap-2 text-sm text-danger-700 dark:text-danger-400">
-            <AlertCircle className="h-5 w-5 shrink-0" />
-            <span>
-              <span className="font-semibold">{meta.total} pesanan</span> belum diproses
-            </span>
+        <Reveal>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-500/30 dark:bg-danger-500/10">
+            <div className="flex items-center gap-2 text-sm text-danger-700 dark:text-danger-400">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>
+                <span className="font-semibold">{meta.total} pesanan</span> belum diproses
+              </span>
+            </div>
+            <Magnetic strength={0.3}>
+              <Button variant="danger" size="sm" onClick={handleProcessOverdue} isLoading={isProcessing}>
+                <RotateCcw className="h-4 w-4" />
+                Proses Semua
+              </Button>
+            </Magnetic>
           </div>
-          <Button variant="danger" size="sm" onClick={handleProcessOverdue} isLoading={isProcessing}>
-            <RotateCcw className="h-4 w-4" />
-            Proses Semua
-          </Button>
-        </div>
+        </Reveal>
       )}
 
       {isLoading ? (
@@ -130,10 +145,16 @@ function AdminOverduePageContent() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial={reduceMotion ? undefined : 'hidden'}
+                whileInView={reduceMotion ? undefined : 'visible'}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ staggerChildren: 0.04 }}
+              >
                 {orders.map((order) => (
-                  <tr
+                  <motion.tr
                     key={order.id}
+                    variants={rowVariants}
                     className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-zinc-400">{order.id.slice(0, 8)}…</td>
@@ -147,9 +168,9 @@ function AdminOverduePageContent() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-zinc-500">{formatDate(order.created_at)}</td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
 

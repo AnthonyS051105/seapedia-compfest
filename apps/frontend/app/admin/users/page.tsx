@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion, useReducedMotion, Variants } from 'framer-motion'
 import { Users } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Card } from '@/components/ui/Card'
@@ -9,7 +10,13 @@ import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal } from '@/components/ui/Reveal'
 import { AdminUserListItem, PaginatedResponse, Role } from '@/types'
+
+const rowVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -31,6 +38,7 @@ export default function AdminUsersPage() {
 }
 
 function AdminUsersPageContent() {
+  const reduceMotion = useReducedMotion()
   const router = useRouter()
   const searchParams = useSearchParams()
   const page = Number(searchParams.get('page') ?? '1')
@@ -58,10 +66,12 @@ function AdminUsersPageContent() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengguna</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">Daftar semua pengguna SEAPEDIA</p>
-      </div>
+      <Reveal>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengguna</h1>
+          <p className="text-zinc-600 dark:text-zinc-400">Daftar semua pengguna SEAPEDIA</p>
+        </div>
+      </Reveal>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -83,9 +93,18 @@ function AdminUsersPageContent() {
                   <th className="px-4 py-3 font-medium">Terdaftar</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial={reduceMotion ? undefined : 'hidden'}
+                whileInView={reduceMotion ? undefined : 'visible'}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ staggerChildren: 0.04 }}
+              >
                 {users.map((user) => (
-                  <tr key={user.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                  <motion.tr
+                    key={user.id}
+                    variants={rowVariants}
+                    className="border-b border-zinc-200 dark:border-zinc-800 last:border-0"
+                  >
                     <td className="px-4 py-3 font-medium text-zinc-950 dark:text-zinc-50">{user.username}</td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{user.email}</td>
                     <td className="px-4 py-3">
@@ -98,9 +117,9 @@ function AdminUsersPageContent() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(user.created_at)}</td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           </Card>
 

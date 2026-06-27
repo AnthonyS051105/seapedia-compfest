@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
 import { cn } from '@/lib/utils'
 import { BuyerOrder, OrderStatus, PaginatedResponse } from '@/types'
 
@@ -117,7 +118,9 @@ function BuyerOrdersPageContent() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Saya</h1>
+      <Reveal>
+        <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Saya</h1>
+      </Reveal>
 
       <div className="mb-6 flex flex-wrap gap-2">
         {TABS.map((t) => (
@@ -156,29 +159,30 @@ function BuyerOrdersPageContent() {
         />
       ) : (
         <>
-          <div>
+          <Reveal stagger staggerGap={0.06}>
             {orders.map((order) => (
-              <Link
-                key={order.id}
-                href={`/buyer/orders/${order.id}`}
-                className="mb-3 block rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="font-mono text-xs text-zinc-400">#{order.id.slice(0, 8).toUpperCase()}</p>
-                  <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>{STATUS_LABELS[order.status]}</Badge>
-                </div>
-                <p className="mt-1 line-clamp-1 text-sm text-zinc-700 dark:text-zinc-300">
-                  Pengiriman {DELIVERY_METHOD_LABELS[order.delivery_method] ?? order.delivery_method}
-                </p>
-                <div className="mt-2 flex items-center justify-between">
-                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                    {formatRupiah(order.final_total)}
+              <RevealItem key={order.id}>
+                <Link
+                  href={`/buyer/orders/${order.id}`}
+                  className="mb-3 block rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="font-mono text-xs text-zinc-400">#{order.id.slice(0, 8).toUpperCase()}</p>
+                    <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>{STATUS_LABELS[order.status]}</Badge>
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-sm text-zinc-700 dark:text-zinc-300">
+                    Pengiriman {DELIVERY_METHOD_LABELS[order.delivery_method] ?? order.delivery_method}
                   </p>
-                  <p className="text-xs text-zinc-500">{formatTimestamp(order.created_at)}</p>
-                </div>
-              </Link>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                      {formatRupiah(order.final_total)}
+                    </p>
+                    <p className="text-xs text-zinc-500">{formatTimestamp(order.created_at)}</p>
+                  </div>
+                </Link>
+              </RevealItem>
             ))}
-          </div>
+          </Reveal>
 
           {meta && meta.totalPages > 1 && (
             <Pagination

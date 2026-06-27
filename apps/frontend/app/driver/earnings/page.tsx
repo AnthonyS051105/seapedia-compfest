@@ -5,6 +5,8 @@ import { Wallet } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { TiltCard } from '@/components/ui/TiltCard'
 import { ApiResponse, DeliveryMethod, DriverEarnings } from '@/types'
 
 const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
@@ -47,15 +49,21 @@ export default function DriverEarningsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pendapatan Saya</h1>
+      <Reveal>
+        <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pendapatan Saya</h1>
+      </Reveal>
 
-      <div className="rounded-2xl bg-brand-500 p-8 text-center">
-        <p className="text-xs font-semibold uppercase tracking-wide text-brand-100">Total Pendapatan</p>
-        <p className="mt-1 font-display text-5xl font-extrabold text-white">
-          {formatRupiah(earnings.total_earnings)}
-        </p>
-        <p className="mt-2 text-sm text-brand-100">{earnings.completed_jobs_count} pengiriman selesai</p>
-      </div>
+      <Reveal>
+        <TiltCard maxTilt={5} radiusClassName="rounded-2xl">
+          <div className="rounded-2xl bg-brand-500 p-8 text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-100">Total Pendapatan</p>
+            <p className="mt-1 font-display text-5xl font-extrabold text-white">
+              {formatRupiah(earnings.total_earnings)}
+            </p>
+            <p className="mt-2 text-sm text-brand-100">{earnings.completed_jobs_count} pengiriman selesai</p>
+          </div>
+        </TiltCard>
+      </Reveal>
 
       <h2 className="mb-2 mt-8 font-display font-semibold text-zinc-950 dark:text-zinc-50">Riwayat Pendapatan</h2>
 
@@ -66,25 +74,24 @@ export default function DriverEarningsPage() {
           description="Selesaikan pekerjaan pengiriman untuk mulai mendapatkan penghasilan."
         />
       ) : (
-        <div>
+        <Reveal stagger staggerGap={0.05}>
           {earnings.jobs.map((job) => (
-            <div
-              key={job.job_id}
-              className="flex items-center justify-between border-b border-zinc-100 py-3 text-sm last:border-0 dark:border-zinc-800"
-            >
-              <div>
-                <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                  #{job.order_id.slice(0, 8).toUpperCase()}
-                </p>
-                <p className="text-zinc-500">
-                  {DELIVERY_METHOD_LABELS[job.delivery_method]}
-                  {job.completed_at ? ` · ${formatTimestamp(job.completed_at)}` : ''}
-                </p>
+            <RevealItem key={job.job_id}>
+              <div className="flex items-center justify-between border-b border-zinc-100 py-3 text-sm last:border-0 dark:border-zinc-800">
+                <div>
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                    #{job.order_id.slice(0, 8).toUpperCase()}
+                  </p>
+                  <p className="text-zinc-500">
+                    {DELIVERY_METHOD_LABELS[job.delivery_method]}
+                    {job.completed_at ? ` · ${formatTimestamp(job.completed_at)}` : ''}
+                  </p>
+                </div>
+                <p className="font-semibold text-success-600 dark:text-success-500">+{formatRupiah(job.earning)}</p>
               </div>
-              <p className="font-semibold text-success-600 dark:text-success-500">+{formatRupiah(job.earning)}</p>
-            </div>
+            </RevealItem>
           ))}
-        </div>
+        </Reveal>
       )}
     </div>
   )

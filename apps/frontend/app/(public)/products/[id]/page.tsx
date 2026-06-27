@@ -13,6 +13,9 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { TiltCard } from '@/components/ui/TiltCard'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { ApiErrorResponse, ApiResponse, CartConflictData, Product } from '@/types'
 
 function formatRupiah(amount: number): string {
@@ -136,8 +139,8 @@ export default function ProductDetailPage() {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[3fr_2fr]">
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="group aspect-square overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
+        <Reveal y={16} className="lg:sticky lg:top-24 lg:self-start">
+          <TiltCard maxTilt={5} radiusClassName="rounded-2xl" className="group aspect-square overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
             {product.images.length > 0 ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -150,29 +153,30 @@ export default function ProductDetailPage() {
                 <ImageOff className="h-12 w-12 text-zinc-300 dark:text-zinc-700" />
               </div>
             )}
-          </div>
+          </TiltCard>
 
           {product.images.length > 1 && (
-            <div className="mt-3 flex gap-2">
+            <Reveal stagger staggerGap={0.05} className="mt-3 flex gap-2">
               {product.images.map((image, index) => (
-                <button
-                  key={image}
-                  type="button"
-                  onClick={() => setActiveImage(index)}
-                  className={cn(
-                    'h-16 w-16 overflow-hidden rounded-lg border-2 transition-colors',
-                    index === activeImage ? 'border-brand-500' : 'border-zinc-200 dark:border-zinc-700'
-                  )}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={image} alt="" className="h-full w-full object-cover" />
-                </button>
+                <RevealItem key={image} y={8}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveImage(index)}
+                    className={cn(
+                      'h-16 w-16 overflow-hidden rounded-lg border-2 transition-colors',
+                      index === activeImage ? 'border-brand-500' : 'border-zinc-200 dark:border-zinc-700'
+                    )}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image} alt="" className="h-full w-full object-cover" />
+                  </button>
+                </RevealItem>
               ))}
-            </div>
+            </Reveal>
           )}
-        </div>
+        </Reveal>
 
-        <div>
+        <Reveal delay={0.1} y={16}>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">
             {product.store.name}
           </p>
@@ -216,16 +220,18 @@ export default function ProductDetailPage() {
             )}
 
             {isAuthenticated ? (
-              <Button
-                size="lg"
-                disabled={isOutOfStock}
-                isLoading={isAddingToCart}
-                onClick={handleAddToCart}
-                title={!isBuyer ? 'Aktifkan peran Pembeli' : undefined}
-                className="flex-1"
-              >
-                Tambah ke Keranjang
-              </Button>
+              <Magnetic strength={0.2} className="flex-1">
+                <Button
+                  size="lg"
+                  disabled={isOutOfStock}
+                  isLoading={isAddingToCart}
+                  onClick={handleAddToCart}
+                  title={!isBuyer ? 'Aktifkan peran Pembeli' : undefined}
+                  className="w-full"
+                >
+                  Tambah ke Keranjang
+                </Button>
+              </Magnetic>
             ) : (
               <Button
                 variant="outline"
@@ -270,7 +276,7 @@ export default function ProductDetailPage() {
               <p className="whitespace-pre-line">{product.description || 'Tidak ada deskripsi untuk produk ini.'}</p>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       <Modal isOpen={!!conflict} onClose={() => setConflict(null)} title="Produk dari Toko Berbeda">

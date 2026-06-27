@@ -9,6 +9,9 @@ import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { TiltCard } from '@/components/ui/TiltCard'
+import { Magnetic } from '@/components/ui/Magnetic'
 import { useCartStore } from '@/store/cart.store'
 import {
   ApiErrorResponse,
@@ -161,165 +164,174 @@ export default function BuyerCheckoutPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Checkout</h1>
+      <Reveal>
+        <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Checkout</h1>
+      </Reveal>
 
       <div className="grid gap-8 lg:grid-cols-[3fr_2fr]">
-        <div>
-          <SectionHeader number={1} title="Alamat Pengiriman" />
-          <div className="flex flex-col gap-2">
-            {addresses.map((address) => (
-              <label
-                key={address.id}
-                className={cn(
-                  'flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all',
-                  addressId === address.id
-                    ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20 dark:bg-brand-500/10'
-                    : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600'
-                )}
-              >
-                <input
-                  type="radio"
-                  name="address"
-                  className="mt-1 accent-brand-500"
-                  checked={addressId === address.id}
-                  onChange={() => setAddressId(address.id)}
-                />
-                <div>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    {address.label} - {address.recipient_name}, {address.phone}
-                  </p>
-                  <p className="text-sm text-zinc-500">
-                    {address.street}, {address.city}, {address.province} {address.postal_code}
-                  </p>
-                </div>
-              </label>
-            ))}
-          </div>
-
-          <div className="mt-6">
-            <SectionHeader number={2} title="Metode Pengiriman" />
-            <div className="flex flex-col gap-2">
-              {DELIVERY_OPTIONS.map((option) => (
-                <label
-                  key={option.value}
-                  className={cn(
-                    'flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all',
-                    deliveryMethod === option.value
-                      ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20 dark:bg-brand-500/10'
-                      : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600'
-                  )}
-                >
-                  <div className="flex items-center gap-3">
+        <Reveal delay={0.05}>
+          <div>
+            <SectionHeader number={1} title="Alamat Pengiriman" />
+            <Reveal stagger staggerGap={0.05} className="flex flex-col gap-2">
+              {addresses.map((address) => (
+                <RevealItem key={address.id}>
+                  <label
+                    className={cn(
+                      'flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all',
+                      addressId === address.id
+                        ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20 dark:bg-brand-500/10'
+                        : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600'
+                    )}
+                  >
                     <input
                       type="radio"
-                      name="delivery_method"
-                      className="accent-brand-500"
-                      checked={deliveryMethod === option.value}
-                      onChange={() => setDeliveryMethod(option.value)}
+                      name="address"
+                      className="mt-1 accent-brand-500"
+                      checked={addressId === address.id}
+                      onChange={() => setAddressId(address.id)}
                     />
                     <div>
-                      <p className="font-medium text-zinc-900 dark:text-zinc-100">{option.label}</p>
-                      <p className="text-xs text-zinc-500">{option.sla}</p>
+                      <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                        {address.label} - {address.recipient_name}, {address.phone}
+                      </p>
+                      <p className="text-sm text-zinc-500">
+                        {address.street}, {address.city}, {address.province} {address.postal_code}
+                      </p>
                     </div>
-                  </div>
-                  <p className="font-bold text-brand-600 dark:text-brand-400">{formatRupiah(option.fee)}</p>
-                </label>
+                  </label>
+                </RevealItem>
               ))}
-            </div>
-          </div>
+            </Reveal>
 
-          <div className="mt-6">
-            <SectionHeader number={3} title="Kode Diskon (Opsional)" />
-            <div className="flex gap-2">
-              <Input
-                placeholder="HEMAT10"
-                value={discountCodeInput}
-                onChange={(e) => setDiscountCodeInput(e.target.value.toUpperCase())}
-                className="flex-1"
-              />
-              <Button variant="outline" size="sm" onClick={handleApplyDiscount}>
-                Gunakan
-              </Button>
-            </div>
-            {preview?.discount_code && !previewError && (
-              <div className="mt-2 flex justify-between rounded-lg border border-success-200 bg-success-50 px-3 py-2 text-sm text-success-700 dark:border-success-500/30 dark:bg-success-500/10 dark:text-success-400">
-                <span>
-                  {preview.discount_type === 'VOUCHER' ? 'Voucher' : 'Promo'} {preview.discount_code} diterapkan
-                </span>
-                <span className="font-semibold">-{formatRupiah(preview.discount_amount)}</span>
-              </div>
-            )}
-            {previewError && appliedDiscountCode && (
-              <p className="mt-2 text-sm text-danger-600 dark:text-danger-500">{previewError}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-md dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Ringkasan Pesanan</h2>
-
-            {preview === undefined ? (
-              <Skeleton height={160} />
-            ) : !preview ? (
-              <p className="text-sm text-danger-600 dark:text-danger-500">{previewError}</p>
-            ) : (
-              <>
-                <div className="flex flex-col">
-                  <div className="flex justify-between py-1.5 text-sm">
-                    <span className="text-zinc-600 dark:text-zinc-400">Subtotal</span>
-                    <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.subtotal)}</span>
-                  </div>
-                  {preview.discount_amount > 0 && (
-                    <div className="flex justify-between py-1.5 text-sm">
-                      <span className="text-success-600 dark:text-success-500">
-                        Diskon {preview.discount_code ? `(${preview.discount_code})` : ''}
-                      </span>
-                      <span className="text-success-600 dark:text-success-500">
-                        -{formatRupiah(preview.discount_amount)}
-                      </span>
+            <div className="mt-6">
+              <SectionHeader number={2} title="Metode Pengiriman" />
+              <div className="flex flex-col gap-2">
+                {DELIVERY_OPTIONS.map((option) => (
+                  <label
+                    key={option.value}
+                    className={cn(
+                      'flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all',
+                      deliveryMethod === option.value
+                        ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/20 dark:bg-brand-500/10'
+                        : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="delivery_method"
+                        className="accent-brand-500"
+                        checked={deliveryMethod === option.value}
+                        onChange={() => setDeliveryMethod(option.value)}
+                      />
+                      <div>
+                        <p className="font-medium text-zinc-900 dark:text-zinc-100">{option.label}</p>
+                        <p className="text-xs text-zinc-500">{option.sla}</p>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex justify-between py-1.5 text-sm">
-                    <span className="text-zinc-600 dark:text-zinc-400">Ongkos Kirim</span>
-                    <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.delivery_fee)}</span>
-                  </div>
-                  <div className="flex justify-between py-1.5 text-sm">
-                    <span className="text-zinc-600 dark:text-zinc-400">PPN 12%</span>
-                    <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.ppn_amount)}</span>
-                  </div>
-                </div>
+                    <p className="font-bold text-brand-600 dark:text-brand-400">{formatRupiah(option.fee)}</p>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-                <div className="my-3 h-px bg-zinc-100 dark:bg-zinc-800" />
-
-                <div className="flex justify-between font-display text-lg font-bold text-zinc-950 dark:text-zinc-50">
-                  <span>Total Pembayaran</span>
-                  <span>{formatRupiah(preview.final_total)}</span>
-                </div>
-
-                <p
-                  className={cn(
-                    'mt-2 text-xs',
-                    preview.is_balance_enough ? 'text-zinc-500' : 'text-danger-600 dark:text-danger-500'
-                  )}
-                >
-                  Saldo dompet: {formatRupiah(preview.wallet_balance)}{' '}
-                  {preview.is_balance_enough ? '' : '(Saldo tidak mencukupi)'}
-                </p>
-
-                <Button
-                  size="lg"
-                  className="mt-4 w-full"
-                  disabled={!preview.is_balance_enough}
-                  isLoading={isConfirming}
-                  onClick={handleConfirm}
-                >
-                  Konfirmasi Pesanan
+            <div className="mt-6">
+              <SectionHeader number={3} title="Kode Diskon (Opsional)" />
+              <div className="flex gap-2">
+                <Input
+                  placeholder="HEMAT10"
+                  value={discountCodeInput}
+                  onChange={(e) => setDiscountCodeInput(e.target.value.toUpperCase())}
+                  className="flex-1"
+                />
+                <Button variant="outline" size="sm" onClick={handleApplyDiscount}>
+                  Gunakan
                 </Button>
-              </>
-            )}
+              </div>
+              {preview?.discount_code && !previewError && (
+                <div className="mt-2 flex justify-between rounded-lg border border-success-200 bg-success-50 px-3 py-2 text-sm text-success-700 dark:border-success-500/30 dark:bg-success-500/10 dark:text-success-400">
+                  <span>
+                    {preview.discount_type === 'VOUCHER' ? 'Voucher' : 'Promo'} {preview.discount_code} diterapkan
+                  </span>
+                  <span className="font-semibold">-{formatRupiah(preview.discount_amount)}</span>
+                </div>
+              )}
+              {previewError && appliedDiscountCode && (
+                <p className="mt-2 text-sm text-danger-600 dark:text-danger-500">{previewError}</p>
+              )}
+            </div>
           </div>
-        </div>
+        </Reveal>
+
+        <Reveal delay={0.1} className="lg:sticky lg:top-24 lg:self-start">
+          <TiltCard radiusClassName="rounded-2xl">
+            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-md dark:border-zinc-800 dark:bg-zinc-900">
+              <h2 className="mb-4 font-display font-semibold text-zinc-950 dark:text-zinc-50">Ringkasan Pesanan</h2>
+
+              {preview === undefined ? (
+                <Skeleton height={160} />
+              ) : !preview ? (
+                <p className="text-sm text-danger-600 dark:text-danger-500">{previewError}</p>
+              ) : (
+                <>
+                  <div className="flex flex-col">
+                    <div className="flex justify-between py-1.5 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400">Subtotal</span>
+                      <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.subtotal)}</span>
+                    </div>
+                    {preview.discount_amount > 0 && (
+                      <div className="flex justify-between py-1.5 text-sm">
+                        <span className="text-success-600 dark:text-success-500">
+                          Diskon {preview.discount_code ? `(${preview.discount_code})` : ''}
+                        </span>
+                        <span className="text-success-600 dark:text-success-500">
+                          -{formatRupiah(preview.discount_amount)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between py-1.5 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400">Ongkos Kirim</span>
+                      <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.delivery_fee)}</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400">PPN 12%</span>
+                      <span className="text-zinc-900 dark:text-zinc-100">{formatRupiah(preview.ppn_amount)}</span>
+                    </div>
+                  </div>
+
+                  <div className="my-3 h-px bg-zinc-100 dark:bg-zinc-800" />
+
+                  <div className="flex justify-between font-display text-lg font-bold text-zinc-950 dark:text-zinc-50">
+                    <span>Total Pembayaran</span>
+                    <span>{formatRupiah(preview.final_total)}</span>
+                  </div>
+
+                  <p
+                    className={cn(
+                      'mt-2 text-xs',
+                      preview.is_balance_enough ? 'text-zinc-500' : 'text-danger-600 dark:text-danger-500'
+                    )}
+                  >
+                    Saldo dompet: {formatRupiah(preview.wallet_balance)}{' '}
+                    {preview.is_balance_enough ? '' : '(Saldo tidak mencukupi)'}
+                  </p>
+
+                  <Magnetic className="mt-4 block">
+                    <Button
+                      size="lg"
+                      className="w-full"
+                      disabled={!preview.is_balance_enough}
+                      isLoading={isConfirming}
+                      onClick={handleConfirm}
+                    >
+                      Konfirmasi Pesanan
+                    </Button>
+                  </Magnetic>
+                </>
+              )}
+            </div>
+          </TiltCard>
+        </Reveal>
       </div>
     </div>
   )
