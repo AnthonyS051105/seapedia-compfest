@@ -8,7 +8,6 @@ import toast from 'react-hot-toast'
 import { useForm } from 'react-hook-form'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
@@ -79,58 +78,81 @@ function AdminVouchersPageContent() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Voucher</h1>
-        <Button onClick={() => setIsModalOpen(true)}>+ Buat Voucher</Button>
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Voucher</h1>
+        <Button size="sm" onClick={() => setIsModalOpen(true)}>
+          + Buat Voucher
+        </Button>
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} height={56} />
-          ))}
-        </div>
+        <Skeleton height={300} className="rounded-xl" />
       ) : !vouchers || vouchers.length === 0 ? (
         <EmptyState icon={Tag} title="Belum ada voucher" description="Buat voucher pertama untuk buyer." />
       ) : (
         <>
-          <Card className="overflow-x-auto p-0">
+          <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
             <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-text-sub">
-                  <th className="px-4 py-3 font-medium">Kode</th>
-                  <th className="px-4 py-3 font-medium">Tipe</th>
-                  <th className="px-4 py-3 font-medium">Nilai</th>
-                  <th className="px-4 py-3 font-medium">Pemakaian</th>
-                  <th className="px-4 py-3 font-medium">Kadaluarsa</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
+              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                <tr className="text-left">
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Kode</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Tipe</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Nilai</th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Pemakaian
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Kadaluarsa
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {vouchers.map((voucher) => (
-                  <tr key={voucher.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium">
-                      <Link href={`/admin/vouchers/${voucher.id}`} className="text-primary hover:underline">
-                        {voucher.code}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-text-sub">
-                      {voucher.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
-                    </td>
-                    <td className="px-4 py-3 text-text">{formatDiscountValue(voucher)}</td>
-                    <td className="px-4 py-3 text-text">
-                      {voucher.current_usage}/{voucher.max_usage}
-                    </td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(voucher.expiry_date)}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant={voucher.is_active ? 'green' : 'gray'}>
-                        {voucher.is_active ? 'Aktif' : 'Nonaktif'}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
+                {vouchers.map((voucher) => {
+                  const usagePercent =
+                    voucher.max_usage > 0 ? Math.min(100, (voucher.current_usage / voucher.max_usage) * 100) : 0
+
+                  return (
+                    <tr
+                      key={voucher.id}
+                      className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                    >
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/admin/vouchers/${voucher.id}`}
+                          className="font-mono text-sm text-brand-600 hover:underline dark:text-brand-400"
+                        >
+                          {voucher.code}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-500">
+                        {voucher.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
+                      </td>
+                      <td className="px-4 py-3 text-zinc-900 dark:text-zinc-100">{formatDiscountValue(voucher)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-zinc-500">
+                            {voucher.current_usage}/{voucher.max_usage}
+                          </span>
+                          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                            <div
+                              className="h-full rounded-full bg-brand-500"
+                              style={{ width: `${usagePercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-500">{formatDate(voucher.expiry_date)}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant={voucher.is_active ? 'green' : 'gray'}>
+                          {voucher.is_active ? 'Aktif' : 'Nonaktif'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
-          </Card>
+          </div>
 
           {meta && meta.totalPages > 1 && (
             <Pagination
@@ -216,9 +238,9 @@ function CreateVoucherModal({
         />
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-text">Tipe Diskon</label>
+          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Tipe Diskon</label>
           <select
-            className="h-10 rounded-lg border border-border bg-surface px-3 text-base text-text outline-none focus:border-primary"
+            className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 outline-none focus:border-brand-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
             {...register('discount_type')}
           >
             <option value="PERCENTAGE">Persentase (%)</option>
@@ -265,12 +287,12 @@ function CreateVoucherModal({
           {...register('expiry_date')}
         />
 
-        <label className="flex items-center gap-2 text-sm text-text">
-          <input type="checkbox" defaultChecked {...register('is_active')} />
+        <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <input type="checkbox" defaultChecked className="accent-brand-500" {...register('is_active')} />
           Aktifkan voucher ini
         </label>
 
-        {apiError && <p className="text-sm text-danger">{apiError}</p>}
+        {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
         <div className="mt-2 flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>

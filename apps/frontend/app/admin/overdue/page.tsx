@@ -2,11 +2,10 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { RotateCcw } from 'lucide-react'
+import { AlertCircle, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -37,7 +36,7 @@ function AdminOverduePageContent() {
   const [result, setResult] = useState<{
     key: number
     orders: AdminOrderListItem[]
-    meta: { totalPages: number }
+    meta: { total: number; totalPages: number }
   } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
@@ -45,10 +44,14 @@ function AdminOverduePageContent() {
     api
       .get<PaginatedResponse<AdminOrderListItem>>('/admin/overdue-orders', { params: { page, limit: 10 } })
       .then((res) => {
-        setResult({ key: page, orders: res.data.data, meta: { totalPages: res.data.meta.totalPages } })
+        setResult({
+          key: page,
+          orders: res.data.data,
+          meta: { total: res.data.meta.total, totalPages: res.data.meta.totalPages },
+        })
       })
       .catch(() => {
-        setResult({ key: page, orders: [], meta: { totalPages: 0 } })
+        setResult({ key: page, orders: [], meta: { total: 0, totalPages: 0 } })
       })
   }
 
@@ -76,23 +79,28 @@ function AdminOverduePageContent() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text">Pesanan Overdue</h1>
-          <p className="text-text-sub">Pesanan yang melewati SLA pengiriman dan dikembalikan otomatis</p>
-        </div>
-        <Button onClick={handleProcessOverdue} isLoading={isProcessing} variant="danger">
-          <RotateCcw className="h-4 w-4" />
-          Proses Semua Overdue
-        </Button>
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Overdue</h1>
+        <p className="text-zinc-500">Pesanan yang melewati SLA pengiriman dan dikembalikan otomatis</p>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} height={56} />
-          ))}
+      {meta && meta.total > 0 && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger-200 bg-danger-50 p-4 dark:border-danger-500/30 dark:bg-danger-500/10">
+          <div className="flex items-center gap-2 text-sm text-danger-700 dark:text-danger-400">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <span>
+              <span className="font-semibold">{meta.total} pesanan</span> belum diproses
+            </span>
+          </div>
+          <Button variant="danger" size="sm" onClick={handleProcessOverdue} isLoading={isProcessing}>
+            <RotateCcw className="h-4 w-4" />
+            Proses Semua
+          </Button>
         </div>
+      )}
+
+      {isLoading ? (
+        <Skeleton height={300} className="rounded-xl" />
       ) : !orders || orders.length === 0 ? (
         <EmptyState
           icon={RotateCcw}
@@ -101,34 +109,49 @@ function AdminOverduePageContent() {
         />
       ) : (
         <>
-          <Card className="overflow-x-auto p-0">
+          <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
             <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-text-sub">
-                  <th className="px-4 py-3 font-medium">Order ID</th>
-                  <th className="px-4 py-3 font-medium">Metode</th>
-                  <th className="px-4 py-3 font-medium">Total Refund</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Dibuat</th>
+              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                <tr className="text-left">
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Order ID
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Metode
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Total Refund
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                    Dibuat
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-mono text-xs text-text">{order.id.slice(0, 8)}…</td>
-                    <td className="px-4 py-3 text-text-sub">{order.delivery_method}</td>
-                    <td className="px-4 py-3 text-text">{formatRupiah(order.final_total)}</td>
+                  <tr
+                    key={order.id}
+                    className="border-b border-zinc-100 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-400">{order.id.slice(0, 8)}…</td>
+                    <td className="px-4 py-3 text-zinc-500">{order.delivery_method}</td>
+                    <td className="px-4 py-3 text-zinc-900 dark:text-zinc-100">
+                      {formatRupiah(order.final_total)}
+                    </td>
                     <td className="px-4 py-3">
                       <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
                         {order.status.replaceAll('_', ' ')}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(order.created_at)}</td>
+                    <td className="px-4 py-3 text-zinc-500">{formatDate(order.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </Card>
+          </div>
 
           {meta && meta.totalPages > 1 && (
             <Pagination

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { ArrowLeft, Ticket } from 'lucide-react'
 import { api } from '@/lib/api'
-import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -54,7 +53,10 @@ export default function AdminVoucherDetailPage() {
   if (!voucher) {
     return (
       <div className="mx-auto max-w-2xl">
-        <Link href="/admin/vouchers" className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+        <Link
+          href="/admin/vouchers"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-brand-600 hover:underline dark:text-brand-400"
+        >
           <ArrowLeft className="h-4 w-4" />
           Kembali ke Daftar Voucher
         </Link>
@@ -68,66 +70,69 @@ export default function AdminVoucherDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/admin/vouchers" className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+      <Link
+        href="/admin/vouchers"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-brand-600 hover:underline dark:text-brand-400"
+      >
         <ArrowLeft className="h-4 w-4" />
         Kembali ke Daftar Voucher
       </Link>
 
-      <Card>
+      <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <p className="text-sm text-text-sub">Kode Voucher</p>
-            <p className="font-mono text-3xl font-bold tracking-wider text-text">{voucher.code}</p>
+            <p className="text-sm text-zinc-500">Kode Voucher</p>
+            <p className="font-mono text-3xl font-bold tracking-wider text-zinc-950 dark:text-zinc-50">
+              {voucher.code}
+            </p>
           </div>
           <Badge variant={voucher.is_active ? 'green' : 'gray'}>{voucher.is_active ? 'Active' : 'Inactive'}</Badge>
         </div>
 
-        <dl className="flex flex-col divide-y divide-border text-sm">
+        <div className="flex flex-col divide-y divide-zinc-100 text-sm dark:divide-zinc-800">
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Tipe</dt>
-            <dd className="font-medium text-text">
+            <span className="text-zinc-500">Tipe</span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
               {voucher.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
-            </dd>
+            </span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Nilai Diskon</dt>
-            <dd className="font-medium text-text">{formatDiscountValue(voucher)}</dd>
+            <span className="text-zinc-500">Nilai Diskon</span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">{formatDiscountValue(voucher)}</span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Maks Diskon</dt>
-            <dd className="font-medium text-text">
+            <span className="text-zinc-500">Maks Diskon</span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
               {voucher.max_discount_amount ? formatRupiah(voucher.max_discount_amount) : 'Tidak ada batas'}
-            </dd>
+            </span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Min. Order</dt>
-            <dd className="font-medium text-text">
+            <span className="text-zinc-500">Min. Order</span>
+            <span className="font-medium text-zinc-900 dark:text-zinc-100">
               {voucher.min_order_amount ? formatRupiah(voucher.min_order_amount) : 'Tidak ada minimum'}
-            </dd>
+            </span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Kadaluarsa</dt>
-            <dd className="flex items-center gap-2 font-medium text-text">
+            <span className="text-zinc-500">Kadaluarsa</span>
+            <span className="flex items-center gap-2 font-medium text-zinc-900 dark:text-zinc-100">
               {formatDate(voucher.expiry_date)}
               <Badge variant={expiryInfo.variant}>{expiryInfo.label}</Badge>
-            </dd>
+            </span>
           </div>
           <div className="py-3">
-            <dt className="mb-2 text-text-sub">Penggunaan</dt>
-            <dd>
-              <div className="mb-1 flex items-center justify-between text-xs text-text-sub">
-                <span>
-                  {voucher.current_usage} / {voucher.max_usage}
-                </span>
-                <span>{Math.round(usagePercent)}%</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${usagePercent}%` }} />
-              </div>
-            </dd>
+            <p className="mb-2 text-zinc-500">Penggunaan</p>
+            <div className="mb-1.5 flex items-center justify-between text-xs text-zinc-500">
+              <span>
+                {voucher.current_usage} / {voucher.max_usage}
+              </span>
+              <span>{Math.round(usagePercent)}%</span>
+            </div>
+            <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+              <div className="h-full rounded-full bg-brand-500" style={{ width: `${usagePercent}%` }} />
+            </div>
           </div>
-        </dl>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
