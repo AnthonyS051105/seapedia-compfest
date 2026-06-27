@@ -33,12 +33,12 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         aria-label="Halaman sebelumnya"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
 
-      {pages[0] > 1 && <span className="px-2 text-text-sub">…</span>}
+      {pages[0] > 1 && <span className="px-2 text-sm text-zinc-500">…</span>}
 
       {pages.map((p) => (
         <button
@@ -46,22 +46,22 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
           type="button"
           onClick={() => onPageChange(p)}
           className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium',
-            p === page ? 'bg-primary text-white' : 'text-text hover:bg-gray-50'
+            'flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium',
+            p === page ? 'bg-brand-500 text-white' : 'text-zinc-600 hover:bg-zinc-100'
           )}
         >
           {p}
         </button>
       ))}
 
-      {pages[pages.length - 1] < totalPages && <span className="px-2 text-text-sub">…</span>}
+      {pages[pages.length - 1] < totalPages && <span className="px-2 text-sm text-zinc-500">…</span>}
 
       <button
         type="button"
         aria-label="Halaman selanjutnya"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text disabled:cursor-not-allowed disabled:opacity-40 hover:bg-gray-50"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRight className="h-4 w-4" />
       </button>

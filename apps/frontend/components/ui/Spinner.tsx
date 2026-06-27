@@ -8,9 +8,9 @@ export interface SpinnerProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const sizeClasses: Record<SpinnerSize, string> = {
-  sm: 'h-4 w-4',
-  md: 'h-6 w-6',
-  lg: 'h-8 w-8',
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
 }
 
 export function Spinner({ size = 'md', className, ...props }: SpinnerProps) {
@@ -19,7 +19,7 @@ export function Spinner({ size = 'md', className, ...props }: SpinnerProps) {
       role="status"
       aria-label="Loading"
       className={cn(
-        'animate-spin rounded-full border-2 border-primary border-t-transparent',
+        'animate-spin rounded-full border-2 border-zinc-200 border-t-current',
         sizeClasses[size],
         className
       )}

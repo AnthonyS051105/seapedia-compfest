@@ -10,12 +10,12 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  blue: 'bg-blue-100 text-blue-700',
-  green: 'bg-emerald-100 text-emerald-700',
-  yellow: 'bg-amber-100 text-amber-700',
-  orange: 'bg-orange-100 text-orange-700',
-  red: 'bg-red-100 text-red-700',
-  gray: 'bg-gray-100 text-gray-700',
+  yellow: 'bg-amber-50 text-amber-700 border border-amber-200',
+  blue: 'bg-blue-50 text-blue-700 border border-blue-200',
+  orange: 'bg-brand-50 text-brand-700 border border-brand-200',
+  green: 'bg-success-50 text-success-700 border border-green-200',
+  red: 'bg-danger-50 text-danger-700 border border-red-200',
+  gray: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
 }
 
 export const ORDER_STATUS_BADGE_VARIANT: Record<OrderStatus, BadgeVariant> = {
@@ -30,7 +30,7 @@ export function Badge({ variant = 'gray', className, children, ...props }: Badge
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
         variantClasses[variant],
         className
       )}

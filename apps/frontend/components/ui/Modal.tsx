@@ -30,26 +30,26 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
         className={cn(
-          'w-full max-w-md rounded-xl bg-surface p-6 shadow-xl',
+          'relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl',
           className
         )}
         onClick={(event) => event.stopPropagation()}
       >
         {title && (
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-text">{title}</h2>
+            <h2 className="font-display text-lg font-semibold text-zinc-950">{title}</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-full p-1 text-text-sub hover:bg-gray-100"
+              className="absolute top-4 right-4 rounded-lg p-1 text-brand-600 hover:bg-brand-50 transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         )}

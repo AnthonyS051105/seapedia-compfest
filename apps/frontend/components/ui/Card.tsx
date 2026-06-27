@@ -10,14 +10,18 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const variantClasses: Record<CardVariant, string> = {
   default: '',
-  hover: 'transition-shadow hover:shadow-md',
-  selected: 'border-primary ring-1 ring-primary',
+  hover: 'card-interactive',
+  selected: 'border-brand-500 ring-1 ring-brand-500',
 }
 
 export function Card({ variant = 'default', className, children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-xl border border-border bg-surface p-4', variantClasses[variant], className)}
+      className={cn(
+        'rounded-xl border border-zinc-200 bg-white p-4 [box-shadow:var(--shadow-card)]',
+        variantClasses[variant],
+        className
+      )}
       {...props}
     >
       {children}

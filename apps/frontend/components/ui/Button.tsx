@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react'
-import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Spinner } from './Spinner'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -13,17 +13,25 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-white hover:bg-primary-dark',
-  secondary: 'bg-secondary text-white hover:opacity-90',
-  outline: 'border border-border bg-transparent text-text hover:bg-gray-50',
-  ghost: 'bg-transparent text-text hover:bg-gray-100',
-  danger: 'bg-danger text-white hover:opacity-90',
+  primary:
+    'bg-brand-500 hover:bg-brand-600 text-white shadow-sm hover:shadow-[var(--shadow-brand)]',
+  secondary: 'bg-zinc-900 hover:bg-zinc-800 text-white',
+  outline:
+    'border border-zinc-300 text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50 bg-white',
+  ghost: 'text-brand-600 hover:bg-brand-50',
+  danger: 'bg-danger-500 hover:bg-danger-700 text-white',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-10 px-4 text-base',
-  lg: 'h-12 px-6 text-lg',
+  sm: 'px-3 py-1.5 text-xs',
+  md: 'px-4 py-2 text-sm',
+  lg: 'px-5 py-2.5 text-base',
+}
+
+const spinnerSize: Record<ButtonSize, 'sm' | 'md'> = {
+  sm: 'sm',
+  md: 'sm',
+  lg: 'md',
 }
 
 export function Button({
@@ -38,7 +46,8 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none',
+        variant === 'ghost' || variant === 'outline' ? 'font-medium' : 'font-semibold',
         variantClasses[variant],
         sizeClasses[size],
         className
@@ -46,7 +55,7 @@ export function Button({
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+      {isLoading && <Spinner size={spinnerSize[size]} className="text-current" />}
       {children}
     </button>
   )
