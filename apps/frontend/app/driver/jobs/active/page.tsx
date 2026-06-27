@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { CheckCircle2, MapPin, Phone, User } from 'lucide-react'
+import { CheckCircle2, MapPin, Phone } from 'lucide-react'
 import { api } from '@/lib/api'
-import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -21,6 +19,16 @@ const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
 
 function formatRupiah(amount: number): string {
   return `Rp ${amount.toLocaleString('id-ID')}`
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
 }
 
 export default function DriverActiveJobPage() {
@@ -75,68 +83,74 @@ export default function DriverActiveJobPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Pekerjaan Aktif</h1>
-        <Badge variant="orange">Sedang dalam Perjalanan</Badge>
-      </div>
+      <div className="rounded-2xl border-2 border-brand-500 bg-white p-6 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
+          <span className="text-sm font-semibold text-success-600 dark:text-success-500">Sedang Berlangsung</span>
+        </div>
 
-      <div className="flex flex-col gap-6">
-        <Card>
-          <h2 className="mb-4 font-semibold text-text">Order #{job.order_id.slice(0, 8).toUpperCase()}</h2>
-          <div className="flex flex-col gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-text-sub" />
-              <span className="text-text">{job.address.recipient_name}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-text-sub" />
-              <span className="text-text">{job.address.phone}</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-text-sub" />
-              <span className="text-text">
-                {job.address.street}, {job.address.city}, {job.address.province} {job.address.postal_code}
-              </span>
-            </div>
+        <p className="mb-4 font-mono text-xs text-zinc-400">Order #{job.order_id.slice(0, 8).toUpperCase()}</p>
+
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-400">
+            {getInitials(job.address.recipient_name)}
+          </span>
+          <div>
+            <p className="font-semibold text-zinc-900 dark:text-zinc-100">{job.address.recipient_name}</p>
+            <p className="flex items-center gap-1 text-sm text-zinc-500">
+              <Phone className="h-3.5 w-3.5" />
+              {job.address.phone}
+            </p>
           </div>
-        </Card>
+        </div>
 
-        <Card>
-          <h2 className="mb-4 font-semibold text-text">Produk</h2>
-          <div className="flex flex-col gap-3">
+        <div className="mt-4 flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
+          <span>
+            {job.address.street}, {job.address.city}, {job.address.province} {job.address.postal_code}
+          </span>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="mb-3 font-display font-semibold text-zinc-950 dark:text-zinc-50">Produk</h2>
+          <div>
             {job.order_items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between text-sm">
+              <div
+                key={item.id}
+                className="flex items-center justify-between border-b border-zinc-100 py-2 text-sm last:border-0 dark:border-zinc-800"
+              >
                 <div>
-                  <p className="font-medium text-text">{item.product_name}</p>
-                  <p className="text-text-sub">
+                  <p className="font-medium text-zinc-900 dark:text-zinc-100">{item.product_name}</p>
+                  <p className="text-zinc-500">
                     {formatRupiah(item.product_price)} × {item.quantity}
                   </p>
                 </div>
-                <p className="font-medium text-text">{formatRupiah(item.subtotal)}</p>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">{formatRupiah(item.subtotal)}</p>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
-        <Card>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-text-sub">
-              Metode: <span className="font-medium text-text">{DELIVERY_METHOD_LABELS[job.delivery_method]}</span>
-            </span>
-            <span className="font-semibold text-secondary">Pendapatan: {formatRupiah(job.estimated_earning)}</span>
-          </div>
-        </Card>
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-zinc-50 px-4 py-3 dark:bg-zinc-950">
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            Metode: {DELIVERY_METHOD_LABELS[job.delivery_method]}
+          </span>
+          <span className="font-semibold text-brand-600 dark:text-brand-400">
+            {formatRupiah(job.estimated_earning)}
+          </span>
+        </div>
 
-        <Button size="lg" onClick={() => setIsCompleteModalOpen(true)}>
-          ✅ Konfirmasi Selesai
+        <Button size="lg" className="mt-6 w-full" onClick={() => setIsCompleteModalOpen(true)}>
+          Konfirmasi Selesai
         </Button>
       </div>
 
       <Modal isOpen={isCompleteModalOpen} onClose={() => setIsCompleteModalOpen(false)} title="Konfirmasi Pengiriman Selesai?">
-        <p className="text-sm text-text-sub">
+        <p className="text-sm text-zinc-500">
           Pastikan paket sudah diterima oleh pembeli. Status pesanan akan berubah menjadi{' '}
-          <span className="font-medium text-text">Pesanan Selesai</span> dan pendapatan{' '}
-          <span className="font-medium text-secondary">{formatRupiah(job.estimated_earning)}</span> akan dicatat.
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">Pesanan Selesai</span> dan pendapatan{' '}
+          <span className="font-medium text-brand-600 dark:text-brand-400">{formatRupiah(job.estimated_earning)}</span>{' '}
+          akan dicatat.
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={() => setIsCompleteModalOpen(false)} disabled={isCompleting}>

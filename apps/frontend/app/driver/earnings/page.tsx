@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Wallet } from 'lucide-react'
 import { api } from '@/lib/api'
-import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ApiResponse, DeliveryMethod, DriverEarnings } from '@/types'
@@ -43,44 +42,49 @@ export default function DriverEarningsPage() {
   }
 
   if (!earnings) {
-    return <p className="text-text-sub">Gagal memuat data pendapatan.</p>
+    return <p className="text-zinc-500">Gagal memuat data pendapatan.</p>
   }
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Pendapatan Saya</h1>
+      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pendapatan Saya</h1>
 
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card>
-          <p className="text-sm text-text-sub">💰 Total Pendapatan</p>
-          <p className="mt-1 text-2xl font-bold text-text">{formatRupiah(earnings.total_earnings)}</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-text-sub">📦 Pengiriman Selesai</p>
-          <p className="mt-1 text-2xl font-bold text-text">{earnings.completed_jobs_count}</p>
-        </Card>
+      <div className="rounded-2xl bg-brand-500 p-8 text-center">
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand-100">Total Pendapatan</p>
+        <p className="mt-1 font-display text-5xl font-extrabold text-white">
+          {formatRupiah(earnings.total_earnings)}
+        </p>
+        <p className="mt-2 text-sm text-brand-100">{earnings.completed_jobs_count} pengiriman selesai</p>
       </div>
 
+      <h2 className="mb-2 mt-8 font-display font-semibold text-zinc-950 dark:text-zinc-50">Riwayat Pendapatan</h2>
+
       {earnings.jobs.length === 0 ? (
-        <EmptyState icon={Wallet} title="Belum ada pendapatan" description="Selesaikan pekerjaan pengiriman untuk mulai mendapatkan penghasilan." />
+        <EmptyState
+          icon={Wallet}
+          title="Belum ada pendapatan"
+          description="Selesaikan pekerjaan pengiriman untuk mulai mendapatkan penghasilan."
+        />
       ) : (
-        <Card>
-          <h2 className="mb-4 font-semibold text-text">Riwayat Pendapatan</h2>
-          <div className="flex flex-col divide-y divide-border">
-            {earnings.jobs.map((job) => (
-              <div key={job.job_id} className="flex items-center justify-between py-3 text-sm">
-                <div>
-                  <p className="font-medium text-text">#{job.order_id.slice(0, 8).toUpperCase()}</p>
-                  <p className="text-text-sub">
-                    {DELIVERY_METHOD_LABELS[job.delivery_method]}
-                    {job.completed_at ? ` · ${formatTimestamp(job.completed_at)}` : ''}
-                  </p>
-                </div>
-                <p className="font-semibold text-secondary">+{formatRupiah(job.earning)}</p>
+        <div>
+          {earnings.jobs.map((job) => (
+            <div
+              key={job.job_id}
+              className="flex items-center justify-between border-b border-zinc-100 py-3 text-sm last:border-0 dark:border-zinc-800"
+            >
+              <div>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                  #{job.order_id.slice(0, 8).toUpperCase()}
+                </p>
+                <p className="text-zinc-500">
+                  {DELIVERY_METHOD_LABELS[job.delivery_method]}
+                  {job.completed_at ? ` · ${formatTimestamp(job.completed_at)}` : ''}
+                </p>
               </div>
-            ))}
-          </div>
-        </Card>
+              <p className="font-semibold text-success-600 dark:text-success-500">+{formatRupiah(job.earning)}</p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )

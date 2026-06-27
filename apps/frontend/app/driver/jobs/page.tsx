@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { PackageSearch, MapPin, Truck } from 'lucide-react'
+import { MapPin, Truck } from 'lucide-react'
 import { api } from '@/lib/api'
-import { Card } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -18,6 +16,12 @@ const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
   INSTANT: 'Instant',
   NEXT_DAY: 'Next Day',
   REGULAR: 'Regular',
+}
+
+const METHOD_BADGE_CLASSES: Record<DeliveryMethod, string> = {
+  INSTANT: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+  NEXT_DAY: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+  REGULAR: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
 }
 
 function formatRupiah(amount: number): string {
@@ -90,7 +94,7 @@ export default function DriverJobsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Pekerjaan Tersedia</h1>
+      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pekerjaan Tersedia</h1>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -100,33 +104,43 @@ export default function DriverJobsPage() {
         </div>
       ) : !jobs || jobs.length === 0 ? (
         <EmptyState
-          icon={PackageSearch}
+          icon={Truck}
           title="Belum ada pekerjaan tersedia"
           description="Coba lagi nanti, pekerjaan baru akan muncul di sini."
         />
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <div>
             {jobs.map((job) => (
-              <Card key={job.id}>
+              <div
+                key={job.id}
+                className="mb-3 rounded-xl border border-zinc-200 bg-white p-5 card-interactive dark:border-zinc-800 dark:bg-zinc-900"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Truck className="h-4 w-4 text-text-sub" />
-                      <p className="font-semibold text-text">#{job.order_id.slice(0, 8).toUpperCase()}</p>
-                      <Badge variant="blue">{DELIVERY_METHOD_LABELS[job.delivery_method]}</Badge>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${METHOD_BADGE_CLASSES[job.delivery_method]}`}
+                      >
+                        {DELIVERY_METHOD_LABELS[job.delivery_method]}
+                      </span>
+                      <span className="font-mono text-xs text-zinc-400">
+                        #{job.order_id.slice(0, 8).toUpperCase()}
+                      </span>
                     </div>
-                    <p className="mt-2 flex items-center gap-1 text-sm text-text-sub">
-                      <MapPin className="h-4 w-4" />
+                    <p className="mt-2 flex items-center gap-1.5 text-base font-semibold text-zinc-950 dark:text-zinc-50">
+                      <MapPin className="h-4 w-4 text-zinc-400" />
                       {job.destination_city}
                     </p>
-                    <p className="mt-1 text-sm font-medium text-secondary">
-                      Estimasi pendapatan: {formatRupiah(job.estimated_earning)}
+                    <p className="mt-1 font-display text-xl font-bold text-brand-600 dark:text-brand-400">
+                      {formatRupiah(job.estimated_earning)}
                     </p>
                   </div>
-                  <Button onClick={() => setSelectedJob(job)}>Ambil Pekerjaan</Button>
+                  <Button size="sm" onClick={() => setSelectedJob(job)}>
+                    Ambil Pekerjaan
+                  </Button>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
 
@@ -139,19 +153,27 @@ export default function DriverJobsPage() {
       <Modal isOpen={!!selectedJob} onClose={() => setSelectedJob(null)} title="Ambil Pekerjaan?">
         {selectedJob && (
           <div className="flex flex-col gap-2 text-sm">
-            <p className="text-text-sub">
-              Order: <span className="font-medium text-text">#{selectedJob.order_id.slice(0, 8).toUpperCase()}</span>
+            <p className="text-zinc-500">
+              Order:{' '}
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                #{selectedJob.order_id.slice(0, 8).toUpperCase()}
+              </span>
             </p>
-            <p className="text-text-sub">
-              Tujuan: <span className="font-medium text-text">{selectedJob.destination_city}</span>
+            <p className="text-zinc-500">
+              Tujuan:{' '}
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">{selectedJob.destination_city}</span>
             </p>
-            <p className="text-text-sub">
+            <p className="text-zinc-500">
               Metode:{' '}
-              <span className="font-medium text-text">{DELIVERY_METHOD_LABELS[selectedJob.delivery_method]}</span>
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                {DELIVERY_METHOD_LABELS[selectedJob.delivery_method]}
+              </span>
             </p>
-            <p className="text-text-sub">
+            <p className="text-zinc-500">
               Pendapatan:{' '}
-              <span className="font-medium text-secondary">{formatRupiah(selectedJob.estimated_earning)}</span>
+              <span className="font-medium text-brand-600 dark:text-brand-400">
+                {formatRupiah(selectedJob.estimated_earning)}
+              </span>
             </p>
           </div>
         )}
