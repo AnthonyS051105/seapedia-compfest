@@ -732,21 +732,25 @@ Daftar semua tag (untuk konsistensi grouping di Swagger UI):
  * tags:
  *   - name: Auth
  *   - name: Public
+ *   - name: Reviews
  *   - name: Buyer - Wallet
- *   - name: Buyer - Cart & Checkout
- *   - name: Buyer - Orders
+ *   - name: Buyer - Addresses
+ *   - name: Buyer - Cart
+ *   - name: Buyer - Checkout
  *   - name: Buyer - Reports
  *   - name: Seller - Store
  *   - name: Seller - Products
  *   - name: Seller - Orders
+ *   - name: Seller - Reports
  *   - name: Driver - Jobs
  *   - name: Driver - Earnings
  *   - name: Admin - Dashboard
  *   - name: Admin - Users
+ *   - name: Admin - Stores
+ *   - name: Admin - Products
  *   - name: Admin - Orders
- *   - name: Admin - Discounts
+ *   - name: Vouchers & Promos
  *   - name: Admin - Overdue
- *   - name: Reviews
  */
 ```
 

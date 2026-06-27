@@ -686,13 +686,17 @@ Complete seed with:
 - [x] 2 active vouchers (HEMAT10, DISC50K)
 - [x] 2 active promos (PROMO15, FLASH25K)
 - [x] Run: `npx prisma db seed`
+- [x] 1 completed order (PESANAN_SELESAI) for buyer1 from seller1's store, with delivery job/driver earning recorded (2026-06-27, added for end-to-end demo)
+- [x] 1 in-progress order (SEDANG_DIKIRIM) assigned to driver1, visible via `GET /driver/jobs/active`
+- [x] 1 returned order (DIKEMBALIKAN, `is_overdue_processed=true`) with matching PAYMENT + REFUND wallet transactions and stock restored
+- [x] Verified via `npx prisma migrate reset --force`: all 4 accounts log in successfully, and buyer/seller/driver/admin dashboards all return non-empty data (3 orders across all 3 demo statuses, seller income report, driver active job + earnings, admin stats/overdue-orders all populated)
 
 ### TASK-7.9: Swagger Annotations (Backend)
 
-- [ ] Add JSDoc Swagger annotations to ALL route files
-- [ ] Document all request bodies, query params, responses
-- [ ] Document auth requirements (bearerAuth) per endpoint
-- [ ] Verify Swagger UI renders at /api/docs
+- [x] Add JSDoc Swagger annotations to ALL route files (audited 2026-06-27: all 64 operations across 51 paths in admin/auth/buyer/driver/public/seller routes already had `@swagger` blocks directly above every `router.METHOD()` call — no gaps found)
+- [x] Document all request bodies, query params, responses (verified — all path params documented, all applicable response codes present, the handful of POST endpoints flagged as "no requestBody" are legitimate bodyless action triggers like logout/refresh/take-job)
+- [x] Document auth requirements (bearerAuth) per endpoint (confirmed via spec's `security` field per operation)
+- [x] Verify Swagger UI renders at /api/docs (confirmed 200 response + valid JSON spec with zero broken `$ref`s; also synced the tag list in SWAGGER_REFERENCE.md §4 to match the more granular tags actually used in code)
 
 ### TASK-7.10: README (Root)
 
