@@ -1,4 +1,3 @@
-import { CheckCircle2, Circle, Loader2, Package, PackageCheck, RotateCcw, Truck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { OrderStatus, OrderStatusHistoryEntry } from '@/types'
 
@@ -15,14 +14,6 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   SEDANG_DIKIRIM: 'Sedang Dikirim',
   PESANAN_SELESAI: 'Pesanan Selesai',
   DIKEMBALIKAN: 'Dikembalikan',
-}
-
-const STATUS_ICONS: Record<OrderStatus, typeof Package> = {
-  SEDANG_DIKEMAS: Package,
-  MENUNGGU_PENGIRIM: PackageCheck,
-  SEDANG_DIKIRIM: Truck,
-  PESANAN_SELESAI: CheckCircle2,
-  DIKEMBALIKAN: RotateCcw,
 }
 
 function formatTimestamp(value: string): string {
@@ -52,48 +43,44 @@ export function OrderStatusTimeline({ history, currentStatus, className }: Order
   const currentIndex = steps.indexOf(currentStatus)
 
   return (
-    <div className={cn('flex flex-col', className)}>
+    <div className={cn('flex flex-col gap-0', className)}>
       {steps.map((status, index) => {
         const entry = historyByStatus.get(status)
         const isCompleted = isReturned ? index < steps.length - 1 || status === 'DIKEMBALIKAN' : index <= currentIndex
         const isCurrent = status === currentStatus
         const isLast = index === steps.length - 1
-        const Icon = entry ? STATUS_ICONS[status] : Circle
 
         return (
-          <div key={status} className="flex gap-3">
+          <div key={status} className="flex items-start gap-3">
             <div className="flex flex-col items-center">
-              <div
+              <span
                 className={cn(
-                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2',
-                  isCompleted
-                    ? status === 'DIKEMBALIKAN'
-                      ? 'border-danger bg-danger text-white'
-                      : 'border-secondary bg-secondary text-white'
-                    : isCurrent
-                      ? 'border-primary text-primary'
-                      : 'border-border text-text-sub'
+                  'h-3 w-3 shrink-0 rounded-full',
+                  status === 'DIKEMBALIKAN' && isCompleted
+                    ? 'bg-danger-500'
+                    : isCompleted && !isCurrent
+                      ? 'bg-brand-500'
+                      : isCurrent
+                        ? 'bg-brand-500 ring-4 ring-brand-500/20'
+                        : 'border-2 border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900'
                 )}
-              >
-                {isCurrent && !entry ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Icon className="h-4 w-4" />
-                )}
-              </div>
-              {!isLast && (
-                <div className={cn('w-0.5 flex-1', isCompleted ? 'bg-secondary' : 'bg-border')} />
-              )}
+              />
+              {!isLast && <div className="w-0.5 flex-1 bg-zinc-200 dark:bg-zinc-800" />}
             </div>
 
             <div className={cn('flex-1 pb-6', isLast && 'pb-0')}>
-              <p className={cn('text-sm font-semibold', isCompleted || isCurrent ? 'text-text' : 'text-text-sub')}>
+              <p
+                className={cn(
+                  'text-sm',
+                  isCompleted || isCurrent
+                    ? 'font-semibold text-zinc-900 dark:text-zinc-100'
+                    : 'text-zinc-400 dark:text-zinc-600'
+                )}
+              >
                 {STATUS_LABELS[status]}
               </p>
-              <p className="text-xs text-text-sub">
-                {entry ? formatTimestamp(entry.created_at) : 'Menunggu'}
-              </p>
-              {entry?.note && <p className="mt-1 text-xs text-text-sub">{entry.note}</p>}
+              <p className="text-xs text-zinc-500">{entry ? formatTimestamp(entry.created_at) : 'Menunggu'}</p>
+              {entry?.note && <p className="mt-1 text-xs text-zinc-500">{entry.note}</p>}
             </div>
           </div>
         )

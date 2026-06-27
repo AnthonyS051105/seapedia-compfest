@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Package } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Badge, ORDER_STATUS_BADGE_VARIANT } from '@/components/ui/Badge'
-import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
@@ -30,6 +30,12 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   SEDANG_DIKIRIM: 'Sedang Dikirim',
   PESANAN_SELESAI: 'Pesanan Selesai',
   DIKEMBALIKAN: 'Dikembalikan',
+}
+
+const DELIVERY_METHOD_LABELS: Record<string, string> = {
+  INSTANT: 'Instant',
+  NEXT_DAY: 'Next Day',
+  REGULAR: 'Regular',
 }
 
 function formatRupiah(amount: number): string {
@@ -111,17 +117,19 @@ function BuyerOrdersPageContent() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Pesanan Saya</h1>
+      <h1 className="mb-6 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan Saya</h1>
 
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
+      <div className="mb-6 flex flex-wrap gap-2">
         {TABS.map((t) => (
           <button
             key={t.value}
             type="button"
             onClick={() => updateParams({ status: t.value === 'ALL' ? undefined : t.value, page: undefined })}
             className={cn(
-              'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
-              tab === t.value ? 'bg-primary text-white' : 'bg-gray-100 text-text-sub hover:bg-gray-200'
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              tab === t.value
+                ? 'bg-brand-500 text-white'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
             )}
           >
             {t.label}
@@ -142,31 +150,32 @@ function BuyerOrdersPageContent() {
           description="Buat pesanan pertamamu!"
           action={
             <Link href="/products">
-              <Card variant="hover" className="cursor-pointer px-4 py-2 text-sm font-medium text-primary">
-                Belanja Sekarang
-              </Card>
+              <Button size="sm">Belanja Sekarang</Button>
             </Link>
           }
         />
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <div>
             {orders.map((order) => (
-              <Link key={order.id} href={`/buyer/orders/${order.id}`}>
-                <Card variant="hover" className="cursor-pointer">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-text">#{order.id.slice(0, 8).toUpperCase()}</p>
-                      <p className="mt-1 text-xs text-text-sub">{formatTimestamp(order.created_at)}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
-                        {STATUS_LABELS[order.status]}
-                      </Badge>
-                      <p className="font-semibold text-text">{formatRupiah(order.final_total)}</p>
-                    </div>
-                  </div>
-                </Card>
+              <Link
+                key={order.id}
+                href={`/buyer/orders/${order.id}`}
+                className="mb-3 block rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-mono text-xs text-zinc-400">#{order.id.slice(0, 8).toUpperCase()}</p>
+                  <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>{STATUS_LABELS[order.status]}</Badge>
+                </div>
+                <p className="mt-1 line-clamp-1 text-sm text-zinc-700 dark:text-zinc-300">
+                  Pengiriman {DELIVERY_METHOD_LABELS[order.delivery_method] ?? order.delivery_method}
+                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    {formatRupiah(order.final_total)}
+                  </p>
+                  <p className="text-xs text-zinc-500">{formatTimestamp(order.created_at)}</p>
+                </div>
               </Link>
             ))}
           </div>
