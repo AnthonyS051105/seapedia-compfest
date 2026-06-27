@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, X, ShoppingCart, ChevronDown } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { cn } from '@/lib/utils'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
 import { useCartStore } from '@/store/cart.store'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 
 const ROLE_LABEL: Record<string, string> = {
@@ -24,12 +24,20 @@ export function Navbar() {
   const { itemCount, refreshItemCount } = useCartStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated && activeRole === 'BUYER') {
       refreshItemCount()
     }
   }, [isAuthenticated, activeRole, refreshItemCount])
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -43,24 +51,41 @@ export function Navbar() {
     router.push('/')
   }
 
+  const avatarInitial = user?.username?.charAt(0).toUpperCase() ?? '?'
+
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface">
-      <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="text-lg font-bold text-primary">
-          SEAPEDIA
+    <header
+      className={cn(
+        'sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b transition-all duration-200',
+        isScrolled ? 'border-zinc-200/80 shadow-sm' : 'border-transparent'
+      )}
+    >
+      <nav className="container-page flex items-center justify-between h-16">
+        <Link href="/" className="font-display font-bold text-xl tracking-tight shrink-0">
+          <span className="text-brand-500">SEA</span>
+          <span className="text-zinc-950">PEDIA</span>
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
-          <Link href="/products" className="text-sm font-medium text-text hover:text-primary">
+        <div className="hidden items-center gap-1 md:flex">
+          <Link
+            href="/products"
+            className="text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors px-3 py-1.5 rounded-md hover:bg-zinc-50"
+          >
             Produk
           </Link>
+        </div>
 
+        <div className="hidden items-center gap-2 md:flex">
           {isAuthenticated && user ? (
             <>
-              <Link href="/buyer/cart" className="relative text-text hover:text-primary" aria-label="Keranjang">
+              <Link
+                href="/buyer/cart"
+                aria-label="Keranjang"
+                className="relative p-2 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
+              >
                 <ShoppingCart className="h-5 w-5" />
                 {itemCount > 0 && (
-                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-white">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 px-0.5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {itemCount}
                   </span>
                 )}
@@ -70,29 +95,36 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen((open) => !open)}
-                  className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-text hover:bg-gray-50"
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-50 transition-colors"
                 >
-                  <span>{user.username}</span>
-                  {activeRole && <Badge variant="blue">{ROLE_LABEL[activeRole]}</Badge>}
-                  <ChevronDown className="h-4 w-4" />
+                  <span className="w-7 h-7 rounded-full bg-brand-50 text-brand-700 text-xs font-bold flex items-center justify-center">
+                    {avatarInitial}
+                  </span>
+                  <span className="text-sm font-medium text-zinc-700">{user.username}</span>
+                  {activeRole && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-brand-50 text-brand-700">
+                      {ROLE_LABEL[activeRole]}
+                    </span>
+                  )}
+                  <ChevronDown className="h-4 w-4 text-zinc-400" />
                 </button>
 
                 {isDropdownOpen && (
                   <div
-                    className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-border bg-surface py-1 shadow-lg"
+                    className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-zinc-200 bg-white py-1 shadow-lg"
                     onMouseLeave={() => setIsDropdownOpen(false)}
                   >
                     <Link
                       href="/auth/select-role"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-text hover:bg-gray-50"
+                      className="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
                     >
                       Ganti Peran
                     </Link>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-sm text-danger hover:bg-gray-50"
+                      className="block w-full px-4 py-2 text-left text-sm text-danger-600 hover:bg-zinc-50"
                     >
                       Keluar
                     </button>
@@ -116,45 +148,85 @@ export function Navbar() {
           )}
         </div>
 
-        <button
-          type="button"
-          className="text-text md:hidden"
-          aria-label="Menu"
-          onClick={() => setIsMobileMenuOpen((open) => !open)}
-        >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          {isAuthenticated && (
+            <Link
+              href="/buyer/cart"
+              aria-label="Keranjang"
+              className="relative p-2 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {itemCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-4.5 h-4.5 px-0.5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
+          )}
+          <button
+            type="button"
+            className="p-2 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 rounded-lg transition-colors"
+            aria-label="Menu"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+          >
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </nav>
 
       {isMobileMenuOpen && (
-        <div className="border-t border-border px-4 py-3 md:hidden">
-          <div className="flex flex-col gap-3">
-            <Link href="/products" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-text">
+        <div className="border-t border-zinc-200 bg-white px-4 py-3 md:hidden">
+          <div className="flex flex-col gap-1">
+            <Link
+              href="/products"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-950 px-3 py-2 rounded-md hover:bg-zinc-50"
+            >
               Produk
             </Link>
 
             {isAuthenticated && user ? (
               <>
-                <Link href="/buyer/cart" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-text">
-                  Keranjang
-                </Link>
-                <div className="flex items-center gap-2 text-sm text-text">
-                  <span>{user.username}</span>
-                  {activeRole && <Badge variant="blue">{ROLE_LABEL[activeRole]}</Badge>}
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <span className="w-7 h-7 rounded-full bg-brand-50 text-brand-700 text-xs font-bold flex items-center justify-center">
+                    {avatarInitial}
+                  </span>
+                  <span className="text-sm font-medium text-zinc-700">{user.username}</span>
+                  {activeRole && (
+                    <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-brand-50 text-brand-700">
+                      {ROLE_LABEL[activeRole]}
+                    </span>
+                  )}
                 </div>
-                <Link href="/auth/select-role" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-text">
+                <Link
+                  href="/auth/select-role"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-sm font-medium text-zinc-600 hover:text-zinc-950 px-3 py-2 rounded-md hover:bg-zinc-50"
+                >
                   Ganti Peran
                 </Link>
-                <button type="button" onClick={handleLogout} className="text-left text-sm font-medium text-danger">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-left text-sm font-medium text-danger-600 px-3 py-2 rounded-md hover:bg-zinc-50"
+                >
                   Keluar
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-text">
+                <Link
+                  href="/auth/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-sm font-medium text-zinc-600 hover:text-zinc-950 px-3 py-2 rounded-md hover:bg-zinc-50"
+                >
                   Masuk
                 </Link>
-                <Link href="/auth/register" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-primary">
+                <Link
+                  href="/auth/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-sm font-medium text-brand-600 px-3 py-2 rounded-md hover:bg-brand-50"
+                >
                   Daftar
                 </Link>
               </>
