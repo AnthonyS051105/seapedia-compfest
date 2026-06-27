@@ -78,14 +78,14 @@ function AdminOrdersPageContent() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text">Pesanan</h1>
-          <p className="text-text-sub">Daftar semua pesanan di marketplace</p>
+          <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pesanan</h1>
+          <p className="text-zinc-600 dark:text-zinc-400">Daftar semua pesanan di marketplace</p>
         </div>
 
         <select
           value={status}
           onChange={(e) => handleStatusChange(e.target.value)}
-          className="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-text outline-none focus:border-primary"
+          className="h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 text-sm text-zinc-950 dark:text-zinc-50 outline-none focus:border-brand-500"
         >
           {STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -108,7 +108,7 @@ function AdminOrdersPageContent() {
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-text-sub">
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-zinc-600 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Order ID</th>
                   <th className="px-4 py-3 font-medium">Metode</th>
                   <th className="px-4 py-3 font-medium">Total</th>
@@ -118,16 +118,16 @@ function AdminOrdersPageContent() {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-mono text-xs text-text">{order.id.slice(0, 8)}…</td>
-                    <td className="px-4 py-3 text-text-sub">{order.delivery_method}</td>
-                    <td className="px-4 py-3 text-text">{formatRupiah(order.final_total)}</td>
+                  <tr key={order.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-950 dark:text-zinc-50">{order.id.slice(0, 8)}…</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{order.delivery_method}</td>
+                    <td className="px-4 py-3 text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</td>
                     <td className="px-4 py-3">
                       <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
                         {order.status.replaceAll('_', ' ')}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(order.created_at)}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(order.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

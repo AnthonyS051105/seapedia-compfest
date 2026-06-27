@@ -55,13 +55,15 @@ export default function SelectRolePage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-12">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-text">Halo, {user.username}! 👋</h1>
-        <p className="mt-1 text-text-sub">Pilih peran yang ingin kamu gunakan:</p>
+    <div className="relative flex flex-1 flex-col items-center justify-center gap-8 overflow-hidden bg-zinc-50 px-4 py-12 transition-colors dark:bg-zinc-950">
+      <div aria-hidden="true" className="bg-grid-fade pointer-events-none absolute inset-0" />
+
+      <div className="relative z-10 text-center">
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Halo, {user.username}!</h1>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">Pilih peran yang ingin kamu gunakan:</p>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="relative z-10 flex flex-wrap justify-center gap-4">
         {user.roles.map((role) => {
           const meta = ROLE_META[role]
           const Icon = meta.icon
@@ -74,13 +76,13 @@ export default function SelectRolePage() {
               disabled={pendingRole !== null}
               onClick={() => handleSelectRole(role)}
               className={cn(
-                'flex w-48 flex-col items-center gap-3 rounded-xl border border-border bg-surface p-6 text-center shadow-sm transition-colors hover:border-primary disabled:cursor-not-allowed disabled:opacity-60',
-                isPending && 'border-primary'
+                'flex w-48 flex-col items-center gap-3 rounded-xl border border-zinc-200 bg-white p-6 text-center shadow-sm transition-colors hover:border-brand-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-800 dark:bg-zinc-900',
+                isPending && 'border-brand-500'
               )}
             >
-              <Icon className="h-8 w-8 text-primary" />
-              <span className="font-semibold text-text">{meta.label}</span>
-              <span className="text-sm text-text-sub">{meta.description}</span>
+              <Icon className="h-8 w-8 text-brand-500" />
+              <span className="font-semibold text-zinc-950 dark:text-zinc-50">{meta.label}</span>
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">{meta.description}</span>
             </button>
           )
         })}

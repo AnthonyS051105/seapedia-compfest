@@ -40,22 +40,22 @@ export default function DriverDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-text">Dashboard Kurir</h1>
-        <p className="text-text-sub">Selamat datang, {user?.username}!</p>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Dashboard Kurir</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Selamat datang, {user?.username}!</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <p className="text-sm text-text-sub">🚗 Pekerjaan Aktif</p>
-          <p className="mt-1 text-2xl font-bold text-text">{activeJob ? 1 : activeJob === null ? 0 : '—'}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">🚗 Pekerjaan Aktif</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-950 dark:text-zinc-50">{activeJob ? 1 : activeJob === null ? 0 : '—'}</p>
         </Card>
         <Card>
-          <p className="text-sm text-text-sub">📦 Pekerjaan Tersedia</p>
-          <p className="mt-1 text-2xl font-bold text-text">{availableCount ?? '—'}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">📦 Pekerjaan Tersedia</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-950 dark:text-zinc-50">{availableCount ?? '—'}</p>
         </Card>
         <Card>
-          <p className="text-sm text-text-sub">💰 Total Pendapatan</p>
-          <p className="mt-1 text-2xl font-bold text-text">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">💰 Total Pendapatan</p>
+          <p className="mt-1 text-2xl font-bold text-zinc-950 dark:text-zinc-50">
             {earnings ? formatRupiah(earnings.total_earnings) : 'Rp 0'}
           </p>
         </Card>
@@ -66,12 +66,12 @@ export default function DriverDashboardPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-text-sub" />
-                <p className="font-semibold text-text">
+                <Truck className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+                <p className="font-semibold text-zinc-950 dark:text-zinc-50">
                   Pekerjaan Aktif #{activeJob.order_id.slice(0, 8).toUpperCase()}
                 </p>
               </div>
-              <p className="mt-2 flex items-center gap-1 text-sm text-text-sub">
+              <p className="mt-2 flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
                 <MapPin className="h-4 w-4" />
                 {activeJob.address.city}
               </p>
@@ -86,8 +86,8 @@ export default function DriverDashboardPage() {
       {!activeJob && availableCount !== null && availableCount > 0 && (
         <Card>
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-text-sub">
-              Ada <span className="font-semibold text-text">{availableCount}</span> pekerjaan tersedia untuk diambil.
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Ada <span className="font-semibold text-zinc-950 dark:text-zinc-50">{availableCount}</span> pekerjaan tersedia untuk diambil.
             </p>
             <Link href="/driver/jobs">
               <Button>Lihat Pekerjaan</Button>

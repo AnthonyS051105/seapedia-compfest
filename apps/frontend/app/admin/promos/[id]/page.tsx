@@ -54,7 +54,7 @@ export default function AdminPromoDetailPage() {
   if (!promo) {
     return (
       <div className="mx-auto max-w-2xl">
-        <Link href="/admin/promos" className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+        <Link href="/admin/promos" className="mb-6 inline-flex items-center gap-2 text-sm text-brand-600 dark:text-brand-400 hover:underline">
           <ArrowLeft className="h-4 w-4" />
           Kembali ke Daftar Promo
         </Link>
@@ -67,7 +67,7 @@ export default function AdminPromoDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href="/admin/promos" className="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+      <Link href="/admin/promos" className="mb-6 inline-flex items-center gap-2 text-sm text-brand-600 dark:text-brand-400 hover:underline">
         <ArrowLeft className="h-4 w-4" />
         Kembali ke Daftar Promo
       </Link>
@@ -75,46 +75,46 @@ export default function AdminPromoDetailPage() {
       <Card>
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <p className="text-sm text-text-sub">Kode Promo</p>
-            <p className="font-mono text-3xl font-bold tracking-wider text-text">{promo.code}</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">Kode Promo</p>
+            <p className="font-mono text-3xl font-bold tracking-wider text-zinc-950 dark:text-zinc-50">{promo.code}</p>
           </div>
           <Badge variant={promo.is_active ? 'green' : 'gray'}>{promo.is_active ? 'Active' : 'Inactive'}</Badge>
         </div>
 
         <dl className="flex flex-col divide-y divide-border text-sm">
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Nama Promo</dt>
-            <dd className="font-medium text-text">{promo.name}</dd>
+            <dt className="text-zinc-600 dark:text-zinc-400">Nama Promo</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">{promo.name}</dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Deskripsi</dt>
-            <dd className="font-medium text-text">{promo.description ?? '-'}</dd>
+            <dt className="text-zinc-600 dark:text-zinc-400">Deskripsi</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">{promo.description ?? '-'}</dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Tipe</dt>
-            <dd className="font-medium text-text">
+            <dt className="text-zinc-600 dark:text-zinc-400">Tipe</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">
               {promo.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
             </dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Nilai Diskon</dt>
-            <dd className="font-medium text-text">{formatDiscountValue(promo)}</dd>
+            <dt className="text-zinc-600 dark:text-zinc-400">Nilai Diskon</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">{formatDiscountValue(promo)}</dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Maks Diskon</dt>
-            <dd className="font-medium text-text">
+            <dt className="text-zinc-600 dark:text-zinc-400">Maks Diskon</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">
               {promo.max_discount_amount ? formatRupiah(promo.max_discount_amount) : 'Tidak ada batas'}
             </dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Min. Order</dt>
-            <dd className="font-medium text-text">
+            <dt className="text-zinc-600 dark:text-zinc-400">Min. Order</dt>
+            <dd className="font-medium text-zinc-950 dark:text-zinc-50">
               {promo.min_order_amount ? formatRupiah(promo.min_order_amount) : 'Tidak ada minimum'}
             </dd>
           </div>
           <div className="flex items-center justify-between py-3">
-            <dt className="text-text-sub">Kadaluarsa</dt>
-            <dd className="flex items-center gap-2 font-medium text-text">
+            <dt className="text-zinc-600 dark:text-zinc-400">Kadaluarsa</dt>
+            <dd className="flex items-center gap-2 font-medium text-zinc-950 dark:text-zinc-50">
               {formatDate(promo.expiry_date)}
               <Badge variant={expiryInfo.variant}>{expiryInfo.label}</Badge>
             </dd>

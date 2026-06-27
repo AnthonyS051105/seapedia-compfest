@@ -83,7 +83,7 @@ export default function BuyerAddressesPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Alamat Pengiriman</h1>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Alamat Pengiriman</h1>
         <Button onClick={openCreateForm}>+ Tambah Alamat</Button>
       </div>
 
@@ -107,13 +107,13 @@ export default function BuyerAddressesPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-text">{address.label}</p>
+                    <p className="font-semibold text-zinc-950 dark:text-zinc-50">{address.label}</p>
                     {address.is_default && <Badge variant="blue">Default</Badge>}
                   </div>
-                  <p className="mt-1 text-sm text-text">
+                  <p className="mt-1 text-sm text-zinc-950 dark:text-zinc-50">
                     {address.recipient_name} — {address.phone}
                   </p>
-                  <p className="text-sm text-text-sub">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
                     {address.street}, {address.city}, {address.province} {address.postal_code}
                   </p>
                 </div>
@@ -122,7 +122,7 @@ export default function BuyerAddressesPage() {
                     type="button"
                     onClick={() => setDeleteTarget(address)}
                     aria-label="Hapus alamat"
-                    className="rounded-full p-1.5 text-text-sub hover:bg-gray-100 hover:text-danger"
+                    className="rounded-full p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-gray-100 hover:text-danger-600 dark:hover:text-danger-500"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -156,8 +156,8 @@ export default function BuyerAddressesPage() {
       />
 
       <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Hapus Alamat?">
-        <p className="text-sm text-text-sub">
-          Alamat <span className="font-medium text-text">{deleteTarget?.label}</span> akan dihapus permanen.
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Alamat <span className="font-medium text-zinc-950 dark:text-zinc-50">{deleteTarget?.label}</span> akan dihapus permanen.
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
@@ -266,12 +266,12 @@ function AddressFormModal({
           error={errors.postal_code?.message}
           {...register('postal_code')}
         />
-        <label className="flex items-center gap-2 text-sm text-text">
+        <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-zinc-50">
           <input type="checkbox" className="h-4 w-4" {...register('is_default')} />
           Jadikan alamat default
         </label>
 
-        {apiError && <p className="text-sm text-danger">{apiError}</p>}
+        {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
         <div className="mt-2 flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>

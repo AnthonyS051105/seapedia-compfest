@@ -52,8 +52,8 @@ function AdminStoresPageContent() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text">Toko</h1>
-        <p className="text-text-sub">Daftar semua toko di SEAPEDIA</p>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Toko</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Daftar semua toko di SEAPEDIA</p>
       </div>
 
       {isLoading ? (
@@ -69,7 +69,7 @@ function AdminStoresPageContent() {
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-text-sub">
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-zinc-600 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Nama Toko</th>
                   <th className="px-4 py-3 font-medium">Seller</th>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -78,18 +78,18 @@ function AdminStoresPageContent() {
               </thead>
               <tbody>
                 {stores.map((store) => (
-                  <tr key={store.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium text-text">{store.name}</td>
-                    <td className="px-4 py-3 text-text-sub">
+                  <tr key={store.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                    <td className="px-4 py-3 font-medium text-zinc-950 dark:text-zinc-50">{store.name}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {store.seller.username}
-                      <span className="block text-xs text-text-sub">{store.seller.email}</span>
+                      <span className="block text-xs text-zinc-600 dark:text-zinc-400">{store.seller.email}</span>
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={store.is_active ? 'green' : 'gray'}>
                         {store.is_active ? 'Aktif' : 'Nonaktif'}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(store.created_at)}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(store.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

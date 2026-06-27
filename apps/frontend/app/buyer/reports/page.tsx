@@ -76,10 +76,10 @@ export default function BuyerReportsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Laporan Pengeluaran</h1>
+      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Laporan Pengeluaran</h1>
 
       <Card className="mb-6">
-        <h2 className="mb-4 font-semibold text-text">Rentang Tanggal</h2>
+        <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Rentang Tanggal</h2>
         <div className="flex flex-wrap items-end gap-4">
           <Input
             type="date"
@@ -120,38 +120,38 @@ export default function BuyerReportsPage() {
         <>
           <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
             <Card>
-              <p className="text-sm text-text-sub">Total Pengeluaran</p>
-              <p className="mt-1 text-xl font-bold text-text">{formatRupiah(report.total_spent)}</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Total Pengeluaran</p>
+              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{formatRupiah(report.total_spent)}</p>
             </Card>
             <Card>
-              <p className="text-sm text-text-sub">Jumlah Pesanan</p>
-              <p className="mt-1 text-xl font-bold text-text">{report.order_count}</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Jumlah Pesanan</p>
+              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.order_count}</p>
             </Card>
             <Card>
-              <p className="text-sm text-text-sub">Pesanan Selesai</p>
-              <p className="mt-1 text-xl font-bold text-text">{report.orders_by_status.PESANAN_SELESAI}</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Pesanan Selesai</p>
+              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.PESANAN_SELESAI}</p>
             </Card>
             <Card>
-              <p className="text-sm text-text-sub">Dana Dikembalikan</p>
-              <p className="mt-1 text-xl font-bold text-text">{report.orders_by_status.DIKEMBALIKAN}</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Dana Dikembalikan</p>
+              <p className="mt-1 text-xl font-bold text-zinc-950 dark:text-zinc-50">{report.orders_by_status.DIKEMBALIKAN}</p>
             </Card>
           </div>
 
           <Card className="mb-6">
-            <h2 className="mb-4 font-semibold text-text">Pengeluaran per Bulan</h2>
+            <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Pengeluaran per Bulan</h2>
             {report.monthly_breakdown.length === 0 ? (
-              <p className="text-sm text-text-sub">Belum ada pesanan pada rentang ini.</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">Belum ada pesanan pada rentang ini.</p>
             ) : (
               <div className="flex items-end gap-4 overflow-x-auto pb-2" style={{ minHeight: 180 }}>
                 {report.monthly_breakdown.map((entry) => (
                   <div key={entry.month} className="flex w-16 shrink-0 flex-col items-center gap-2">
-                    <p className="text-xs font-medium text-text">{formatRupiah(entry.total_spent)}</p>
+                    <p className="text-xs font-medium text-zinc-950 dark:text-zinc-50">{formatRupiah(entry.total_spent)}</p>
                     <div
-                      className="w-10 rounded-t-md bg-primary"
+                      className="w-10 rounded-t-md bg-brand-500"
                       style={{ height: Math.max(8, (entry.total_spent / maxSpending) * 120) }}
                       title={`${entry.order_count} pesanan`}
                     />
-                    <p className="text-xs text-text-sub">{formatMonthLabel(entry.month)}</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">{formatMonthLabel(entry.month)}</p>
                   </div>
                 ))}
               </div>
@@ -159,14 +159,14 @@ export default function BuyerReportsPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-4 font-semibold text-text">Daftar Pesanan</h2>
+            <h2 className="mb-4 font-semibold text-zinc-950 dark:text-zinc-50">Daftar Pesanan</h2>
             {report.orders.length === 0 ? (
               <EmptyState title="Belum ada pesanan" description="Pesananmu akan muncul di sini." />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-border text-text-sub">
+                    <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
                       <th className="py-2 pr-4 font-medium">Order ID</th>
                       <th className="py-2 pr-4 font-medium">Tanggal</th>
                       <th className="py-2 pr-4 font-medium">Toko</th>
@@ -176,13 +176,13 @@ export default function BuyerReportsPage() {
                   </thead>
                   <tbody>
                     {report.orders.map((order) => (
-                      <tr key={order.id} className="border-b border-border last:border-0">
-                        <td className="py-3 pr-4 font-medium text-text">
+                      <tr key={order.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                        <td className="py-3 pr-4 font-medium text-zinc-950 dark:text-zinc-50">
                           #{order.id.slice(0, 8).toUpperCase()}
                         </td>
-                        <td className="py-3 pr-4 text-text-sub">{formatDate(order.created_at)}</td>
-                        <td className="py-3 pr-4 text-text-sub">{order.store_name}</td>
-                        <td className="py-3 pr-4 text-text">{formatRupiah(order.final_total)}</td>
+                        <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{formatDate(order.created_at)}</td>
+                        <td className="py-3 pr-4 text-zinc-600 dark:text-zinc-400">{order.store_name}</td>
+                        <td className="py-3 pr-4 text-zinc-950 dark:text-zinc-50">{formatRupiah(order.final_total)}</td>
                         <td className="py-3 pr-4">
                           <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
                             {STATUS_LABELS[order.status] ?? order.status}

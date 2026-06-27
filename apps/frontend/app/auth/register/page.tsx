@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Reveal } from '@/components/ui/Reveal'
 import { createResolver } from '@/lib/validation/resolver'
 import { RegisterFormSchema, RegisterFormData } from '@/lib/validation/auth.schema'
 import { ApiErrorResponse } from '@/types'
@@ -62,10 +63,16 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-xl border border-border bg-surface p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-text">Buat Akun SEAPEDIA</h1>
-        <p className="mt-1 text-sm text-text-sub">Mulai berbelanja, berjualan, atau mengantar paket.</p>
+    <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-zinc-50 px-4 py-12 transition-colors dark:bg-zinc-950">
+      <div aria-hidden="true" className="bg-grid-fade pointer-events-none absolute inset-0" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-brand-400/20 blur-3xl dark:bg-brand-500/10"
+      />
+
+      <Reveal className="relative z-10 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-8 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Buat Akun SEAPEDIA</h1>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Mulai berbelanja, berjualan, atau mengantar paket.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-4">
           <Input label="Nama Lengkap" error={errors.full_name?.message} {...register('full_name')} />
@@ -80,7 +87,7 @@ export default function RegisterPage() {
           />
 
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-text">Daftar sebagai</span>
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Daftar sebagai</span>
             <Controller
               name="roles"
               control={control}
@@ -89,7 +96,10 @@ export default function RegisterPage() {
                   {ROLE_OPTIONS.map((option) => {
                     const checked = field.value.includes(option.value)
                     return (
-                      <label key={option.value} className="flex items-center gap-2 text-sm text-text">
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300"
+                      >
                         <input
                           type="checkbox"
                           checked={checked}
@@ -100,7 +110,7 @@ export default function RegisterPage() {
                               field.onChange(field.value.filter((role) => role !== option.value))
                             }
                           }}
-                          className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                          className="h-4 w-4 rounded border-zinc-300 text-brand-500 focus:ring-brand-500 dark:border-zinc-700 dark:bg-zinc-800"
                         />
                         {option.label}
                       </label>
@@ -109,23 +119,25 @@ export default function RegisterPage() {
                 </div>
               )}
             />
-            {errors.roles?.message && <p className="text-sm text-danger">{errors.roles.message}</p>}
+            {errors.roles?.message && (
+              <p className="text-sm text-danger-600 dark:text-danger-500">{errors.roles.message}</p>
+            )}
           </div>
 
-          {apiError && <p className="text-sm text-danger">{apiError}</p>}
+          {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
           <Button type="submit" isLoading={isSubmitting} className="mt-2 w-full">
             Daftar
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-text-sub">
+        <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
           Sudah punya akun?{' '}
-          <Link href="/auth/login" className="font-medium text-primary hover:underline">
+          <Link href="/auth/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
             Masuk
           </Link>
         </p>
-      </div>
+      </Reveal>
     </div>
   )
 }

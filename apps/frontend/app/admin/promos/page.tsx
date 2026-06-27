@@ -79,7 +79,7 @@ function AdminPromosPageContent() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-text">Promo</h1>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Promo</h1>
         <Button onClick={() => setIsModalOpen(true)}>+ Buat Promo</Button>
       </div>
 
@@ -96,7 +96,7 @@ function AdminPromosPageContent() {
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-text-sub">
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-zinc-600 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Kode</th>
                   <th className="px-4 py-3 font-medium">Nama</th>
                   <th className="px-4 py-3 font-medium">Tipe</th>
@@ -107,18 +107,18 @@ function AdminPromosPageContent() {
               </thead>
               <tbody>
                 {promos.map((promo) => (
-                  <tr key={promo.id} className="border-b border-border last:border-0">
+                  <tr key={promo.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
                     <td className="px-4 py-3 font-medium">
-                      <Link href={`/admin/promos/${promo.id}`} className="text-primary hover:underline">
+                      <Link href={`/admin/promos/${promo.id}`} className="text-brand-600 dark:text-brand-400 hover:underline">
                         {promo.code}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-text">{promo.name}</td>
-                    <td className="px-4 py-3 text-text-sub">
+                    <td className="px-4 py-3 text-zinc-950 dark:text-zinc-50">{promo.name}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {promo.discount_type === 'PERCENTAGE' ? 'Persentase' : 'Nominal'}
                     </td>
-                    <td className="px-4 py-3 text-text">{formatDiscountValue(promo)}</td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(promo.expiry_date)}</td>
+                    <td className="px-4 py-3 text-zinc-950 dark:text-zinc-50">{formatDiscountValue(promo)}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(promo.expiry_date)}</td>
                     <td className="px-4 py-3">
                       <Badge variant={promo.is_active ? 'green' : 'gray'}>
                         {promo.is_active ? 'Aktif' : 'Nonaktif'}
@@ -229,9 +229,9 @@ function CreatePromoModal({
         />
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-text">Tipe Diskon</label>
+          <label className="text-sm font-medium text-zinc-950 dark:text-zinc-50">Tipe Diskon</label>
           <select
-            className="h-10 rounded-lg border border-border bg-surface px-3 text-base text-text outline-none focus:border-primary"
+            className="h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 text-base text-zinc-950 dark:text-zinc-50 outline-none focus:border-brand-500"
             {...register('discount_type')}
           >
             <option value="PERCENTAGE">Persentase (%)</option>
@@ -270,12 +270,12 @@ function CreatePromoModal({
           {...register('expiry_date')}
         />
 
-        <label className="flex items-center gap-2 text-sm text-text">
+        <label className="flex items-center gap-2 text-sm text-zinc-950 dark:text-zinc-50">
           <input type="checkbox" defaultChecked {...register('is_active')} />
           Aktifkan promo ini
         </label>
 
-        {apiError && <p className="text-sm text-danger">{apiError}</p>}
+        {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
         <div className="mt-2 flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>

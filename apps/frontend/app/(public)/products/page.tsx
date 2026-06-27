@@ -99,7 +99,7 @@ function ProductsPageContent() {
       </div>
 
       <div className="sticky top-16 z-30 border-b border-zinc-100 bg-white/95 py-3 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95">
-        <div className="container-page flex items-center gap-3">
+        <div className="container-page flex items-center justify-center gap-3 md:pl-32">
           <form onSubmit={handleSearchSubmit} className="relative max-w-sm flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             <Input
@@ -132,11 +132,14 @@ function ProductsPageContent() {
             ))}
           </div>
         ) : !products || products.length === 0 ? (
-          <EmptyState
-            icon={PackageX}
-            title="Belum ada produk yang tersedia"
-            description="Coba cari dengan kata kunci lain."
-          />
+          <div className="flex justify-center pt-20 pb-16">
+            <EmptyState
+              icon={PackageX}
+              title="Belum ada produk yang tersedia"
+              description="Coba cari dengan kata kunci lain."
+              className="max-w-md"
+            />
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">

@@ -100,7 +100,7 @@ export default function EditProductPage() {
   if (notFound) {
     return (
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-text-sub">Produk tidak ditemukan.</p>
+        <p className="text-zinc-600 dark:text-zinc-400">Produk tidak ditemukan.</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push('/seller/products')}>
           Kembali ke Daftar Produk
         </Button>
@@ -110,7 +110,7 @@ export default function EditProductPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-text">Edit Produk</h1>
+      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Edit Produk</h1>
 
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -130,7 +130,7 @@ export default function EditProductPage() {
             {...register('images')}
           />
 
-          {apiError && <p className="text-sm text-danger">{apiError}</p>}
+          {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
           <div className="mt-2 flex gap-3">
             <Button type="submit" isLoading={isSubmitting}>

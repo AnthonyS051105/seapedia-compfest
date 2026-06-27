@@ -94,14 +94,16 @@ body {
   color: #E4E4E7;
   background: #09090B;
 }
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-family-display, 'Plus Jakarta Sans', sans-serif);
-  font-weight: 700;
-  color: #09090B;
-  letter-spacing: -0.02em;
-}
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: #FAFAFA;
+@layer base {
+  :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-family-display, 'Plus Jakarta Sans', sans-serif);
+    font-weight: 700;
+    color: #09090B;
+    letter-spacing: -0.02em;
+  }
+  :where(.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6) {
+    color: #FAFAFA;
+  }
 }
 
 /* Page container */
@@ -174,3 +176,17 @@ button:active { transform: scale(0.98); }
   transition: background-size 200ms ease;
 }
 .link-underline:hover { background-size: 100% 1px; }
+
+/* Linear-style faint grid mesh, fading toward the edges */
+.bg-grid-fade {
+  background-image:
+    linear-gradient(to right, rgb(0 0 0 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 100%);
+}
+.dark .bg-grid-fade {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+}

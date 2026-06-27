@@ -4,17 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import {
-  ShieldCheck,
-  Zap,
-  RefreshCw,
-  Users,
-  Tag,
-  Truck,
-  Lock,
-  BarChart2,
-  MessageSquarePlus,
-} from 'lucide-react'
+import { MessageSquarePlus } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -22,20 +12,26 @@ import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { StarRating } from '@/components/ui/StarRating'
-import { useReveal } from '@/hooks/useReveal'
+import { Reveal, RevealItem } from '@/components/ui/Reveal'
+import { WindowDots } from '@/components/ui/WindowDots'
+import { Magnetic } from '@/components/ui/Magnetic'
+import { TiltCard } from '@/components/ui/TiltCard'
+import { CheckoutMockup } from '@/components/public/CheckoutMockup'
+import { OrderStatusDemo } from '@/components/public/OrderStatusDemo'
+import { FoldPanels, FoldPanelItem } from '@/components/public/FoldPanels'
 import { createResolver } from '@/lib/validation/resolver'
 import { CreateReviewFormSchema, CreateReviewFormData } from '@/lib/validation/review.schema'
 import { ApiErrorResponse, Review } from '@/types'
 
 const TRUST_ITEMS = [
-  { Icon: ShieldCheck, label: 'Pembayaran aman' },
-  { Icon: Zap, label: 'Checkout instan' },
-  { Icon: RefreshCw, label: 'Refund otomatis' },
-  { Icon: Users, label: 'Multi peran' },
-  { Icon: Tag, label: 'Voucher & promo' },
-  { Icon: Truck, label: 'Lacak pengiriman' },
-  { Icon: Lock, label: 'Akun terlindungi' },
-  { Icon: BarChart2, label: 'Laporan real-time' },
+  'Pembayaran aman',
+  'Checkout instan',
+  'Refund otomatis',
+  'Multi peran',
+  'Voucher & promo',
+  'Lacak pengiriman',
+  'Akun terlindungi',
+  'Laporan real-time',
 ]
 
 const STATS = [
@@ -45,17 +41,31 @@ const STATS = [
   { value: '80%', label: 'Bagian kurir dari ongkir', sub: 'Dibayar tiap pengiriman selesai' },
 ]
 
+const DELIVERY_PANELS: FoldPanelItem[] = [
+  {
+    id: 'instant',
+    title: 'Instan',
+    description: 'Tiba dalam 1 hari. Ongkir Rp 15.000, kurir menerima Rp 12.000 dari setiap pengiriman.',
+    accent: 'bg-brand-500',
+  },
+  {
+    id: 'next-day',
+    title: 'Besok Sampai',
+    description: 'Tiba dalam 2 hari. Ongkir Rp 10.000, kurir menerima Rp 8.000 dari setiap pengiriman.',
+    accent: 'bg-zinc-950',
+  },
+  {
+    id: 'regular',
+    title: 'Reguler',
+    description: 'Tiba dalam 3 hari. Ongkir Rp 6.000, kurir menerima Rp 4.800 dari setiap pengiriman.',
+    accent: 'bg-zinc-700',
+  },
+]
+
 const CHECKOUT_BULLETS = [
   'Rincian harga lengkap sebelum bayar, tidak ada biaya tersembunyi',
   'Diskon dan ongkos kirim terhitung otomatis di keranjang',
   'Pajak ditampilkan jelas, bukan ditambahkan diam-diam saat checkout',
-]
-
-const ORDER_STATUS_STEPS = [
-  { label: 'Pesanan dikemas', time: '09.12', done: true },
-  { label: 'Menunggu kurir', time: '09.40', done: true },
-  { label: 'Sedang diantar', time: '10.05', done: true },
-  { label: 'Pesanan tiba', time: '', done: false },
 ]
 
 const ORDER_STATUS_BULLETS = [
@@ -66,13 +76,6 @@ const ORDER_STATUS_BULLETS = [
 
 export default function LandingPage() {
   const [reviews, setReviews] = useState<Review[] | null>(null)
-
-  const heroRef = useReveal<HTMLDivElement>()
-  const bentoRef = useReveal<HTMLDivElement>()
-  const statsRef = useReveal<HTMLDivElement>()
-  const checkoutRef = useReveal<HTMLDivElement>()
-  const orderStatusRef = useReveal<HTMLDivElement>()
-  const reviewsRef = useReveal<HTMLDivElement>()
 
   useEffect(() => {
     api
@@ -89,17 +92,14 @@ export default function LandingPage() {
     <div className="flex flex-1 flex-col">
       {/* SECTION 1: HERO */}
       <section className="relative overflow-hidden bg-zinc-50 pt-24 pb-20 transition-colors dark:bg-zinc-950">
+        <div aria-hidden="true" className="bg-grid-fade pointer-events-none absolute inset-0" />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl dark:bg-brand-500/10"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-20 right-0 h-80 w-80 rounded-full bg-accent-300/15 blur-3xl dark:bg-accent-400/10"
+          className="pointer-events-none absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-brand-400/25 blur-3xl dark:bg-brand-500/10"
         />
 
-        <div ref={heroRef} className="container-page relative z-10 reveal grid items-center gap-12 lg:grid-cols-2">
-          <div>
+        <div className="container-page relative z-10 grid items-center gap-12 lg:grid-cols-2">
+          <Reveal>
             <h1 className="mb-6 font-display text-5xl font-extrabold leading-[1.08] tracking-tight text-zinc-950 lg:text-[56px] dark:text-zinc-50">
               Belanja, jual, dan kirim barang dalam satu aplikasi
             </h1>
@@ -110,34 +110,40 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/products">
-                <Button variant="primary" size="lg">
-                  Mulai belanja
-                </Button>
-              </Link>
-              <Link href="/auth/register">
-                <Button variant="outline" size="lg">
-                  Buka toko
-                </Button>
-              </Link>
+              <Magnetic strength={0.3}>
+                <Link href="/products">
+                  <Button variant="primary" size="lg">
+                    Mulai belanja
+                  </Button>
+                </Link>
+              </Magnetic>
+              <Magnetic strength={0.3}>
+                <Link href="/auth/register">
+                  <Button variant="outline" size="lg">
+                    Buka toko
+                  </Button>
+                </Link>
+              </Magnetic>
             </div>
-          </div>
+          </Reveal>
 
-          <HeroProductMockup />
+          <Reveal delay={0.15} y={28}>
+            <HeroProductMockup />
+          </Reveal>
         </div>
       </section>
 
       {/* SECTION 2: MARQUEE TRUST BAR */}
       <section className="overflow-hidden border-y border-zinc-200 bg-white py-5 transition-colors dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex">
-          <div className="flex items-center gap-12 animate-marquee whitespace-nowrap">
-            {[...TRUST_ITEMS, ...TRUST_ITEMS].map((item, i) => (
+          <div className="flex items-center gap-10 animate-marquee whitespace-nowrap">
+            {[...TRUST_ITEMS, ...TRUST_ITEMS].map((label, i) => (
               <span
                 key={i}
                 className="flex shrink-0 items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400"
               >
-                <item.Icon className="h-4 w-4 text-brand-500" aria-hidden="true" />
-                {item.label}
+                {label}
+                <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" aria-hidden="true" />
               </span>
             ))}
           </div>
@@ -146,92 +152,118 @@ export default function LandingPage() {
 
       {/* SECTION 3: BENTO GRID */}
       <section className="bg-white py-20 transition-colors dark:bg-zinc-900">
-        <div ref={bentoRef} className="container-page reveal">
-          <div className="mb-12">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
-              Satu akun, banyak peran
-            </h2>
-            <p className="mt-3 text-zinc-600 dark:text-zinc-400">
-              Masuk sekali, beralih peran sesuai yang kamu butuhkan hari ini.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {/* Card 1: Pembeli */}
-            <div className="relative min-h-50 overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 card-interactive md:col-span-2 dark:border-zinc-800 dark:bg-zinc-900">
-              <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
-                Sebagai pembeli
-              </h3>
-              <ul className="space-y-1.5 text-sm text-zinc-600 dark:text-zinc-400">
-                <li>Lihat rincian harga lengkap sebelum membayar</li>
-                <li>Voucher dan promo berlaku otomatis di keranjang</li>
-                <li>Pantau pesanan sampai benar-benar tiba</li>
-              </ul>
-              <div className="absolute bottom-4 right-4 w-36 rounded-lg border border-zinc-200 bg-white p-3 text-left opacity-30 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
-                <div className="flex justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
-                  <span>Subtotal</span>
-                  <span>Rp 450rb</span>
-                </div>
-                <div className="mt-1 flex justify-between text-[10px] text-zinc-500 dark:text-zinc-400">
-                  <span>Pajak</span>
-                  <span>Rp 49rb</span>
-                </div>
-              </div>
+        <div className="container-page">
+          <Reveal>
+            <div className="mb-12">
+              <h2 className="font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+                Satu akun, banyak peran
+              </h2>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                Masuk sekali, beralih peran sesuai yang kamu butuhkan hari ini.
+              </p>
             </div>
+          </Reveal>
+
+          <Reveal stagger staggerGap={0.1} className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {/* Card 1: Pembeli */}
+            <RevealItem className="md:col-span-2">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative min-h-50 h-full overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 transition-shadow duration-200 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+                <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
+                  Sebagai pembeli
+                </h3>
+                <ul className="space-y-1.5 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li>Lihat rincian harga lengkap sebelum membayar</li>
+                  <li>Voucher dan promo berlaku otomatis di keranjang</li>
+                  <li>Pantau pesanan sampai benar-benar tiba</li>
+                </ul>
+                <div className="absolute bottom-4 right-4 hidden items-center gap-2 rounded-full border border-zinc-200 bg-white py-1.5 pl-1.5 pr-3 shadow-sm sm:flex dark:border-zinc-700 dark:bg-zinc-800">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success-50 text-[11px] font-bold text-success-700 dark:bg-success-500/10 dark:text-success-400">
+                    %
+                  </span>
+                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Hemat Rp 45rb</span>
+                </div>
+              </TiltCard>
+            </RevealItem>
 
             {/* Card 2: Admin (dark, tall, always dark) */}
-            <div className="overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white card-interactive md:row-span-2">
-              <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai admin</h3>
-              <p className="mb-3 text-sm text-zinc-400">Mengawasi seluruh aktivitas platform.</p>
-              <ul className="space-y-1.5 text-sm text-zinc-400">
-                <li>Pantau toko, pesanan, dan pengiriman</li>
-                <li>Atur voucher dan promo yang berjalan</li>
-                <li>Proses pengembalian dana yang tertunda</li>
-              </ul>
-            </div>
+            <RevealItem className="md:row-span-2">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group h-full overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white transition-shadow duration-200 hover:shadow-lg">
+                <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai admin</h3>
+                <p className="mb-3 text-sm text-zinc-400">Mengawasi seluruh aktivitas platform.</p>
+                <ul className="space-y-1.5 text-sm text-zinc-400">
+                  <li>Pantau toko, pesanan, dan pengiriman</li>
+                  <li>Atur voucher dan promo yang berjalan</li>
+                  <li>Proses pengembalian dana yang tertunda</li>
+                </ul>
+              </TiltCard>
+            </RevealItem>
 
             {/* Card 3: Penjual (brand color, always brand) */}
-            <div className="rounded-2xl bg-brand-500 p-6 text-white card-interactive">
-              <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai penjual</h3>
-              <ul className="space-y-1.5 text-sm text-brand-100">
-                <li>Kelola produk dan stok dari satu dasbor</li>
-                <li>Proses pesanan sampai siap dikirim</li>
-              </ul>
-            </div>
+            <RevealItem>
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group h-full rounded-2xl bg-brand-500 p-6 text-white transition-shadow duration-200 hover:shadow-lg">
+                <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai penjual</h3>
+                <ul className="space-y-1.5 text-sm text-brand-100">
+                  <li>Kelola produk dan stok dari satu dasbor</li>
+                  <li>Proses pesanan sampai siap dikirim</li>
+                </ul>
+              </TiltCard>
+            </RevealItem>
 
             {/* Card 4: Kurir */}
-            <div className="relative min-h-40 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 card-interactive md:col-span-2 dark:border-zinc-800 dark:bg-zinc-950">
-              <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
-                Sebagai kurir
-              </h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Ambil pekerjaan pengiriman yang tersedia dan dapatkan bagian dari setiap ongkir.
+            <RevealItem className="md:col-span-2">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative min-h-40 h-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-shadow duration-200 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+                <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
+                  Sebagai kurir
+                </h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  Ambil pekerjaan pengiriman yang tersedia dan dapatkan bagian dari setiap ongkir.
+                </p>
+                <span className="absolute bottom-4 right-4 rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 dark:bg-success-500/10 dark:text-success-400">
+                  Rp 12.000
+                </span>
+              </TiltCard>
+            </RevealItem>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* SECTION 3.5: DELIVERY METHODS (fold panels, expand on click) */}
+      <section className="bg-zinc-50 py-20 transition-colors dark:bg-zinc-950">
+        <div className="container-page">
+          <Reveal>
+            <div className="mb-10">
+              <h2 className="font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+                Pilih kecepatan pengiriman
+              </h2>
+              <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+                Klik salah satu metode untuk melihat detail biaya dan estimasi tiba.
               </p>
-              <span className="absolute bottom-4 right-4 rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 dark:bg-success-500/10 dark:text-success-400">
-                Rp 12.000
-              </span>
             </div>
-          </div>
+          </Reveal>
+
+          <Reveal y={28}>
+            <FoldPanels items={DELIVERY_PANELS} />
+          </Reveal>
         </div>
       </section>
 
       {/* SECTION 4: STATS (always dark, Linear-style impact moment) */}
       <section className="bg-zinc-950 py-20">
-        <div ref={statsRef} className="container-page reveal grid grid-cols-2 gap-12 lg:grid-cols-4">
+        <Reveal stagger staggerGap={0.1} className="container-page grid grid-cols-2 gap-12 lg:grid-cols-4">
           {STATS.map((stat) => (
-            <div key={stat.label}>
+            <RevealItem key={stat.label} y={20}>
               <p className="mb-2 font-display text-5xl font-extrabold text-white">{stat.value}</p>
               <p className="mb-1 text-sm font-semibold text-zinc-300">{stat.label}</p>
               <p className="text-xs text-zinc-500">{stat.sub}</p>
-            </div>
+            </RevealItem>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       {/* SECTION 5: FEATURE - CHECKOUT */}
       <section className="bg-white py-20 transition-colors dark:bg-zinc-900">
-        <div ref={checkoutRef} className="container-page reveal grid items-center gap-16 lg:grid-cols-2">
-          <div>
+        <div className="container-page grid items-center gap-16 lg:grid-cols-2">
+          <Reveal y={24}>
             <h2 className="mb-4 font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
               Checkout yang transparan
             </h2>
@@ -246,82 +278,25 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
 
-          <div className="animate-float overflow-hidden rounded-xl border border-zinc-200 bg-white text-left shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex items-center gap-1.5 border-b border-zinc-100 bg-zinc-50 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900">
-              <span className="h-2.5 w-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700" />
-              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-              <span className="ml-3 text-xs text-zinc-400 dark:text-zinc-500">app/checkout</span>
-            </div>
-            <div className="space-y-2 px-5 py-4">
-              <div className="flex justify-between text-xs">
-                <span className="text-zinc-500">Subtotal</span>
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">Rp 450.000</span>
-              </div>
-              <div className="flex justify-between text-xs text-success-600 dark:text-success-500">
-                <span>Diskon HEMAT10</span>
-                <span>-Rp 45.000</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-zinc-500">Ongkos kirim</span>
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">Rp 6.000</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-zinc-500">Pajak</span>
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">Rp 49.320</span>
-              </div>
-              <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
-              <div className="flex justify-between text-sm font-bold">
-                <span className="text-zinc-950 dark:text-zinc-50">Total</span>
-                <span className="text-zinc-950 dark:text-zinc-50">Rp 460.320</span>
-              </div>
-              <button
-                type="button"
-                disabled
-                className="mt-3 w-full rounded-lg bg-brand-500 py-2 text-center text-xs font-semibold text-white"
-              >
-                Bayar sekarang
-              </button>
-            </div>
-          </div>
+          <Reveal delay={0.1} y={28} className="animate-float">
+            <CheckoutMockup />
+            <p className="mt-3 text-center text-xs text-zinc-400 dark:text-zinc-600">
+              Klik &ldquo;Bayar sekarang&rdquo; untuk melihat simulasinya
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* SECTION 6: FEATURE - ORDER STATUS (reversed) */}
       <section className="bg-zinc-50 py-20 transition-colors dark:bg-zinc-950">
-        <div ref={orderStatusRef} className="container-page reveal grid items-center gap-16 lg:grid-cols-2">
-          <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm lg:order-1 dark:border-zinc-800 dark:bg-zinc-900">
-            {ORDER_STATUS_STEPS.map((step, i) => (
-              <div key={step.label}>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`h-3 w-3 shrink-0 rounded-full ${
-                      step.done ? 'bg-brand-500' : 'bg-zinc-200 dark:bg-zinc-700'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      step.done
-                        ? 'font-semibold text-zinc-900 dark:text-zinc-100'
-                        : 'text-zinc-400 dark:text-zinc-600'
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                  {step.time && (
-                    <span className="ml-auto text-xs text-zinc-500 dark:text-zinc-500">{step.time}</span>
-                  )}
-                </div>
-                {i < ORDER_STATUS_STEPS.length - 1 && (
-                  <div className="ml-1.25 h-4 w-0.5 bg-zinc-200 dark:bg-zinc-700" />
-                )}
-              </div>
-            ))}
-          </div>
+        <div className="container-page grid items-center gap-16 lg:grid-cols-2">
+          <Reveal y={28} className="lg:order-1">
+            <OrderStatusDemo />
+          </Reveal>
 
-          <div className="lg:order-2">
+          <Reveal delay={0.1} className="lg:order-2">
             <h2 className="mb-4 font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
               Pantau pesanan secara langsung
             </h2>
@@ -336,16 +311,18 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* SECTION 7: REVIEWS */}
       <section className="bg-white py-20 transition-colors dark:bg-zinc-900">
-        <div ref={reviewsRef} className="container-page reveal">
-          <h2 className="mb-12 text-center font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
-            Apa kata pengguna?
-          </h2>
+        <div className="container-page">
+          <Reveal>
+            <h2 className="mb-12 text-center font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+              Apa kata pengguna?
+            </h2>
+          </Reveal>
 
           {reviews === null ? (
             <div className="columns-1 gap-4 md:columns-2 lg:columns-3">
@@ -360,26 +337,24 @@ export default function LandingPage() {
               description="Jadilah yang pertama membagikan pengalamanmu di bawah ini."
             />
           ) : (
-            <div className="columns-1 gap-4 md:columns-2 lg:columns-3">
+            <Reveal stagger staggerGap={0.06} className="columns-1 gap-4 md:columns-2 lg:columns-3">
               {reviews.map((review) => (
-                <Card
-                  key={review.id}
-                  variant="interactive"
-                  className="mb-4 break-inside-avoid !p-5"
-                >
-                  <StarRating value={review.rating} size={16} />
-                  <p className="mb-3 mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                    &ldquo;{review.comment}&rdquo;
-                  </p>
-                  <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{review.reviewer_name}</p>
-                </Card>
+                <RevealItem key={review.id} className="mb-4 break-inside-avoid">
+                  <Card variant="interactive" className="p-5!">
+                    <StarRating value={review.rating} size={16} />
+                    <p className="mb-3 mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      &ldquo;{review.comment}&rdquo;
+                    </p>
+                    <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{review.reviewer_name}</p>
+                  </Card>
+                </RevealItem>
               ))}
-            </div>
+            </Reveal>
           )}
 
-          <div className="mx-auto mt-12 max-w-lg">
+          <Reveal delay={0.1} className="mx-auto mt-12 max-w-lg">
             <ReviewForm onSubmitted={handleReviewSubmitted} />
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -391,18 +366,22 @@ export default function LandingPage() {
             Buat akun gratis dan jelajahi semua fitur dalam satu platform.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/auth/register"
-              className="rounded-lg bg-white px-5 py-2.5 font-semibold text-brand-600 transition-colors hover:bg-zinc-50"
-            >
-              Daftar sekarang
-            </Link>
-            <Link
-              href="/auth/login"
-              className="rounded-lg border border-white/40 px-5 py-2.5 font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Masuk
-            </Link>
+            <Magnetic strength={0.3}>
+              <Link
+                href="/auth/register"
+                className="rounded-lg bg-white px-5 py-2.5 font-semibold text-brand-600 transition-colors hover:bg-zinc-50"
+              >
+                Daftar sekarang
+              </Link>
+            </Magnetic>
+            <Magnetic strength={0.3}>
+              <Link
+                href="/auth/login"
+                className="rounded-lg border border-white/40 px-5 py-2.5 font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Masuk
+              </Link>
+            </Magnetic>
           </div>
         </div>
       </section>
@@ -471,10 +450,8 @@ function HeroProductMockup() {
   return (
     <div className="animate-float overflow-hidden rounded-xl border border-zinc-200 bg-white text-left shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center gap-1.5 border-b border-zinc-100 bg-zinc-50 px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-950">
-        <span className="h-2.5 w-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700" />
-        <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-        <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-        <span className="ml-3 text-xs text-zinc-400 dark:text-zinc-500">app/pesanan</span>
+        <WindowDots />
+        <span className="ml-3 text-xs text-zinc-400 dark:text-zinc-500">Status pengiriman</span>
       </div>
       <div className="space-y-3 p-5">
         <div className="flex items-center justify-between">

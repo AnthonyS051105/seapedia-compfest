@@ -62,7 +62,7 @@ export default function DriverJobHistoryPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">Riwayat Pekerjaan</h1>
+      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Riwayat Pekerjaan</h1>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -80,11 +80,11 @@ export default function DriverJobHistoryPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Truck className="h-4 w-4 text-text-sub" />
-                      <p className="font-semibold text-text">#{job.order_id.slice(0, 8).toUpperCase()}</p>
+                      <Truck className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+                      <p className="font-semibold text-zinc-950 dark:text-zinc-50">#{job.order_id.slice(0, 8).toUpperCase()}</p>
                       <Badge variant="green">{DELIVERY_METHOD_LABELS[job.delivery_method]}</Badge>
                     </div>
-                    <p className="mt-2 flex items-center gap-1 text-sm text-text-sub">
+                    <p className="mt-2 flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
                       <MapPin className="h-4 w-4" />
                       {job.destination_city}
                     </p>

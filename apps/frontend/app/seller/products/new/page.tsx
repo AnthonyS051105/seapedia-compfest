@@ -58,7 +58,7 @@ export default function NewProductPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-text">Tambah Produk</h1>
+      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Tambah Produk</h1>
 
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -95,7 +95,7 @@ export default function NewProductPage() {
             {...register('images')}
           />
 
-          {apiError && <p className="text-sm text-danger">{apiError}</p>}
+          {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
           <div className="mt-2 flex gap-3">
             <Button type="submit" isLoading={isSubmitting}>

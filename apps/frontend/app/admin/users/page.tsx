@@ -59,8 +59,8 @@ function AdminUsersPageContent() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text">Pengguna</h1>
-        <p className="text-text-sub">Daftar semua pengguna SEAPEDIA</p>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengguna</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Daftar semua pengguna SEAPEDIA</p>
       </div>
 
       {isLoading ? (
@@ -76,7 +76,7 @@ function AdminUsersPageContent() {
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-text-sub">
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-zinc-600 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Username</th>
                   <th className="px-4 py-3 font-medium">Email</th>
                   <th className="px-4 py-3 font-medium">Peran</th>
@@ -85,9 +85,9 @@ function AdminUsersPageContent() {
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium text-text">{user.username}</td>
-                    <td className="px-4 py-3 text-text-sub">{user.email}</td>
+                  <tr key={user.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                    <td className="px-4 py-3 font-medium text-zinc-950 dark:text-zinc-50">{user.username}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{user.email}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {user.roles.map((role) => (
@@ -97,7 +97,7 @@ function AdminUsersPageContent() {
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(user.created_at)}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(user.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

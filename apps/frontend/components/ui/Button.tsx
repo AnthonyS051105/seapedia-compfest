@@ -1,11 +1,13 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Spinner } from './Spinner'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'dark-outline'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart'> {
   variant?: ButtonVariant
   size?: ButtonSize
   isLoading?: boolean
@@ -45,9 +47,12 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
+    <motion.button
+      whileHover={disabled || isLoading ? undefined : { y: -1 }}
+      whileTap={disabled || isLoading ? undefined : { scale: 0.97 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none',
+        'inline-flex items-center justify-center gap-2 rounded-lg transition-shadow duration-150 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none',
         variantClasses[variant],
         sizeClasses[size],
         className
@@ -57,6 +62,6 @@ export function Button({
     >
       {isLoading && <Spinner size={spinnerSize[size]} className="text-current" />}
       {children}
-    </button>
+    </motion.button>
   )
 }

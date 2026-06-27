@@ -99,15 +99,15 @@ export default function SellerStorePage() {
   if (!isEditing) {
     return (
       <div className="mx-auto max-w-2xl">
-        <h1 className="mb-6 text-2xl font-bold text-text">Toko Saya</h1>
+        <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">Toko Saya</h1>
 
         {store ? (
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-text">{store.name}</h2>
-                {store.description && <p className="mt-1 text-sm text-text-sub">{store.description}</p>}
-                {store.address && <p className="mt-2 text-sm text-text-sub">📍 {store.address}</p>}
+                <h2 className="text-lg font-semibold text-zinc-950 dark:text-zinc-50">{store.name}</h2>
+                {store.description && <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{store.description}</p>}
+                {store.address && <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">📍 {store.address}</p>}
               </div>
               <Button variant="outline" size="sm" onClick={startEditing}>
                 <Pencil className="h-4 w-4" />
@@ -117,9 +117,9 @@ export default function SellerStorePage() {
           </Card>
         ) : (
           <Card className="flex flex-col items-center gap-3 py-10 text-center">
-            <StoreIcon className="h-10 w-10 text-text-sub" />
-            <h2 className="text-lg font-semibold text-text">Kamu belum memiliki toko</h2>
-            <p className="text-sm text-text-sub">Buat toko untuk mulai menjual produk di SEAPEDIA.</p>
+            <StoreIcon className="h-10 w-10 text-zinc-600 dark:text-zinc-400" />
+            <h2 className="text-lg font-semibold text-zinc-950 dark:text-zinc-50">Kamu belum memiliki toko</h2>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">Buat toko untuk mulai menjual produk di SEAPEDIA.</p>
             <Button onClick={startEditing} className="mt-2">
               Buat Toko
             </Button>
@@ -131,7 +131,7 @@ export default function SellerStorePage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold text-text">{store ? 'Edit Toko' : 'Buat Toko'}</h1>
+      <h1 className="mb-6 text-2xl font-bold text-zinc-950 dark:text-zinc-50">{store ? 'Edit Toko' : 'Buat Toko'}</h1>
 
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -160,7 +160,7 @@ export default function SellerStorePage() {
             {...register('logo_url')}
           />
 
-          {apiError && <p className="text-sm text-danger">{apiError}</p>}
+          {apiError && <p className="text-sm text-danger-600 dark:text-danger-500">{apiError}</p>}
 
           <div className="mt-2 flex gap-3">
             <Button type="submit" isLoading={isSubmitting}>

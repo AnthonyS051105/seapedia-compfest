@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, X, ShoppingCart, ChevronDown } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { cn } from '@/lib/utils'
 import { api } from '@/lib/api'
@@ -70,7 +71,7 @@ export function Navbar() {
         <div className="hidden items-center gap-1 md:flex">
           <Link
             href="/products"
-            className="text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors px-3 py-1.5 rounded-md hover:bg-zinc-50 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800"
+            className="link-underline text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors px-3 py-1.5 dark:text-zinc-400 dark:hover:text-zinc-50"
           >
             Produk
           </Link>
@@ -112,27 +113,33 @@ export function Navbar() {
                   <ChevronDown className="h-4 w-4 text-zinc-400" />
                 </button>
 
-                {isDropdownOpen && (
-                  <div
-                    className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
-                    onMouseLeave={() => setIsDropdownOpen(false)}
-                  >
-                    <Link
-                      href="/auth/select-role"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
+                      onMouseLeave={() => setIsDropdownOpen(false)}
                     >
-                      Ganti Peran
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-sm text-danger-600 hover:bg-zinc-50 dark:text-danger-500 dark:hover:bg-zinc-800"
-                    >
-                      Keluar
-                    </button>
-                  </div>
-                )}
+                      <Link
+                        href="/auth/select-role"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        Ganti Peran
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="block w-full px-4 py-2 text-left text-sm text-danger-600 hover:bg-zinc-50 dark:text-danger-500 dark:hover:bg-zinc-800"
+                      >
+                        Keluar
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </>
           ) : (
@@ -178,9 +185,16 @@ export function Navbar() {
         </div>
       </nav>
 
-      {isMobileMenuOpen && (
-        <div className="border-t border-zinc-200 bg-white px-4 py-3 md:hidden dark:border-zinc-800 dark:bg-zinc-950">
-          <div className="flex flex-col gap-1">
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden border-t border-zinc-200 bg-white md:hidden dark:border-zinc-800 dark:bg-zinc-950"
+          >
+          <div className="flex flex-col gap-1 px-4 py-3">
             <Link
               href="/products"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -236,8 +250,9 @@ export function Navbar() {
               </>
             )}
           </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }

@@ -56,8 +56,8 @@ function AdminDeliveryJobsPageContent() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text">Pengiriman</h1>
-        <p className="text-text-sub">Daftar semua delivery job</p>
+        <h1 className="text-2xl font-bold text-zinc-950 dark:text-zinc-50">Pengiriman</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Daftar semua delivery job</p>
       </div>
 
       {isLoading ? (
@@ -73,7 +73,7 @@ function AdminDeliveryJobsPageContent() {
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-text-sub">
+                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-zinc-600 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Order ID</th>
                   <th className="px-4 py-3 font-medium">Driver</th>
                   <th className="px-4 py-3 font-medium">Metode</th>
@@ -84,23 +84,23 @@ function AdminDeliveryJobsPageContent() {
               </thead>
               <tbody>
                 {jobs.map((job) => (
-                  <tr key={job.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-mono text-xs text-text">{job.order_id.slice(0, 8)}…</td>
-                    <td className="px-4 py-3 text-text-sub">
+                  <tr key={job.id} className="border-b border-zinc-200 dark:border-zinc-800 last:border-0">
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-950 dark:text-zinc-50">{job.order_id.slice(0, 8)}…</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">
                       {job.driver_id ? (
                         <span className="font-mono text-xs">{job.driver_id.slice(0, 8)}…</span>
                       ) : (
                         <Badge variant="gray">Belum diambil</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-text-sub">{job.delivery_method}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{job.delivery_method}</td>
                     <td className="px-4 py-3">
                       <Badge variant={ORDER_STATUS_BADGE_VARIANT[job.status]}>
                         {job.status.replaceAll('_', ' ')}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-text">{job.earning !== null ? formatRupiah(job.earning) : '—'}</td>
-                    <td className="px-4 py-3 text-text-sub">{formatDate(job.created_at)}</td>
+                    <td className="px-4 py-3 text-zinc-950 dark:text-zinc-50">{job.earning !== null ? formatRupiah(job.earning) : '—'}</td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400">{formatDate(job.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
