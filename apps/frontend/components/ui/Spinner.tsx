@@ -19,7 +19,7 @@ export function Spinner({ size = 'md', className, ...props }: SpinnerProps) {
       role="status"
       aria-label="Loading"
       className={cn(
-        'animate-spin rounded-full border-2 border-zinc-200 border-t-current',
+        'animate-spin rounded-full border-2 border-zinc-200 dark:border-zinc-700 border-t-current',
         sizeClasses[size],
         className
       )}

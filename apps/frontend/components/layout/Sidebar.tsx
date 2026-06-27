@@ -32,11 +32,11 @@ export function Sidebar({ links }: { links: SidebarLink[] }) {
   const groups = groupLinks(links)
 
   return (
-    <aside className="flex w-16 md:w-60 shrink-0 flex-col gap-1 border-r border-zinc-200 bg-white p-2 md:p-4">
+    <aside className="flex w-16 md:w-60 shrink-0 flex-col gap-1 border-r border-zinc-200 bg-white p-2 md:p-4 dark:border-zinc-800 dark:bg-zinc-900">
       {groups.map((group, groupIndex) => (
         <div key={group.section ?? groupIndex}>
           {group.section && (
-            <p className="hidden md:block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 px-3 py-2 mb-1 mt-4">
+            <p className="hidden md:block text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 px-3 py-2 mb-1 mt-4">
               {group.section}
             </p>
           )}
@@ -52,8 +52,8 @@ export function Sidebar({ links }: { links: SidebarLink[] }) {
                 className={cn(
                   'flex items-center justify-center md:justify-start gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
                   isActive
-                    ? 'relative font-semibold bg-brand-50 text-brand-700 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-4 before:bg-brand-500 before:rounded-full'
-                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                    ? 'relative font-semibold bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-4 before:bg-brand-500 before:rounded-full'
+                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100'
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />

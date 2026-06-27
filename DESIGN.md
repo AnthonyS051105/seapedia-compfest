@@ -1,25 +1,37 @@
 # SEAPEDIA — Design System
-> Version 2.0 — Stripe × Linear Synthesis
+> Version 3.0 — Stripe × Linear, Dual Mode
 > Every decision here has a reference. Claude Code MUST read this before touching any file.
 
 ---
 
 ## The Reference DNA
 
-**Stripe (PRIMARY):** Bold gradient heroes, bento grid feature cards, large stat numbers, infinite marquee trust bars, alternating dark/light sections, sticky blur navbar, dual CTAs, section eyebrow labels.
+**Stripe (PRIMARY):** Restrained light-mode base, bold but controlled headline type, bento grid feature cards, large stat numbers, customer-logo marquee, sticky blur navbar, dual CTAs, content-first hierarchy over decoration, subtle hover lift instead of flashy motion.
 
-**Linear (SECONDARY):** Real UI mockups in hero (not illustrations), numbered feature sections, near-black dark sections for impact, extremely tight typography, dense information hierarchy, changelog-style lists.
+**Linear (SECONDARY):** Dark mode done right (near-black `#08090a`-equivalent, not gray-800), real product UI in the hero instead of illustrations, extremely tight type, dense but breathable information hierarchy, snappy not decorative motion.
 
 **What SEAPEDIA inherits from both:**
-- Bento grid layouts (Stripe) + real app UI mockups inside cards (Linear)
-- Large stat numbers (Stripe) + numbered section headers (Linear)
-- Gradient accent moments (Stripe) + dark section contrast (Linear)
-- Dual CTA buttons (Stripe) + tight information density (Linear)
+- Light-mode-first marketing language (Stripe) with a genuinely usable, equally considered dark mode (Linear) — not dark-as-an-afterthought.
+- Bento grid layouts (Stripe) with real app UI mockups inside cards (Linear).
+- Large stat numbers (Stripe) with the kind of high-contrast dark backdrop Linear uses for impact moments.
+- Calm, content-first motion: hover lift, scroll reveal, marquee. Nothing decorative for its own sake.
 
 **What makes SEAPEDIA its own:**
-- Teal energy instead of Stripe's purple — immediately different
-- Indonesian copy voice — specific and human, not corporate-English translated
-- Marketplace-context content — products, sellers, orders, not APIs and billing
+- Teal accent instead of Stripe's blue/violet and Linear's cyan — immediately distinct.
+- Indonesian copy voice that reads like an actual consumer marketplace (Tokopedia/Shopee-adjacent), not a hackathon submission page.
+- Marketplace-context content: products, sellers, orders, delivery — not APIs and billing.
+
+---
+
+## Dual-Mode Strategy
+
+The page supports **light and dark mode**, switchable by the user, persisted across visits. This is not a "dark section for contrast" trick — it is a complete second theme.
+
+- **Strategy:** Tailwind v4 `dark:` variant, gated by a `class="dark"` on `<html>` (not `prefers-color-scheme` alone, since the user can override it).
+- **State:** a small Zustand store (`store/theme.store.ts`) holds `theme: 'light' | 'dark'`, persisted to `localStorage` via Zustand's `persist` middleware (already a project dependency, no new packages).
+- **Toggle:** lives in the Navbar (desktop and mobile menu), a simple icon button (Sun/Moon), not a decorative switch.
+- **No flash-of-wrong-theme:** an inline script in `app/layout.tsx` reads `localStorage` before paint and sets the `dark` class synchronously, so there's no light-mode flash on a dark-mode visit.
+- **Token rule:** every color utility in every component must have a `dark:` counterpart. A component is not done until it has been looked at in both modes.
 
 ---
 
@@ -29,13 +41,15 @@
 /* globals.css — Tailwind v4 @theme block */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Brand — Teal, not blue */
   --color-brand-50:  #E0FAF7;
   --color-brand-100: #B3F3EC;
   --color-brand-200: #7DEADE;
   --color-brand-400: #2DD4C4;
-  --color-brand-500: #00BFA8;   /* PRIMARY — all main CTAs */
+  --color-brand-500: #00BFA8;   /* PRIMARY — all main CTAs, identical in both modes */
   --color-brand-600: #00A391;
   --color-brand-700: #007D70;
   --color-brand-800: #005A50;
@@ -54,21 +68,23 @@
   --color-danger-500:  #EF4444;
   --color-danger-700:  #B91C1C;
 
-  /* Neutrals — warm zinc, not cool gray */
-  --color-zinc-950: #09090B;    /* Near black for dark sections bg */
-  --color-zinc-900: #18181B;    /* Dark section text bg */
-  --color-zinc-800: #27272A;    /* Dark border, subtle dividers */
-  --color-zinc-700: #3F3F46;    /* Body text */
-  --color-zinc-600: #52525B;    /* Secondary text */
-  --color-zinc-500: #71717A;    /* Placeholder, muted */
-  --color-zinc-400: #A1A1AA;    /* Disabled states */
-  --color-zinc-300: #D4D4D8;    /* Borders */
-  --color-zinc-200: #E4E4E7;    /* Subtle borders */
-  --color-zinc-100: #F4F4F5;    /* Card bg tint */
-  --color-zinc-50:  #FAFAFA;    /* Page background */
+  /* Neutrals — warm zinc, not cool gray. Used for BOTH modes: */
+  /* light mode reads top-down (950 = text, 50 = bg) */
+  /* dark mode reads bottom-up (50 = text, 950 = bg) */
+  --color-zinc-950: #09090B;
+  --color-zinc-900: #18181B;
+  --color-zinc-800: #27272A;
+  --color-zinc-700: #3F3F46;
+  --color-zinc-600: #52525B;
+  --color-zinc-500: #71717A;
+  --color-zinc-400: #A1A1AA;
+  --color-zinc-300: #D4D4D8;
+  --color-zinc-200: #E4E4E7;
+  --color-zinc-100: #F4F4F5;
+  --color-zinc-50:  #FAFAFA;
 
   /* Surface */
-  --color-surface:  #FFFFFF;
+  --color-surface: #FFFFFF;
   --color-surface-raised: #FFFFFF;
 
   /* Font families */
@@ -94,12 +110,20 @@ body {
   background: #FAFAFA;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+.dark body {
+  color: #E4E4E7;       /* zinc-200 */
+  background: #09090B;  /* zinc-950 — true Linear-style near-black */
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-display, 'Plus Jakarta Sans', sans-serif);
   font-weight: 700;
   color: #09090B;
   letter-spacing: -0.02em;
+}
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #FAFAFA;
 }
 
 /* CSS shadows (can't go in @theme) */
@@ -111,6 +135,15 @@ h1, h2, h3, h4, h5, h6 {
   --shadow-xl:    0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
   --shadow-brand: 0 4px 20px 0 rgb(0 191 168 / 0.3);
   --shadow-card:  0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 8px 0 rgb(0 0 0 / 0.06);
+}
+.dark {
+  --shadow-xs:    0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-sm:    0 1px 3px 0 rgb(0 0 0 / 0.5), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md:    0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg:    0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl:    0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-brand: 0 4px 24px 0 rgb(0 191 168 / 0.25);
+  --shadow-card:  0 0 0 1px rgb(255 255 255 / 0.06), 0 2px 8px 0 rgb(0 0 0 / 0.5);
 }
 
 /* Page container */
@@ -125,6 +158,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 ```
 
+**Dark mode mapping cheat sheet** (apply consistently across every component):
+
+| Light | Dark | Used for |
+|---|---|---|
+| `bg-white` | `dark:bg-zinc-900` | Cards, panels, modals |
+| `bg-zinc-50` | `dark:bg-zinc-950` | Page background, subtle section tint |
+| `border-zinc-200` | `dark:border-zinc-800` | Card/input borders |
+| `text-zinc-950` | `dark:text-zinc-50` | Headings |
+| `text-zinc-600` / `700` | `dark:text-zinc-400` | Body text |
+| `text-zinc-500` | `dark:text-zinc-500` | Muted/caption (stays same, already neutral enough) |
+| `bg-zinc-100` (hover) | `dark:bg-zinc-800` | Hover backgrounds |
+| `bg-zinc-950` (existing dark sections, e.g. Stats) | `dark:bg-black/40` or stays `bg-zinc-950` | These sections were already dark; in dark mode they blend into the page rather than standing out |
+| `--color-brand-500` | unchanged | Brand teal works identically in both modes |
+
 ---
 
 ## Typography
@@ -138,18 +185,18 @@ H1 (Page):     font-display text-4xl font-bold tracking-tight leading-[1.15]
 H2 (Section):  font-display text-3xl font-bold tracking-tight
 H3 (Sub):      font-display text-xl font-semibold
 H4 (Card):     font-display text-base font-semibold
-Eyebrow:       font-body text-xs font-semibold uppercase tracking-[0.1em] text-brand-600
-Body Large:    font-body text-base leading-7 text-zinc-700
-Body:          font-body text-sm leading-6 text-zinc-700
-Caption:       font-body text-xs leading-5 text-zinc-500
-Stat Number:   font-display text-5xl font-extrabold tracking-tight text-zinc-950
+Eyebrow:       font-body text-xs font-semibold uppercase tracking-[0.1em] text-brand-600 dark:text-brand-400
+Body Large:    font-body text-base leading-7 text-zinc-700 dark:text-zinc-300
+Body:          font-body text-sm leading-6 text-zinc-700 dark:text-zinc-300
+Caption:       font-body text-xs leading-5 text-zinc-500 dark:text-zinc-500
+Stat Number:   font-display text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50
 Stat Label:    font-body text-sm text-zinc-500
 Code/Mono:     font-mono text-sm
 ```
 
-**Stripe-inspired rule:** Semua eyebrow labels (teks kecil di atas judul section) pakai format ini:
+Eyebrow labels keep the same small-caps treatment in both modes, only the color value shifts:
 ```jsx
-<p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-600 mb-3">
+<p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-600 dark:text-brand-400 mb-3">
   Untuk Semua Kalangan
 </p>
 ```
@@ -175,73 +222,49 @@ Grid: 8px base unit.
 
 ---
 
-## Section Anatomy (Stripe Pattern)
-
-Setiap halaman publik terdiri dari sections dengan **alternating rhythm**:
+## Section Anatomy (Stripe Pattern, Dual-Mode)
 
 ```
-[Hero]         — white bg, gradient accent, full-height impact
-[Trust Bar]    — white bg, infinite marquee/logo strip
-[Bento Grid]   — white bg, asymmetric feature cards
-[Stats]        — dark bg (zinc-950), large numbers, high contrast  ← Linear influence
-[Feature 1]    — white bg, 2-col (text left, mockup right)
-[Feature 2]    — light zinc-50 bg, 2-col (mockup left, text right)
-[Testimonials] — white bg, horizontal quote strip
-[CTA]          — brand-500 bg, single focused call to action
-[Footer]       — zinc-950 bg, 5-col grid                          ← Linear influence
+[Hero]            — bg-zinc-50 dark:bg-zinc-950, gradient accent, real product mockup
+[Trust Bar]       — bg-white dark:bg-zinc-900, infinite marquee
+[Bento Grid]      — bg-white dark:bg-zinc-900, asymmetric feature cards
+[Stats]           — bg-zinc-950 in both modes (this section IS the dark moment, Linear-style)
+[Feature 1]       — bg-white dark:bg-zinc-900, 2-col (text left, mockup right)
+[Feature 2]       — bg-zinc-50 dark:bg-zinc-950, 2-col (mockup left, text right)
+[Reviews]         — bg-white dark:bg-zinc-900, masonry
+[CTA]             — bg-brand-500 in both modes (brand color reads fine on either)
+[Footer]          — bg-zinc-950 in both modes (already the darkest neutral, no change needed)
 ```
 
-**Rule:** Jangan 3 section putih berturut-turut. Pasti ada section gelap atau tinted di antaranya.
+**Rule:** every section must define both its light and dark background. A section that "just works because dark mode inherits" is a bug, not a feature — verify explicitly.
 
 ---
 
-## Hero Section (Stripe-Inspired)
+## Hero Section (Stripe Light + Linear Product-in-Hero)
 
-**Stripe's hero DNA yang kita ambil:**
-- Gradient accent yang bold di background (bukan flat color)
-- Tagline yang sangat spesifik dan action-driven (bukan generic "platform terpercaya")
-- Dual CTA: Primary (filled) + Secondary (ghost/outline)
-- Trust signal langsung di bawah CTA: "Dipercaya oleh X penjual"
-- Social proof bar (logo/brand marquee)
-
-**SEAPEDIA hero implementation:**
+**What we take from each:**
+- Stripe: gradient/blob decoration kept subtle, dual CTA, trust line under the fold.
+- Linear: a real, working UI mockup as the visual anchor instead of an illustration or empty gradient.
 
 ```jsx
-// Gradient: mulai dari zinc-50 (atas), ada accent teal yang subtle di kiri
-// Background decoration: blurred circle gradients (seperti Stripe's wave)
-<section className="relative overflow-hidden bg-zinc-50 pt-24 pb-20">
-  {/* Gradient decoration — Stripe-style blurred blobs */}
-  <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-400/20 rounded-full blur-3xl" />
-  <div className="absolute -top-20 right-0 w-80 h-80 bg-accent-300/15 rounded-full blur-3xl" />
-  
-  <div className="container-page relative">
-    {/* Eyebrow label */}
-    <p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-600 mb-5">
-      Marketplace Multi-Role · Indonesia
-    </p>
-    
-    {/* Headline — spesifik, bukan generic */}
-    <h1 className="font-display text-5xl lg:text-[64px] font-extrabold tracking-tight leading-[1.08] text-zinc-950 max-w-3xl mb-6">
-      Belanja, jual, antar.<br />
-      <span className="text-brand-500">Semua dalam satu platform.</span>
-    </h1>
-    
-    {/* Subtitle — concrete, bukan fluffy */}
-    <p className="text-lg text-zinc-600 max-w-xl mb-8 leading-relaxed">
-      Dari pembeli hingga penjual, dari kurir hingga admin — 
-      SEAPEDIA menghubungkan semua peran dalam satu ekosistem marketplace yang nyata.
-    </p>
-    
-    {/* Dual CTA — Stripe pattern */}
-    <div className="flex items-center gap-3 flex-wrap">
-      <Button size="lg" variant="primary">Mulai Belanja</Button>
-      <Button size="lg" variant="outline">Jadi Penjual</Button>
+<section className="relative overflow-hidden bg-zinc-50 dark:bg-zinc-950 pt-24 pb-20 transition-colors">
+  <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-400/20 dark:bg-brand-500/10 rounded-full blur-3xl" />
+  <div className="absolute -top-20 right-0 w-80 h-80 bg-accent-300/15 dark:bg-accent-400/10 rounded-full blur-3xl" />
+
+  <div className="container-page relative grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <h1 className="font-display text-5xl lg:text-[60px] font-extrabold tracking-tight leading-[1.08] text-zinc-950 dark:text-zinc-50 mb-6">
+        Belanja, jual, dan kirim barang dalam satu aplikasi
+      </h1>
+      <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-xl mb-8 leading-relaxed">
+        Marketplace yang menghubungkan pembeli, penjual, dan kurir secara langsung, tanpa perantara yang berlebihan.
+      </p>
+      <div className="flex items-center gap-3 flex-wrap">
+        <Button size="lg" variant="primary">Mulai belanja</Button>
+        <Button size="lg" variant="outline">Lihat cara kerja</Button>
+      </div>
     </div>
-    
-    {/* Trust signal */}
-    <p className="text-sm text-zinc-400 mt-5">
-      Demo: seller@seapedia.com · buyer@seapedia.com · admin@seapedia.com
-    </p>
+    <ProductMockupCard /> {/* real mini UI, not a gradient blob */}
   </div>
 </section>
 ```
@@ -250,75 +273,50 @@ Setiap halaman publik terdiri dari sections dengan **alternating rhythm**:
 
 ## Bento Grid (Stripe's Feature Cards Pattern)
 
-Stripe menggunakan **asymmetric bento grid** untuk menampilkan fitur — card berbeda ukuran, bukan grid seragam. Ini adalah signature visual paling kuat dari Stripe.
-
-**SEAPEDIA Bento:** Tampilkan 4 peran dalam bento grid:
+Asymmetric bento grid for the 4 roles, identical structure in both modes, only surface colors swap:
 
 ```
 ┌─────────────────────┬──────────────┐
-│                     │              │
-│  BUYER  (wide)      │  SELLER      │
-│  2/3 width          │  1/3 width   │
-│                     │              │
-├────────────┬────────┴──────────────┤
-│            │                       │
-│  DRIVER    │  ADMIN  (wide)        │
-│  1/3 width │  2/3 width            │
-│            │                       │
-└────────────┴───────────────────────┘
+│  BUYER  (wide)       │  SELLER      │
+├────────────┬─────────┴──────────────┤
+│  DRIVER    │  ADMIN  (wide, always dark) │
+└────────────┴────────────────────────┘
 ```
 
-Setiap card bento:
-- Header: Role name + icon (lucide)
-- Real UI mockup (screenshot style, bukan ilustrasi) — gunakan div yang menyerupai UI actual
-- 2-3 bullet fitur utama
-- Link "Coba sebagai [role]"
-- Background card: gradient subtle dari white ke zinc-50
+- Light/white cards: `bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800`
+- The Admin card stays near-black in both modes (`bg-zinc-950`) — it was already the "dark card" and works as-is in dark mode without modification.
+- The Seller (brand-color) card stays `bg-brand-500` in both modes.
 
 ---
 
-## Stats Section (Stripe Numbers + Linear Dark)
+## Stats Section (Stripe Numbers + Linear Dark, Mode-Invariant)
 
-Ambil pattern stat dari Stripe (angka besar) tapi dengan dark background dari Linear:
+This section is dark in both light and dark mode — it's the one deliberate "always dark" moment, same as Linear uses near-black throughout:
 
 ```jsx
 <section className="bg-zinc-950 py-20">
-  <div className="container-page">
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-      {[
-        { number: "4", label: "Peran pengguna", sub: "Buyer, Seller, Driver, Admin" },
-        { number: "7", label: "Level fitur", sub: "Dari auth hingga keamanan" },
-        { number: "100%", label: "TypeScript", sub: "Frontend & backend" },
-        { number: "12%", label: "PPN terkalkulasi", sub: "Otomatis di setiap checkout" },
-      ].map(stat => (
-        <div key={stat.number}>
-          <p className="font-display text-5xl font-extrabold text-white mb-2">{stat.number}</p>
-          <p className="text-sm font-semibold text-zinc-300 mb-1">{stat.label}</p>
-          <p className="text-xs text-zinc-500">{stat.sub}</p>
-        </div>
-      ))}
-    </div>
+  <div className="container-page grid grid-cols-2 lg:grid-cols-4 gap-12">
+    {stats.map(stat => (
+      <div key={stat.label}>
+        <p className="font-display text-5xl font-extrabold text-white mb-2">{stat.number}</p>
+        <p className="text-sm font-semibold text-zinc-300 mb-1">{stat.label}</p>
+        <p className="text-xs text-zinc-500">{stat.sub}</p>
+      </div>
+    ))}
   </div>
 </section>
 ```
 
 ---
 
-## Infinite Marquee / Trust Bar (Stripe Pattern)
-
-Stripe pakai infinite horizontal scroll untuk logo-logo customer. SEAPEDIA pakai untuk feature list atau "powered by" tech stack:
+## Infinite Marquee / Trust Bar (Stripe Pattern, Dual-Mode)
 
 ```jsx
-// CSS animation untuk infinite scroll
-// @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-// .animate-marquee { animation: marquee 20s linear infinite; }
-
-<section className="py-8 border-y border-zinc-200 overflow-hidden bg-white">
+<section className="py-8 border-y border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900 transition-colors">
   <div className="flex">
     <div className="flex items-center gap-16 animate-marquee whitespace-nowrap">
-      {/* Duplikat 2x untuk seamless loop */}
       {features.concat(features).map((f, i) => (
-        <span key={i} className="flex items-center gap-2 text-sm font-medium text-zinc-500">
+        <span key={i} className="flex items-center gap-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
           <f.icon className="w-4 h-4 text-brand-500" />
           {f.label}
         </span>
@@ -330,62 +328,40 @@ Stripe pakai infinite horizontal scroll untuk logo-logo customer. SEAPEDIA pakai
 
 ---
 
-## Navbar (Stripe DNA)
+## Navbar (Stripe DNA, with Theme Toggle)
 
 ```jsx
-// Sticky, blur backdrop, border muncul saat scroll
-<nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-transparent
-                data-[scrolled=true]:border-zinc-200 transition-all duration-200">
+<nav className="sticky top-0 z-50 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-transparent
+                data-[scrolled=true]:border-zinc-200 dark:data-[scrolled=true]:border-zinc-800 transition-all duration-200">
   <div className="container-page flex items-center h-16 gap-8">
-    {/* Logo */}
     <a href="/" className="font-display font-bold text-xl shrink-0">
       <span className="text-brand-500">SEA</span>
-      <span className="text-zinc-950">PEDIA</span>
+      <span className="text-zinc-950 dark:text-zinc-50">PEDIA</span>
     </a>
-    
-    {/* Nav links (desktop) */}
+
     <div className="hidden md:flex items-center gap-1 flex-1">
       <NavLink href="/products">Produk</NavLink>
-      <NavLink href="/stores">Toko</NavLink>
     </div>
-    
-    {/* Right side */}
+
     <div className="flex items-center gap-3 ml-auto">
-      {/* Cart badge — brand, bukan merah */}
-      <button className="relative p-2 text-zinc-600 hover:text-zinc-950 transition-colors">
-        <ShoppingBag className="w-5 h-5" />
-        {count > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-brand-500 
-                           text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-            {count}
-          </span>
-        )}
-      </button>
-      
-      {/* User menu or auth buttons */}
-      {isAuth ? <UserMenu /> : (
-        <>
-          <Button variant="ghost" size="sm" href="/auth/login">Masuk</Button>
-          <Button variant="primary" size="sm" href="/auth/register">Daftar</Button>
-        </>
-      )}
+      <ThemeToggle /> {/* Sun/Moon icon button, toggles Zustand theme store */}
+      {/* cart, user menu, or auth buttons follow */}
     </div>
   </div>
 </nav>
 ```
 
+`ThemeToggle` button style: `p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg transition-colors`.
+
 ---
 
 ## Dark Section Pattern (Linear DNA)
 
-Linear menggunakan `#08090a` untuk background gelap yang ekstrem. Kita pakai `zinc-950` yang setara:
+Sections that are *always* dark (Stats, Footer) don't need a `dark:` variant since they're already at the darkest point of the neutral scale in both modes:
 
 ```jsx
-// Dark sections: bg-zinc-950, semua text putih, border zinc-800
-// Gunakan untuk: Stats, dark CTA, featured highlights
 <section className="bg-zinc-950 text-white">
   <div className="container-page py-20">
-    {/* Eyebrow dalam dark section */}
     <p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-400 mb-4">
       Label Section
     </p>
@@ -401,39 +377,31 @@ Linear menggunakan `#08090a` untuk background gelap yang ekstrem. Kita pakai `zi
 
 ---
 
-## Feature Sections (Alternating 2-Col)
-
-Stripe menggunakan alternating left/right untuk feature sections. Setiap section: satu sisi teks, satu sisi UI mockup.
+## Feature Sections (Alternating 2-Col, Dual-Mode)
 
 ```jsx
-// Feature section dengan real UI mockup — Linear style
-<section className="py-20 bg-white">
+<section className="py-20 bg-white dark:bg-zinc-900 transition-colors">
   <div className="container-page">
     <div className="grid lg:grid-cols-2 gap-16 items-center">
-      {/* Text side */}
       <div>
-        <p className="eyebrow mb-4">Fitur Buyer</p>
-        <h2 className="font-display text-3xl font-bold text-zinc-950 mb-4">
+        <h2 className="font-display text-3xl font-bold text-zinc-950 dark:text-zinc-50 mb-4">
           Checkout yang transparan dan adil
         </h2>
-        <p className="text-zinc-600 text-base leading-relaxed mb-6">
-          Lihat breakdown harga lengkap sebelum bayar: subtotal, diskon, ongkir, 
-          dan PPN 12% — semua terhitung otomatis.
+        <p className="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed mb-6">
+          Lihat rincian harga lengkap sebelum bayar: subtotal, diskon, ongkir, dan pajak — semua terhitung otomatis.
         </p>
         <ul className="space-y-3">
           {features.map(f => (
-            <li className="flex items-start gap-3 text-sm text-zinc-700">
-              <CheckCircle className="w-5 h-5 text-brand-500 shrink-0 mt-0.5" />
+            <li className="flex items-start gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-2 shrink-0" />
               {f}
             </li>
           ))}
         </ul>
       </div>
-      
-      {/* UI Mockup side — BUKAN gambar stock atau ilustrasi */}
-      {/* Gunakan div HTML yang menyerupai actual UI component */}
-      <div className="bg-zinc-50 rounded-2xl border border-zinc-200 p-4 shadow-lg">
-        <CheckoutMockup /> {/* Actual checkout UI mini */}
+
+      <div className="bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-lg">
+        <CheckoutMockup />
       </div>
     </div>
   </div>
@@ -442,64 +410,34 @@ Stripe menggunakan alternating left/right untuk feature sections. Setiap section
 
 ---
 
-## Numbered Section Headers (Linear DNA)
-
-Linear menggunakan `1.0 Intake`, `2.0 Plan`, `3.0 Build` — numbered section anchors yang navigable.
-SEAPEDIA pakai ini untuk halaman marketing role-specific:
+## UI Mockup Cards (Linear Hero Pattern, Dual-Mode)
 
 ```jsx
-<div className="flex items-baseline gap-3 mb-8">
-  <span className="font-display text-sm font-bold text-brand-500 tabular-nums">01</span>
-  <div className="h-px flex-1 bg-zinc-200 max-w-[40px]" />
-  <h2 className="font-display text-2xl font-bold text-zinc-950">Keranjang Belanja</h2>
-</div>
-```
-
----
-
-## UI Mockup Cards (Linear Hero Pattern)
-
-Linear menampilkan UI asli mereka di hero — **bukan screenshot, tapi styled divs yang terasa seperti screenshot**. Ini yang membedakan dari generik.
-
-Untuk SEAPEDIA, buat mini mockup dari fitur utama sebagai "live preview":
-
-```jsx
-// Mini checkout summary mockup — dipakai di feature sections dan bento grid
 function CheckoutMockupCard() {
   return (
-    <div className="bg-white rounded-xl border border-zinc-200 shadow-md overflow-hidden text-left">
-      {/* Header bar */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-100 bg-zinc-50">
-        <div className="w-2 h-2 rounded-full bg-zinc-300" />
-        <div className="w-2 h-2 rounded-full bg-zinc-300" />
-        <div className="w-2 h-2 rounded-full bg-zinc-300" />
-        <span className="text-[10px] text-zinc-400 ml-2">seapedia.com/checkout</span>
+    <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-md overflow-hidden text-left">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950">
+        <div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+        <div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+        <div className="w-2 h-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 ml-2">app/checkout</span>
       </div>
-      {/* Content */}
       <div className="p-4 space-y-2">
         <div className="flex justify-between text-xs">
-          <span className="text-zinc-500">Subtotal</span>
-          <span className="text-zinc-700 font-medium">Rp 450.000</span>
+          <span className="text-zinc-500 dark:text-zinc-500">Subtotal</span>
+          <span className="text-zinc-700 dark:text-zinc-300 font-medium">Rp 450.000</span>
         </div>
-        <div className="flex justify-between text-xs text-success-600">
+        <div className="flex justify-between text-xs text-success-600 dark:text-success-500">
           <span>Diskon HEMAT10</span>
           <span>-Rp 45.000</span>
         </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-zinc-500">Ongkir (Regular)</span>
-          <span className="text-zinc-700 font-medium">Rp 6.000</span>
-        </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-zinc-500">PPN 12%</span>
-          <span className="text-zinc-700 font-medium">Rp 49.320</span>
-        </div>
-        <div className="h-px bg-zinc-100 my-1" />
+        <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1" />
         <div className="flex justify-between text-sm font-bold">
-          <span className="text-zinc-950">Total</span>
-          <span className="text-zinc-950">Rp 460.320</span>
+          <span className="text-zinc-950 dark:text-zinc-50">Total</span>
+          <span className="text-zinc-950 dark:text-zinc-50">Rp 460.320</span>
         </div>
         <button className="w-full mt-2 bg-brand-500 text-white text-xs font-semibold py-2 rounded-lg">
-          Konfirmasi Pesanan
+          Bayar sekarang
         </button>
       </div>
     </div>
@@ -516,15 +454,17 @@ function CheckoutMockupCard() {
 ```
 Primary: bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold
          shadow-sm hover:shadow-brand transition-all duration-150
-         
-Ghost:   text-brand-600 hover:bg-brand-50 rounded-lg font-medium
+         (identical in both modes — brand color carries its own contrast)
 
-Outline: border border-zinc-300 text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50
-         rounded-lg font-medium bg-white
+Ghost:   text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-lg font-medium
 
-Dark outline (dalam dark section):
+Outline: border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300
+         hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800
+         rounded-lg font-medium bg-white dark:bg-transparent
+
+Dark outline (always-dark sections like Stats/CTA, independent of page theme):
          border border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800
-         
+
 Danger:  bg-danger-500 hover:bg-danger-700 text-white rounded-lg
 
 Sizes:
@@ -538,35 +478,35 @@ Loading: Spinner inline (white on dark bg), pertahankan width
 ### Input
 
 ```
-Base:    border-[1.5px] border-zinc-300 rounded-lg px-3 py-2 text-sm
-         bg-white text-zinc-900 placeholder:text-zinc-400
-         
-Focus:   border-brand-500 ring-2 ring-brand-500/15 outline-none
+Base:    border-[1.5px] border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm
+         bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600
+
+Focus:   focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 focus:outline-none
 Error:   border-danger-500 ring-2 ring-danger-500/15
 Success: border-success-500 ring-2 ring-success-500/15
 
-Label:   text-sm font-medium text-zinc-700 mb-1.5 block
-Error msg: text-xs text-danger-600 mt-1
+Label:   text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 block
+Error msg: text-xs text-danger-600 dark:text-danger-500 mt-1
 Helper:  text-xs text-zinc-500 mt-1
 ```
 
 ### Card
 
 ```
-Default:  bg-white border border-zinc-200 rounded-xl shadow-card
-Interactive: + hover:border-zinc-300 hover:shadow-md transition-all duration-150
-Elevated: bg-white rounded-2xl shadow-xl border border-zinc-100
-Dark:     bg-zinc-900 border border-zinc-800 rounded-xl
+Default:  bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-card
+Interactive: + card-interactive class
+Elevated: bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-800
+Dark:     bg-zinc-900 border border-zinc-800 rounded-xl (already dark, unchanged in dark mode)
 ```
 
 ### Status Badges (Order)
 
 ```
-SEDANG_DIKEMAS:    bg-amber-50 text-amber-700 border border-amber-200 rounded-full
-MENUNGGU_PENGIRIM: bg-blue-50 text-blue-700 border border-blue-200 rounded-full  
-SEDANG_DIKIRIM:    bg-brand-50 text-brand-700 border border-brand-200 rounded-full
-PESANAN_SELESAI:   bg-success-50 text-success-700 border border-green-200 rounded-full
-DIKEMBALIKAN:      bg-danger-50 text-danger-700 border border-red-200 rounded-full
+SEDANG_DIKEMAS:    bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 rounded-full
+MENUNGGU_PENGIRIM: bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30 rounded-full
+SEDANG_DIKIRIM:    bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-200 dark:border-brand-500/30 rounded-full
+PESANAN_SELESAI:   bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-400 border border-green-200 dark:border-success-500/30 rounded-full
+DIKEMBALIKAN:      bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-400 border border-red-200 dark:border-danger-500/30 rounded-full
 
 All: px-2.5 py-0.5 text-xs font-semibold
 ```
@@ -575,17 +515,18 @@ All: px-2.5 py-0.5 text-xs font-semibold
 
 ```
 Width: 240px desktop, collapse to icon-only (w-16) pada mobile
-Bg: bg-white border-r border-zinc-200
+Bg: bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800
 
-Nav item default: px-3 py-2 rounded-lg text-sm text-zinc-600 hover:bg-zinc-100 
-                  hover:text-zinc-900 transition-colors flex items-center gap-3
+Nav item default: px-3 py-2 rounded-lg text-sm text-zinc-600 dark:text-zinc-400
+                  hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100
+                  transition-colors flex items-center gap-3
 
 Nav item active:  px-3 py-2 rounded-lg text-sm font-semibold
-                  bg-brand-50 text-brand-700
+                  bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400
                   [relative] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
                   before:w-0.5 before:h-4 before:bg-brand-500 before:rounded-full
 
-Section label:    text-[10px] font-semibold uppercase tracking-wider text-zinc-400
+Section label:    text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600
                   px-3 py-2 mb-1 mt-4
 ```
 
@@ -593,16 +534,14 @@ Section label:    text-[10px] font-semibold uppercase tracking-wider text-zinc-4
 
 ## Animation & Interaction
 
-### Prinsip animasi (dari kedua referensi):
+### Principles (from both references)
 
-**Stripe pakai:** Subtle reveal animations saat scroll, hover gradient shifts, smooth state transitions.
-**Linear pakai:** Minimal animation, hanya di hero (floating mockup), sisanya snappy dan langsung.
+**Stripe:** subtle reveal on scroll, hover lift, smooth color/shadow transitions. Nothing loud.
+**Linear:** minimal everywhere except one hero moment, otherwise snappy and immediate, no decorative looping.
 
-**SEAPEDIA rule:** Animate to communicate, not to decorate.
+**SEAPEDIA rule:** Animate to communicate, not to decorate. No new animation library — CSS keyframes, transitions, and `IntersectionObserver`-driven reveal classes only (project has no `framer-motion`/`gsap` dependency, and none should be added without explicit approval).
 
 ```css
-/* globals.css — keyframes */
-
 /* Infinite marquee (trust bar) */
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -618,25 +557,28 @@ Section label:    text-[10px] font-semibold uppercase tracking-wider text-zinc-4
 }
 .animate-float { animation: float 6s ease-in-out infinite; }
 
-/* Fade up (scroll reveal) */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Scroll reveal — driven by IntersectionObserver toggling a class, not scroll listeners */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.animate-fade-up { animation: fade-up 0.5s ease-out forwards; }
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 /* Reduced motion — WAJIB */
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-float,
-  .animate-fade-up { animation: none; }
+  .reveal { animation: none; transition: none; opacity: 1; transform: none; }
 }
 ```
 
-### Hover micro-interactions (Stripe-level polish):
+### Hover micro-interactions (Stripe-level polish)
 
 ```css
-/* Card lift */
 .card-interactive {
   transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
@@ -645,10 +587,8 @@ Section label:    text-[10px] font-semibold uppercase tracking-wider text-zinc-4
   box-shadow: var(--shadow-lg);
 }
 
-/* Button press */
 button:active { transform: scale(0.98); }
 
-/* Link underline — dari teks, bukan dari kotak */
 .link-underline {
   background: linear-gradient(currentColor, currentColor) no-repeat left bottom;
   background-size: 0% 1px;
@@ -661,35 +601,30 @@ button:active { transform: scale(0.98); }
 
 ## Dark / Light Section Contrast Table
 
-| Section | Background | Text | Border | Notes |
-|---------|-----------|------|--------|-------|
-| Hero | `zinc-50` + blobs | `zinc-950` | — | Gradient decoration blobs |
-| Trust Bar | `white` | `zinc-500` | `zinc-200` top+bottom | Marquee |
-| Bento Grid | `white` | `zinc-950` | `zinc-200` | Alternating card heights |
-| Stats | `zinc-950` | `white` | `zinc-800` | Dark section — Linear DNA |
-| Feature Alt 1 | `white` | `zinc-950` | — | Mockup kanan |
-| Feature Alt 2 | `zinc-50` | `zinc-950` | — | Mockup kiri |
-| Testimonials | `white` | `zinc-950` | `zinc-100` | Quote cards |
-| CTA | `brand-500` | `white` | — | Single focused action |
-| Footer | `zinc-950` | `zinc-400` | `zinc-800` | Dense 5-col grid |
+| Section | Light bg | Dark bg | Text (light/dark) | Notes |
+|---------|----------|---------|--------------------|-------|
+| Hero | `zinc-50` + blobs | `zinc-950` + dimmer blobs | `zinc-950` / `zinc-50` | Real product mockup, not just gradient |
+| Trust Bar | `white` | `zinc-900` | `zinc-500` / `zinc-400` | Marquee, border `zinc-200`/`zinc-800` |
+| Bento Grid | `white` | `zinc-900` | `zinc-950` / `zinc-50` | Admin card stays `zinc-950` always; Seller stays `brand-500` always |
+| Stats | `zinc-950` always | `zinc-950` always | `white` always | The one deliberate always-dark moment |
+| Feature Alt 1 | `white` | `zinc-900` | `zinc-950` / `zinc-50` | Mockup right |
+| Feature Alt 2 | `zinc-50` | `zinc-950` | `zinc-950` / `zinc-50` | Mockup left |
+| Reviews | `white` | `zinc-900` | `zinc-950` / `zinc-50` | Masonry cards |
+| CTA | `brand-500` always | `brand-500` always | `white` always | Brand color reads fine on either page theme |
+| Footer | `zinc-950` always | `zinc-950` always | `zinc-400` always | Already darkest neutral, no change needed |
 
 ---
 
 ## 7 Aturan Anti-Slop (Hard Rules)
 
 1. **Tidak ada Poppins, Nunito, DM Sans.** Plus Jakarta Sans untuk display, Inter untuk body. Titik.
-
-2. **Tidak ada gradient rainbow.** Hanya satu gradient blob di hero (teal/amber, bukan merah-kuning-hijau).
-
-3. **Tidak ada hero dengan centered text + stock photo.** Left-aligned hero dengan dual CTA pattern.
-
-4. **Tidak ada card grid yang perfectly symmetric everywhere.** Landing page harus punya minimal satu bento asymmetric grid.
-
-5. **Primary color bukan #3B82F6 (blue-500).** Teal #00BFA8 — satu keputusan visual yang langsung identifiable.
-
-6. **Tidak ada icon dekoratif yang tidak menjelaskan apa-apa.** Icon hanya jika membantu pemahaman, bukan filler.
-
-7. **Empty states tidak punya SVG ilustrasi generic.** Text yang actionable + satu icon sederhana, cukup.
+2. **Tidak ada gradient rainbow.** Hanya satu gradient blob di hero (teal/amber), redup di dark mode.
+3. **Tidak ada hero dengan centered text + stock photo.** Split hero: teks di satu sisi, mockup produk nyata di sisi lain.
+4. **Tidak ada card grid yang perfectly symmetric everywhere.** Bento asymmetric grid wajib ada minimal satu.
+5. **Primary color bukan #3B82F6 (blue-500).** Teal #00BFA8 di kedua mode — identik, tidak berubah.
+6. **Tidak ada icon dekoratif yang tidak menjelaskan apa-apa.** Icon hanya jika membantu pemahaman.
+7. **Empty states tidak punya SVG ilustrasi generic.** Text actionable + satu icon sederhana.
+8. **Dark mode bukan "dark section sebagai aksen."** Setiap komponen harus benar-benar dicek di kedua mode, bukan diasumsikan otomatis kontras.
 
 ---
 
@@ -700,15 +635,15 @@ Redesign hanya menyentuh:
 - Struktur JSX visual (wrapper divs, layout grids)
 - Font imports
 - Animasi dan transitions
+- Penambahan theme store/toggle (state UI murni, tidak menyentuh auth/cart/order logic)
 
 Yang TIDAK BOLEH diubah:
 - Semua API calls (`api.get`, `api.post`, dll)
 - Event handlers (`onClick`, `onChange`, `onSubmit`)
 - Form logic dan validation
-- Zustand store logic
+- Zustand store logic untuk auth/cart/order (theme store baru terpisah, tidak menggantikan yang sudah ada)
 - Custom hooks
 - Next.js routing (`router.push`, `redirect`, dll)
 - Props yang diteruskan ke komponen utility
 
 Setelah setiap file: `npx tsc --noEmit` — fix semua TypeScript error sebelum lanjut.
-

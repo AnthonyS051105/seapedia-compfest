@@ -32,7 +32,7 @@ export function StarRating({ value, onChange, size = 20, className }: StarRating
           <Star
             width={size}
             height={size}
-            className={star <= displayValue ? 'fill-accent-400 text-accent-400' : 'fill-none text-zinc-200'}
+            className={star <= displayValue ? 'fill-accent-400 text-accent-400' : 'fill-none text-zinc-200 dark:text-zinc-700'}
           />
         </button>
       ))}

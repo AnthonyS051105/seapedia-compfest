@@ -33,7 +33,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         aria-label="Halaman sebelumnya"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
-        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-zinc-800"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -47,7 +47,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
           onClick={() => onPageChange(p)}
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium',
-            p === page ? 'bg-brand-500 text-white' : 'text-zinc-600 hover:bg-zinc-100'
+            p === page ? 'bg-brand-500 text-white' : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
           )}
         >
           {p}
@@ -61,7 +61,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         aria-label="Halaman selanjutnya"
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
-        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-zinc-800"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
