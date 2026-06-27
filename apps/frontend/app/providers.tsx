@@ -9,7 +9,6 @@ import { ApiResponse, User } from '@/types'
 interface RefreshResponseData {
   access_token: string
   expires_in: number
-  user: User
 }
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -22,9 +21,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
     async function initializeAuth() {
       try {
-        const { data } = await api.post<ApiResponse<RefreshResponseData>>('/auth/refresh')
+        const { data: refreshData } = await api.post<ApiResponse<RefreshResponseData>>('/auth/refresh')
+        useAuthStore.getState().setAccessToken(refreshData.data.access_token)
+        const { data: meData } = await api.get<ApiResponse<User>>('/auth/me')
         if (isMounted) {
-          setAuth(data.data.user, data.data.access_token)
+          setAuth(meData.data, refreshData.data.access_token)
         }
       } catch {
         if (isMounted) {

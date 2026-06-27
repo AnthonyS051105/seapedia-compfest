@@ -437,7 +437,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 border-t border-zinc-800 pt-6 text-xs text-zinc-600 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col gap-3 border-t border-zinc-800 pt-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} SEAPEDIA</p>
           </div>
         </div>

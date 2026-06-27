@@ -88,7 +88,7 @@ export default function AdminVoucherDetailPage() {
               {voucher.code}
             </p>
           </div>
-          <Badge variant={voucher.is_active ? 'green' : 'gray'}>{voucher.is_active ? 'Active' : 'Inactive'}</Badge>
+          <Badge variant={voucher.is_active ? 'green' : 'gray'}>{voucher.is_active ? 'Aktif' : 'Tidak Aktif'}</Badge>
         </div>
 
         <div className="flex flex-col divide-y divide-zinc-100 text-sm dark:divide-zinc-800">

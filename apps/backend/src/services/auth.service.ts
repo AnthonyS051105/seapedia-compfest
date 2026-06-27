@@ -112,7 +112,7 @@ class AuthService {
     }
 
     const roles = user.user_roles.map((ur) => ur.role) as Role[]
-    const activeRole = this.determineActiveRole(roles)
+    const activeRole = this.resolveActiveRole(roles, user.active_role as Role | null)
 
     const accessToken = signAccessToken({
       sub: user.id,
@@ -182,7 +182,7 @@ class AuthService {
     }
 
     const roles = user.user_roles.map((ur) => ur.role) as Role[]
-    const activeRole = this.determineActiveRole(roles)
+    const activeRole = this.resolveActiveRole(roles, user.active_role as Role | null)
 
     const accessToken = signAccessToken({
       sub: user.id,
@@ -211,6 +211,8 @@ class AuthService {
     if (!roles.includes(role)) {
       throw new ForbiddenError('User tidak memiliki peran yang diminta')
     }
+
+    await prisma.user.update({ where: { id: userId }, data: { active_role: role } })
 
     const accessToken = signAccessToken({
       sub: user.id,
@@ -261,6 +263,13 @@ class AuthService {
       return roles[0]
     }
     return null
+  }
+
+  private resolveActiveRole(roles: Role[], storedActiveRole: Role | null): Role | null {
+    if (storedActiveRole && roles.includes(storedActiveRole)) {
+      return storedActiveRole
+    }
+    return this.determineActiveRole(roles)
   }
 
   async cleanupExpiredRefreshTokens(): Promise<number> {

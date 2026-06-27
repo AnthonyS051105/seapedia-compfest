@@ -80,7 +80,7 @@ export default function AdminPromoDetailPage() {
             <p className="text-sm text-zinc-600 dark:text-zinc-400">Kode Promo</p>
             <p className="font-mono text-3xl font-bold tracking-wider text-zinc-950 dark:text-zinc-50">{promo.code}</p>
           </div>
-          <Badge variant={promo.is_active ? 'green' : 'gray'}>{promo.is_active ? 'Active' : 'Inactive'}</Badge>
+          <Badge variant={promo.is_active ? 'green' : 'gray'}>{promo.is_active ? 'Aktif' : 'Tidak Aktif'}</Badge>
         </div>
 
         <dl className="flex flex-col divide-y divide-zinc-200 dark:divide-zinc-800 text-sm">

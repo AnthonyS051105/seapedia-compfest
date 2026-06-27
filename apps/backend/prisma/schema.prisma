@@ -49,14 +49,15 @@ enum DiscountType {
 // =====================
 
 model User {
-  id         String   @id @default(uuid())
-  username   String   @unique
-  email      String   @unique
-  password   String
-  full_name  String?
-  phone      String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String   @id @default(uuid())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  full_name   String?
+  phone       String?
+  active_role Role?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   user_roles     UserRole[]
   refresh_tokens RefreshToken[]
