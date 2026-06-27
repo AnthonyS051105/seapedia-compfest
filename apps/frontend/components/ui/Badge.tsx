@@ -2,7 +2,17 @@ import { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { OrderStatus } from '@/types'
 
-export type BadgeVariant = 'blue' | 'green' | 'yellow' | 'red' | 'gray' | 'orange'
+export type BadgeVariant =
+  | 'blue'
+  | 'green'
+  | 'yellow'
+  | 'red'
+  | 'gray'
+  | 'orange'
+  | 'success'
+  | 'warning'
+  | 'info'
+  | 'neutral'
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant
@@ -16,6 +26,10 @@ const variantClasses: Record<BadgeVariant, string> = {
   green: 'bg-success-50 text-success-700 border border-green-200',
   red: 'bg-danger-50 text-danger-700 border border-red-200',
   gray: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
+  success: 'bg-success-50 text-success-700 border border-green-200',
+  warning: 'bg-amber-50 text-amber-700 border border-amber-200',
+  info: 'bg-blue-50 text-blue-700 border border-blue-200',
+  neutral: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
 }
 
 export const ORDER_STATUS_BADGE_VARIANT: Record<OrderStatus, BadgeVariant> = {
@@ -30,7 +44,7 @@ export function Badge({ variant = 'gray', className, children, ...props }: Badge
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold',
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold',
         variantClasses[variant],
         className
       )}

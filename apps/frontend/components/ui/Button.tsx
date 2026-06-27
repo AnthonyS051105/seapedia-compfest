@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { Spinner } from './Spinner'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'dark-outline'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,12 +14,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-500 hover:bg-brand-600 text-white shadow-sm hover:shadow-[var(--shadow-brand)]',
-  secondary: 'bg-zinc-900 hover:bg-zinc-800 text-white',
+    'bg-brand-500 hover:bg-brand-600 text-white shadow-sm hover:shadow-[var(--shadow-brand)] font-semibold',
+  secondary: 'bg-zinc-900 hover:bg-zinc-800 text-white font-semibold',
   outline:
-    'border border-zinc-300 text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50 bg-white',
-  ghost: 'text-brand-600 hover:bg-brand-50',
-  danger: 'bg-danger-500 hover:bg-danger-700 text-white',
+    'border border-zinc-300 text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50 bg-white font-medium',
+  ghost: 'text-brand-600 hover:bg-brand-50 font-medium',
+  danger: 'bg-danger-500 hover:bg-danger-700 text-white font-semibold',
+  'dark-outline': 'border border-zinc-700 text-white hover:border-zinc-500 hover:bg-zinc-800 font-medium',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -46,8 +47,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none',
-        variant === 'ghost' || variant === 'outline' ? 'font-medium' : 'font-semibold',
+        'inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none',
         variantClasses[variant],
         sizeClasses[size],
         className
