@@ -37,9 +37,9 @@ function StoreDetailPageContent() {
 
   if (notFound) {
     return (
-      <div className="mx-auto flex max-w-[1400px] flex-1 flex-col items-center justify-center gap-3 px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-text">Toko tidak ditemukan</h1>
-        <Link href="/products" className="font-medium text-primary hover:underline">
+      <div className="container-page flex flex-1 flex-col items-center justify-center gap-3 py-16 text-center">
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Toko tidak ditemukan</h1>
+        <Link href="/products" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
           Kembali ke katalog
         </Link>
       </div>
@@ -48,9 +48,9 @@ function StoreDetailPageContent() {
 
   if (!store) {
     return (
-      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-        <Skeleton height={120} className="mb-6" />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="container-page py-8">
+        <Skeleton height={160} className="mb-8 rounded-2xl" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} height={220} />
           ))}
@@ -60,30 +60,32 @@ function StoreDetailPageContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-      <div className="mb-8 flex flex-col items-center gap-4 rounded-xl border border-border bg-surface p-6 text-center sm:flex-row sm:text-left">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10">
+    <div className="container-page py-8">
+      <div className="mb-8 flex flex-col items-center gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 p-8 text-center sm:flex-row sm:text-left dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-50 dark:bg-brand-500/10">
           {store.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={store.logo_url} alt={store.name} className="h-full w-full object-cover" />
           ) : (
-            <StoreIcon className="h-8 w-8 text-primary" />
+            <StoreIcon className="h-8 w-8 text-brand-600 dark:text-brand-400" />
           )}
         </div>
         <div>
-          <h1 className="text-xl font-bold text-text">{store.name}</h1>
-          {store.address && <p className="text-sm text-text-sub">{store.address}</p>}
-          {store.description && <p className="mt-1 text-sm text-text-sub">{store.description}</p>}
+          <h1 className="font-display text-3xl font-bold text-zinc-950 dark:text-zinc-50">{store.name}</h1>
+          {store.address && <p className="mt-1 text-sm text-zinc-500">{store.address}</p>}
+          {store.description && <p className="mt-1 text-zinc-600 dark:text-zinc-400">{store.description}</p>}
         </div>
       </div>
 
-      <h2 className="mb-4 font-semibold text-text">Produk dari {store.name}</h2>
+      <h2 className="mb-4 font-display text-lg font-semibold text-zinc-950 dark:text-zinc-50">
+        Produk dari {store.name}
+      </h2>
 
       {store.products.length === 0 ? (
         <EmptyState icon={PackageX} title="Toko ini belum memiliki produk" />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
             {store.products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { ImageOff, Minus, Plus, Store as StoreIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
 import { useCartStore } from '@/store/cart.store'
@@ -31,6 +32,7 @@ export default function ProductDetailPage() {
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [conflict, setConflict] = useState<CartConflictData | null>(null)
   const [isResolvingConflict, setIsResolvingConflict] = useState(false)
+  const [activeTab, setActiveTab] = useState<'description'>('description')
 
   useEffect(() => {
     api
@@ -45,10 +47,10 @@ export default function ProductDetailPage() {
 
   if (notFound) {
     return (
-      <div className="mx-auto flex max-w-[1400px] flex-1 flex-col items-center justify-center gap-3 px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-text">Produk tidak ditemukan</h1>
-        <p className="text-text-sub">Produk ini mungkin sudah dihapus atau tidak tersedia.</p>
-        <Link href="/products" className="font-medium text-primary hover:underline">
+      <div className="container-page flex flex-1 flex-col items-center justify-center gap-3 py-16 text-center">
+        <h1 className="font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">Produk tidak ditemukan</h1>
+        <p className="text-zinc-500">Produk ini mungkin sudah dihapus atau tidak tersedia.</p>
+        <Link href="/products" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
           Kembali ke katalog
         </Link>
       </div>
@@ -57,9 +59,9 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <Skeleton height={400} />
+      <div className="container-page py-8">
+        <div className="grid gap-10 pt-8 lg:grid-cols-[3fr_2fr]">
+          <Skeleton height={400} className="rounded-2xl" />
           <div className="flex flex-col gap-4">
             <Skeleton height={32} width="80%" />
             <Skeleton height={24} width="40%" />
@@ -87,7 +89,7 @@ export default function ProductDetailPage() {
     setIsAddingToCart(true)
     try {
       await api.post('/buyer/cart', { product_id: product.id, quantity })
-      toast.success('Produk ditambahkan ke keranjang 🛒')
+      toast.success('Produk ditambahkan ke keranjang')
       refreshItemCount()
     } catch (error) {
       const apiErr = error as {
@@ -109,7 +111,7 @@ export default function ProductDetailPage() {
     try {
       await api.delete('/buyer/cart')
       await api.post('/buyer/cart', { product_id: product.id, quantity })
-      toast.success('Produk ditambahkan ke keranjang 🛒')
+      toast.success('Produk ditambahkan ke keranjang')
       refreshItemCount()
       setConflict(null)
     } catch (error) {
@@ -121,39 +123,46 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6">
-      <nav className="mb-6 text-sm text-text-sub">
-        <Link href="/" className="hover:text-primary">
-          Home
+    <div className="container-page py-8">
+      <nav className="mb-6 text-sm text-zinc-500">
+        <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400">
+          Beranda
         </Link>{' '}
         &gt;{' '}
-        <Link href="/products" className="hover:text-primary">
+        <Link href="/products" className="hover:text-brand-600 dark:hover:text-brand-400">
           Produk
         </Link>{' '}
-        &gt; <span className="text-text">{product.name}</span>
+        &gt; <span className="text-zinc-700 dark:text-zinc-300">{product.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="flex flex-col gap-3">
-          <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-xl bg-gray-100">
+      <div className="grid gap-10 lg:grid-cols-[3fr_2fr]">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="group aspect-square overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
             {product.images.length > 0 ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.images[activeImage]} alt={product.name} className="h-full w-full object-cover" />
+              <img
+                src={product.images[activeImage]}
+                alt={product.name}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
             ) : (
-              <ImageOff className="h-12 w-12 text-text-sub" />
+              <div className="flex h-full w-full items-center justify-center">
+                <ImageOff className="h-12 w-12 text-zinc-300 dark:text-zinc-700" />
+              </div>
             )}
           </div>
 
           {product.images.length > 1 && (
-            <div className="flex gap-2">
+            <div className="mt-3 flex gap-2">
               {product.images.map((image, index) => (
                 <button
                   key={image}
                   type="button"
                   onClick={() => setActiveImage(index)}
-                  className={`h-16 w-16 overflow-hidden rounded-lg border-2 ${
-                    index === activeImage ? 'border-primary' : 'border-border'
-                  }`}
+                  className={cn(
+                    'h-16 w-16 overflow-hidden rounded-lg border-2 transition-colors',
+                    index === activeImage ? 'border-brand-500' : 'border-zinc-200 dark:border-zinc-700'
+                  )}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={image} alt="" className="h-full w-full object-cover" />
@@ -163,83 +172,121 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-text">{product.name}</h1>
-            <p className="mt-2 text-2xl font-bold text-primary">{formatRupiah(product.price)}</p>
-            <p className="mt-1 text-sm text-text-sub">
-              {isOutOfStock ? <Badge variant="red">Stok habis</Badge> : `Stok: ${product.stock} tersisa`}
-            </p>
-          </div>
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">
+            {product.store.name}
+          </p>
+          <h1 className="mb-2 font-display text-3xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+            {product.name}
+          </h1>
+          <p className="mb-1 font-display text-2xl font-bold text-zinc-950 dark:text-zinc-50">
+            {formatRupiah(product.price)}
+          </p>
+          {isOutOfStock ? (
+            <Badge variant="red">Stok Habis</Badge>
+          ) : (
+            <p className="text-sm text-zinc-500">Stok: {product.stock} tersisa</p>
+          )}
 
-          {!isOutOfStock && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-text">Kuantitas:</span>
-              <div className="flex items-center rounded-lg border border-border">
+          <div className="my-5 h-px bg-zinc-100 dark:bg-zinc-800" />
+
+          <div className="flex items-center gap-3">
+            {!isOutOfStock && (
+              <div className="flex overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
                 <button
                   type="button"
                   aria-label="Kurangi jumlah"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-9 w-9 items-center justify-center text-text hover:bg-gray-50"
+                  className="flex h-10 w-10 items-center justify-center border-r border-zinc-200 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="w-10 text-center text-sm font-medium text-text">{quantity}</span>
+                <span className="flex h-10 w-10 items-center justify-center text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {quantity}
+                </span>
                 <button
                   type="button"
                   aria-label="Tambah jumlah"
                   onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                  className="flex h-9 w-9 items-center justify-center text-text hover:bg-gray-50"
+                  className="flex h-10 w-10 items-center justify-center border-l border-zinc-200 text-sm text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-          )}
+            )}
 
-          <Button
-            size="lg"
-            disabled={isOutOfStock}
-            isLoading={isAddingToCart}
-            onClick={handleAddToCart}
-            title={isAuthenticated && !isBuyer ? 'Aktifkan peran Pembeli' : undefined}
-            className="w-full sm:w-auto"
-          >
-            Tambah ke Keranjang
-          </Button>
+            {isAuthenticated ? (
+              <Button
+                size="lg"
+                disabled={isOutOfStock}
+                isLoading={isAddingToCart}
+                onClick={handleAddToCart}
+                title={!isBuyer ? 'Aktifkan peran Pembeli' : undefined}
+                className="flex-1"
+              >
+                Tambah ke Keranjang
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => router.push('/auth/login')}
+                className="flex-1"
+              >
+                Login untuk Berbelanja
+              </Button>
+            )}
+          </div>
 
           <Link
             href={`/stores/${product.store.id}`}
-            className="flex items-center gap-3 rounded-xl border border-border bg-surface p-4 hover:border-primary"
+            className="mt-6 flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors hover:border-brand-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-brand-700"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <StoreIcon className="h-5 w-5 text-primary" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-500/10">
+              <StoreIcon className="h-5 w-5 text-brand-600 dark:text-brand-400" />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-text-sub">Toko</p>
-              <p className="font-medium text-text">{product.store.name}</p>
+              <p className="font-semibold text-zinc-900 dark:text-zinc-100">{product.store.name}</p>
             </div>
-            <span className="text-sm text-primary">Lihat Toko →</span>
+            <span className="text-sm text-brand-600 dark:text-brand-400">Lihat Toko →</span>
           </Link>
 
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <h2 className="mb-2 font-semibold text-text">Deskripsi</h2>
-            <p className="whitespace-pre-line text-sm text-text-sub">
-              {product.description || 'Tidak ada deskripsi untuk produk ini.'}
-            </p>
+          <div className="mt-6">
+            <div className="flex border-b border-zinc-200 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setActiveTab('description')}
+                className={cn(
+                  '-mb-px border-b-2 px-1 py-2 text-sm transition-colors',
+                  activeTab === 'description'
+                    ? 'border-brand-500 font-medium text-brand-600 dark:text-brand-400'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+                )}
+              >
+                Deskripsi
+              </button>
+            </div>
+            <div className="prose pt-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+              <p className="whitespace-pre-line">{product.description || 'Tidak ada deskripsi untuk produk ini.'}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={!!conflict} onClose={() => setConflict(null)} title="⚠️ Produk dari Toko Berbeda">
-        <p className="text-sm text-text-sub">
+      <Modal isOpen={!!conflict} onClose={() => setConflict(null)} title="Produk dari Toko Berbeda">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Keranjangmu saat ini berisi produk dari{' '}
-          <span className="font-medium text-text">&quot;{conflict?.current_store.name}&quot;</span>. SEAPEDIA hanya
-          mengizinkan pembelian dari 1 toko dalam 1 pesanan.
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+            &quot;{conflict?.current_store.name}&quot;
+          </span>
+          . SEAPEDIA hanya mengizinkan pembelian dari 1 toko dalam 1 pesanan.
         </p>
-        <p className="mt-2 text-sm text-text-sub">
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Apakah kamu ingin mengosongkan keranjang dan menambahkan produk dari{' '}
-          <span className="font-medium text-text">&quot;{conflict?.requested_store.name}&quot;</span> ini?
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+            &quot;{conflict?.requested_store.name}&quot;
+          </span>{' '}
+          ini?
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={() => setConflict(null)} disabled={isResolvingConflict}>
