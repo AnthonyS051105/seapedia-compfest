@@ -734,13 +734,13 @@ Create `docs/TESTING_GUIDE.md`:
 
 ### TASK-7.12: Deployment
 
-- [ ] Deploy backend to Railway
-  - Set all environment variables in Railway dashboard
+- [ ] Deploy backend to Render
+  - Set all environment variables in Render dashboard
   - Add `npx prisma migrate deploy && node dist/server.js` as start command
   - Run seed on first deploy
 
 - [ ] Deploy frontend to Vercel
-  - Set NEXT_PUBLIC_API_URL to Railway backend URL
+  - Set NEXT_PUBLIC_API_URL to Render backend URL
   - Verify CORS is configured correctly
 
 - [ ] Update README with deployment URLs
@@ -763,7 +763,7 @@ Create `docs/TESTING_GUIDE.md`:
 ### BONUS-02: Deployment (15 pts)
 
 - [ ] Frontend accessible at public Vercel URL
-- [ ] Backend accessible at public Railway URL
+- [ ] Backend accessible at public Render URL
 - [ ] Database on Supabase/Neon
 - [ ] All seed data loaded on production DB
 - [ ] Demo accounts working on production

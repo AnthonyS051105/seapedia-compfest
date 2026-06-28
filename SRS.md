@@ -17,7 +17,7 @@ This SRS defines the complete functional and non-functional requirements for the
 
 SEAPEDIA is a fullstack web application consisting of:
 - **Frontend:** Next.js 14 (App Router) with TypeScript and Tailwind CSS, deployed to Vercel
-- **Backend:** Express.js REST API with TypeScript and Prisma ORM, deployed to Railway
+- **Backend:** Express.js REST API with TypeScript and Prisma ORM, deployed to Render
 - **Database:** PostgreSQL hosted on Supabase or Neon
 - **Auth:** JWT (access token in memory/header + refresh token in httpOnly cookie)
 - **API Docs:** Swagger/OpenAPI via swagger-jsdoc and swagger-ui-express
@@ -54,7 +54,7 @@ SEAPEDIA is a fullstack web application consisting of:
 │                                                              │
 │  ┌──────────────┐    REST API    ┌──────────────────────┐   │
 │  │  Next.js 14  │◄─────────────►│  Express.js Backend  │   │
-│  │  (Vercel)    │    + Cookie    │  (Railway)           │   │
+│  │  (Vercel)    │    + Cookie    │  (Render)           │   │
 │  └──────────────┘               └──────────┬───────────┘   │
 │                                            │ Prisma ORM     │
 │                                            ▼                 │

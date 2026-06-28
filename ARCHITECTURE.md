@@ -10,7 +10,7 @@
 SEAPEDIA uses a **separated frontend-backend architecture** (not Next.js fullstack) because:
 1. The challenge requires an **API-based backend** that could support both web and mobile clients
 2. Easier to test and document the API independently (Swagger)
-3. Backend can be deployed separately on Railway with its own scaling
+3. Backend can be deployed separately on Render with its own scaling
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -18,7 +18,7 @@ SEAPEDIA uses a **separated frontend-backend architecture** (not Next.js fullsta
 │                                                                  │
 │  ┌──────────────────┐         ┌──────────────────────────────┐  │
 │  │   NEXT.JS 14     │  REST   │      EXPRESS.JS API          │  │
-│  │   (Vercel)       │◄───────►│      (Railway)               │  │
+│  │   (Vercel)       │◄───────►│      (Render)                 │  │
 │  │                  │  + JWT  │                              │  │
 │  │  App Router      │  Cookie │  Routes → Controllers →      │  │
 │  │  Tailwind CSS    │         │  Services → Prisma → DB      │  │
@@ -483,13 +483,13 @@ getSystemDate() {
 │  PRODUCTION DEPLOYMENT                                     │
 │                                                           │
 │  ┌──────────────────┐     ┌──────────────────────────┐   │
-│  │     VERCEL       │     │        RAILWAY           │   │
+│  │     VERCEL       │     │         RENDER           │   │
 │  │                  │     │                          │   │
 │  │  Next.js 14      │     │  Express.js API          │   │
-│  │  (Static + SSR)  │────►│  (Node.js container)     │   │
+│  │  (Static + SSR)  │────►│  (Node.js web service)   │   │
 │  │                  │     │                          │   │
-│  │  seapedia.vercel │     │  seapedia-api.railway.app│   │
-│  │  .app            │     │                          │   │
+│  │  seapedia.vercel │     │  seapedia-backend         │   │
+│  │  .app            │     │  .onrender.com           │   │
 │  └──────────────────┘     └──────────┬───────────────┘   │
 │                                       │                    │
 │                                       ▼                    │
@@ -514,17 +514,17 @@ cors({
 
 **Critical:** `credentials: true` and `origin: specific_domain` are required for httpOnly cookies to work cross-origin.
 
-### 6.2 Railway Deployment
+### 6.2 Render Deployment
 
-```dockerfile
-# Procfile or railway.json
+```yaml
+# render.yaml
 build: npm run build && npx prisma generate
 start: npx prisma migrate deploy && node dist/server.js
 ```
 
-**On first deployment:** Run seed manually after deploy:
+**On first deployment:** Run seed manually after deploy, via Render's Shell tab on the service:
 ```bash
-railway run npx prisma db seed
+npx prisma db seed
 ```
 
 ### 6.3 Environment Separation
@@ -544,7 +544,7 @@ railway run npx prisma db seed
 ### 7.1 Defense in Depth
 
 ```
-Layer 1: Network    → HTTPS only (Vercel + Railway enforce TLS)
+Layer 1: Network    → HTTPS only (Vercel + Render enforce TLS)
 Layer 2: Transport  → CORS whitelist + credential cookie restrictions  
 Layer 3: Auth       → JWT verification on every protected request
 Layer 4: AuthZ      → Active role check per endpoint

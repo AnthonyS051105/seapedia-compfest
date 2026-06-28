@@ -28,7 +28,7 @@
                           │ (Authorization: Bearer <access_token>)
                           │ (Cookie: seapedia_refresh_token)
 ┌─────────────────────────▼────────────────────────────────────────────┐
-│                    API LAYER (Railway)                                 │
+│                    API LAYER (Render)                                 │
 │                                                                        │
 │  ┌─────────────────────────────────────────────────────────────────┐  │
 │  │                   Express.js + TypeScript                        │  │
@@ -1198,7 +1198,7 @@ BCRYPT_ROUNDS=12
 
 **Frontend (.env.local):**
 ```
-NEXT_PUBLIC_API_URL=https://seapedia-api.railway.app/api
+NEXT_PUBLIC_API_URL=https://seapedia-backend.onrender.com/api
 ```
 
 ### 6.2 CORS Configuration
@@ -1212,16 +1212,17 @@ const corsConfig = {
 }
 ```
 
-### 6.3 Railway Configuration (Backend)
+### 6.3 Render Configuration (Backend)
 
-```json
-// railway.json or Procfile
-{
-  "deploy": {
-    "startCommand": "npm run start",
-    "buildCommand": "npm run build && npx prisma migrate deploy"
-  }
-}
+```yaml
+# render.yaml
+services:
+  - type: web
+    name: seapedia-backend
+    runtime: node
+    rootDir: apps/backend
+    buildCommand: npm run build && npx prisma generate
+    startCommand: npx prisma migrate deploy && node dist/server.js
 ```
 
 ---
