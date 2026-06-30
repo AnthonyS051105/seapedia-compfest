@@ -10,7 +10,7 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       { url: 'http://localhost:3001/api', description: 'Development' },
-      { url: 'https://seapedia-backend.onrender.com/api', description: 'Production' },
+      { url: 'https://seapedia-api.railway.app/api', description: 'Production' },
     ],
     components: {
       securitySchemes: {

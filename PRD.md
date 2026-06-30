@@ -490,4 +490,4 @@ Driver earns **80% of the delivery fee** for each completed delivery.
 - Swagger/OpenAPI documentation
 - Seed data for all roles
 - Incremental Git commit history (no squashed commits)
-- Optional: deployment URL on Vercel + Render
+- Optional: deployment URL on Vercel + Railway

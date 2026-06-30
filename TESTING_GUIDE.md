@@ -358,6 +358,6 @@ curl -X POST http://localhost:3001/api/auth/refresh \
 
 ### Deployment
 - [ ] Frontend live di Vercel
-- [ ] Backend live di Render
+- [ ] Backend live di Railway
 - [ ] Database sudah di-seed di production
 - [ ] Test semua flow di environment production (bukan localhost)

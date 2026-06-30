@@ -37,7 +37,7 @@
 - **Sanitization:** sanitize-html (for user-generated content)
 - **API Docs:** swagger-jsdoc + swagger-ui-express
 - **Security:** helmet, express-rate-limit, cors
-- **Deployment:** Render
+- **Deployment:** Railway
 
 ---
 
@@ -190,7 +190,7 @@ The complete schema is in `SDD.md` → Section 2.1. Key tables:
 
 ### Base URL
 - Development: `http://localhost:3001/api`
-- Production: `https://seapedia-backend.onrender.com/api`
+- Production: `https://seapedia-api.railway.app/api`
 
 ### Standard Response Envelope
 ```typescript
