@@ -164,10 +164,10 @@ export default function LandingPage() {
             </div>
           </Reveal>
 
-          <Reveal stagger staggerGap={0.1} className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Reveal stagger staggerGap={0.1} className="grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2">
             {/* Card 1: Pembeli */}
             <RevealItem className="md:col-span-2">
-              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative min-h-50 h-full overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 transition-shadow duration-200 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative flex h-full min-h-50 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 transition-shadow duration-200 hover:shadow-lg md:block dark:border-zinc-800 dark:bg-zinc-900">
                 <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
                   Sebagai pembeli
                 </h3>
@@ -176,7 +176,7 @@ export default function LandingPage() {
                   <li>Voucher dan promo berlaku otomatis di keranjang</li>
                   <li>Pantau pesanan sampai benar-benar tiba</li>
                 </ul>
-                <div className="absolute bottom-4 right-4 hidden items-center gap-2 rounded-full border border-zinc-200 bg-white py-1.5 pl-1.5 pr-3 shadow-sm sm:flex dark:border-zinc-700 dark:bg-zinc-800">
+                <div className="mt-4 flex items-center gap-2 self-start rounded-full border border-zinc-200 bg-white py-1.5 pl-1.5 pr-3 shadow-sm md:absolute md:bottom-4 md:right-4 md:mt-0 dark:border-zinc-700 dark:bg-zinc-800">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success-50 text-[11px] font-bold text-success-700 dark:bg-success-500/10 dark:text-success-400">
                     %
                   </span>
@@ -185,40 +185,48 @@ export default function LandingPage() {
               </TiltCard>
             </RevealItem>
 
-            {/* Card 2: Admin (dark, tall, always dark) */}
+            {/* Card 2: Admin (dark, spans both rows, always dark) */}
             <RevealItem className="md:row-span-2">
-              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group h-full overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white transition-shadow duration-200 hover:shadow-lg">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative flex h-full min-h-50 flex-col overflow-hidden rounded-2xl bg-zinc-950 p-6 text-white transition-shadow duration-200 hover:shadow-lg md:block">
                 <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai admin</h3>
                 <p className="mb-3 text-sm text-zinc-400">Mengawasi seluruh aktivitas platform.</p>
                 <ul className="space-y-1.5 text-sm text-zinc-400">
                   <li>Pantau toko, pesanan, dan pengiriman</li>
                   <li>Atur voucher dan promo yang berjalan</li>
                   <li>Proses pengembalian dana yang tertunda</li>
+                  <li>Simulasikan hari berikutnya untuk uji SLA pengiriman</li>
                 </ul>
+                <span className="mt-4 self-start rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-zinc-200 md:absolute md:bottom-4 md:right-4 md:mt-0">
+                  4 peran terpantau
+                </span>
               </TiltCard>
             </RevealItem>
 
             {/* Card 3: Penjual (brand color, always brand) */}
             <RevealItem>
-              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group h-full rounded-2xl bg-brand-500 p-6 text-white transition-shadow duration-200 hover:shadow-lg">
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative flex h-full min-h-50 flex-col overflow-hidden rounded-2xl bg-brand-500 p-6 text-white transition-shadow duration-200 hover:shadow-lg md:block">
                 <h3 className="mb-2 font-display text-xl font-semibold text-white">Sebagai penjual</h3>
                 <ul className="space-y-1.5 text-sm text-brand-100">
                   <li>Kelola produk dan stok dari satu dasbor</li>
                   <li>Proses pesanan sampai siap dikirim</li>
+                  <li>Pantau pendapatan toko secara real-time</li>
                 </ul>
+                <span className="mt-4 self-start rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white md:absolute md:bottom-4 md:right-4 md:mt-0">
+                  5 produk aktif
+                </span>
               </TiltCard>
             </RevealItem>
 
             {/* Card 4: Kurir */}
-            <RevealItem className="md:col-span-2">
-              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative min-h-40 h-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-shadow duration-200 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+            <RevealItem>
+              <TiltCard maxTilt={4} radiusClassName="rounded-2xl" className="group relative flex h-full min-h-50 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 p-6 transition-shadow duration-200 hover:shadow-lg md:block dark:border-zinc-800 dark:bg-zinc-950">
                 <h3 className="mb-2 font-display text-xl font-semibold text-zinc-950 dark:text-zinc-50">
                   Sebagai kurir
                 </h3>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
                   Ambil pekerjaan pengiriman yang tersedia dan dapatkan bagian dari setiap ongkir.
                 </p>
-                <span className="absolute bottom-4 right-4 rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 dark:bg-success-500/10 dark:text-success-400">
+                <span className="mt-4 self-start rounded-full bg-success-50 px-3 py-1 text-xs font-semibold text-success-700 md:absolute md:bottom-4 md:right-4 md:mt-0 dark:bg-success-500/10 dark:text-success-400">
                   Rp 12.000
                 </span>
               </TiltCard>
