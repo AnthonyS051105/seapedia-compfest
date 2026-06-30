@@ -2,8 +2,8 @@
 
 > Multi-role e-commerce marketplace — COMPFEST 18 Software Engineering Academy
 
-**Live Demo:** https://seapedia-pi.vercel.app/
-**API Docs (Swagger):** https://seapediabackend-production-9b3e.up.railway.app/api/docs
+**Live Demo:** https://seapedia-pi.vercel.app/ \
+**API Docs (Swagger):** https://seapediabackend-production-9b3e.up.railway.app/api/docs \
 **GitHub:** https://github.com/AnthonyS051105/seapedia-compfest
 
 ---
@@ -25,14 +25,14 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS |
-| Backend | Express.js, TypeScript, Prisma ORM |
-| Database | PostgreSQL (Supabase) |
-| Auth | JWT (access token 15min + refresh token 7 days, httpOnly cookie) |
-| API Docs | Swagger/OpenAPI (swagger-jsdoc + swagger-ui-express) |
-| Deployment | Vercel (frontend) + Railway (backend) |
+| Layer      | Technology                                                       |
+| ---------- | ---------------------------------------------------------------- |
+| Frontend   | Next.js 14 (App Router), TypeScript, Tailwind CSS                |
+| Backend    | Express.js, TypeScript, Prisma ORM                               |
+| Database   | PostgreSQL (Supabase)                                            |
+| Auth       | JWT (access token 15min + refresh token 7 days, httpOnly cookie) |
+| API Docs   | Swagger/OpenAPI (swagger-jsdoc + swagger-ui-express)             |
+| Deployment | Vercel (frontend) + Railway (backend)                            |
 
 ---
 
@@ -130,21 +130,21 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api
 
 ## Demo Accounts
 
-| Role | Email | Password | Notes |
-|------|-------|----------|-------|
-| Admin | admin@seapedia.com | Admin@123 | Admin role only |
+| Role           | Email                | Password   | Notes                                         |
+| -------------- | -------------------- | ---------- | --------------------------------------------- |
+| Admin          | admin@seapedia.com   | Admin@123  | Admin role only                               |
 | Seller + Buyer | seller1@seapedia.com | Seller@123 | Has store "Toko Elektronik Maju" + 5 products |
-| Buyer + Driver | buyer1@seapedia.com | Buyer@123 | Wallet balance Rp 1.000.000 |
-| Driver only | driver1@seapedia.com | Driver@123 | No other roles |
+| Buyer + Driver | buyer1@seapedia.com  | Buyer@123  | Wallet balance Rp 1.000.000                   |
+| Driver only    | driver1@seapedia.com | Driver@123 | No other roles                                |
 
 **Active discount codes for testing:**
 
-| Code | Type | Value | Limit |
-|------|------|-------|-------|
-| HEMAT10 | Voucher (Percentage) | 10% off | 100 uses |
-| DISC50K | Voucher (Fixed) | Rp 50.000 off | 50 uses |
-| PROMO15 | Promo (Percentage) | 15% off | No limit |
-| FLASH25K | Promo (Fixed) | Rp 25.000 off | No limit |
+| Code     | Type                 | Value         | Limit    |
+| -------- | -------------------- | ------------- | -------- |
+| HEMAT10  | Voucher (Percentage) | 10% off       | 100 uses |
+| DISC50K  | Voucher (Fixed)      | Rp 50.000 off | 50 uses  |
+| PROMO15  | Promo (Percentage)   | 15% off       | No limit |
+| FLASH25K | Promo (Fixed)        | Rp 25.000 off | No limit |
 
 ---
 
@@ -171,6 +171,7 @@ final_total      = tax_base + ppn_12
 ```
 
 **Contoh konkret:**
+
 - Subtotal: Rp 300.000
 - Diskon HEMAT10 (10%): -Rp 30.000
 - Discounted: Rp 270.000
@@ -183,12 +184,12 @@ final_total      = tax_base + ppn_12
 
 ### 3. Voucher vs Promo
 
-| Atribut | Voucher | Promo |
-|---------|---------|-------|
-| Batas penggunaan | Ya (`max_usage`) | Tidak |
-| Tanggal kadaluarsa | Ya | Ya |
-| Dibuat oleh | Admin | Admin |
-| Kombinasi | ❌ Tidak bisa digabung | ❌ Tidak bisa digabung |
+| Atribut            | Voucher                | Promo                  |
+| ------------------ | ---------------------- | ---------------------- |
+| Batas penggunaan   | Ya (`max_usage`)       | Tidak                  |
+| Tanggal kadaluarsa | Ya                     | Ya                     |
+| Dibuat oleh        | Admin                  | Admin                  |
+| Kombinasi          | ❌ Tidak bisa digabung | ❌ Tidak bisa digabung |
 
 Hanya **satu kode diskon** (voucher ATAU promo) yang bisa digunakan per pesanan — tidak ada stacking.
 
@@ -223,11 +224,11 @@ Setiap perubahan status dicatat di `OrderStatusHistory` dengan timestamp. Status
 
 Kurir mendapat **80% dari ongkos kirim** untuk setiap pengiriman yang selesai dikonfirmasi.
 
-| Metode | Ongkir | Pendapatan Kurir (80%) |
-|--------|--------|------------------------|
-| Instant | Rp 15.000 | Rp 12.000 |
-| Next Day | Rp 10.000 | Rp 8.000 |
-| Regular | Rp 6.000 | Rp 4.800 |
+| Metode   | Ongkir    | Pendapatan Kurir (80%) |
+| -------- | --------- | ---------------------- |
+| Instant  | Rp 15.000 | Rp 12.000              |
+| Next Day | Rp 10.000 | Rp 8.000               |
+| Regular  | Rp 6.000  | Rp 4.800               |
 
 Dicatat di `DeliveryJob.earning` (per pekerjaan) dan diakumulasikan di `DriverProfile.total_earnings`.
 
@@ -235,13 +236,14 @@ Dicatat di `DeliveryJob.earning` (per pekerjaan) dan diakumulasikan di `DriverPr
 
 Pesanan dianggap overdue jika tidak mencapai status `Pesanan Selesai` dalam batas waktu berikut, dihitung dari waktu checkout (`created_at`):
 
-| Metode | SLA |
-|--------|-----|
-| Instant | 1 hari |
+| Metode   | SLA    |
+| -------- | ------ |
+| Instant  | 1 hari |
 | Next Day | 2 hari |
-| Regular | 3 hari |
+| Regular  | 3 hari |
 
 **Yang terjadi saat overdue (dalam satu Prisma transaction):**
+
 1. Flag `is_overdue_processed` di-set `true` lebih dulu — mencegah pemrosesan ganda (double refund/restock)
 2. Status pesanan berubah → `Dikembalikan`, dicatat di `OrderStatusHistory`
 3. Dana `final_total` dikembalikan ke dompet pembeli (tipe transaksi: `REFUND`)
@@ -249,6 +251,7 @@ Pesanan dianggap overdue jika tidak mencapai status `Pesanan Selesai` dalam bata
 5. Pendapatan penjual tidak pernah dicatat untuk pesanan ini (income hanya dicatat saat `Pesanan Selesai`)
 
 **Cara mensimulasikan "hari berikutnya":**
+
 1. Login sebagai Admin → buka `/admin/dashboard`
 2. Klik tombol **"Simulasi Hari Berikutnya"**
 3. Setiap klik memanggil `POST /api/admin/simulate-next-day`, yang menambah `system_date_offset` di tabel `SystemConfig` sebesar 1 hari, lalu otomatis memproses semua pesanan yang sudah melewati SLA-nya
@@ -259,16 +262,20 @@ Pesanan dianggap overdue jika tidak mencapai status `Pesanan Selesai` dalam bata
 ## Security
 
 ### SQL Injection Prevention
+
 Semua query database menggunakan **Prisma ORM**, yang secara otomatis memparameterisasi seluruh input. Satu-satunya raw query (`$queryRaw` untuk `SELECT ... FOR UPDATE SKIP LOCKED` saat driver mengambil job) menggunakan tagged template literal sehingga tetap diparameterisasi — tidak ada string interpolation langsung ke SQL di manapun dalam codebase.
 
 ### XSS Prevention
+
 - **Backend:** Semua input teks dari pengguna (nama reviewer & komentar review, nama/deskripsi toko, nama/deskripsi produk, nama lengkap user, nama/deskripsi promo) diproses melalui `sanitize-html` sebelum disimpan ke database — menghapus seluruh tag HTML.
 - **Frontend:** React JSX secara default meng-escape semua string sehingga konten tidak bisa dieksekusi sebagai HTML. `dangerouslySetInnerHTML` tidak digunakan di manapun pada konten buatan pengguna.
 
 ### Input Validation
+
 Semua request body dan query divalidasi menggunakan **Zod schemas** sebelum mencapai controller (lihat `ZOD_SCHEMAS.md`). Field yang tidak valid mengembalikan HTTP 400 dengan detail error per field.
 
 ### Session & Token Security
+
 - **Access token:** JWT dengan expiry 15 menit, disimpan di memory (Zustand store) — tidak pernah di localStorage.
 - **Refresh token:** JWT dengan expiry 7 hari, disimpan sebagai `httpOnly`, `Secure` (production), `SameSite=Strict` cookie — tidak bisa diakses JavaScript.
 - **Logout:** Refresh token ditandai `is_revoked = true` di database, sehingga tidak bisa dipakai lagi walau secara kriptografis masih valid (belum expired).
@@ -276,6 +283,7 @@ Semua request body dan query divalidasi menggunakan **Zod schemas** sebelum menc
 - **Rate limiting:** Endpoint `/api/auth/*` dibatasi 10 request/menit per IP; endpoint lain dibatasi 100 request/menit per IP.
 
 ### Role-Based Access Control (RBAC)
+
 - Setiap endpoint protected memverifikasi `active_role` dari payload JWT di sisi **server**, bukan dari state frontend.
 - Kepemilikan resource diverifikasi pada setiap operasi mutasi (mis. seller hanya bisa edit produk dari tokonya sendiri, buyer hanya bisa lihat pesanannya sendiri, driver hanya bisa menyelesaikan job miliknya).
 - Admin bersifat eksklusif (tidak bisa digabung dengan role lain); role non-admin tidak bisa mengakses endpoint `/api/admin/*` (dijaga oleh `requireRole('ADMIN')` di level router).
@@ -288,6 +296,7 @@ Semua request body dan query divalidasi menggunakan **Zod schemas** sebelum menc
 - **Production:** https://seapediabackend-production-9b3e.up.railway.app/api/docs
 
 Semua endpoint terdokumentasi dengan:
+
 - Request body schema
 - Query parameters
 - Response schema per status code (200/201/400/401/403/404/409)
@@ -298,11 +307,11 @@ Semua endpoint terdokumentasi dengan:
 
 ## Deployment
 
-| Service | Provider | URL |
-|---------|----------|-----|
-| Frontend | Vercel | https://seapedia-pi.vercel.app/ |
-| Backend API | Railway | https://seapediabackend-production-9b3e.up.railway.app/api |
-| Database | Supabase (PostgreSQL) | private |
+| Service     | Provider              | URL                                                        |
+| ----------- | --------------------- | ---------------------------------------------------------- |
+| Frontend    | Vercel                | https://seapedia-pi.vercel.app/                            |
+| Backend API | Railway               | https://seapediabackend-production-9b3e.up.railway.app/api |
+| Database    | Supabase (PostgreSQL) | private                                                    |
 
 Demo accounts (see [Demo Accounts](#demo-accounts)) are seeded on the production database and are usable directly on the live demo.
 
