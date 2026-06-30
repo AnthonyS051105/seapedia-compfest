@@ -1,6 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
+import axios from 'axios'
 import { Toaster } from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/auth.store'
@@ -21,7 +22,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
     async function initializeAuth() {
       try {
-        const { data: refreshData } = await api.post<ApiResponse<RefreshResponseData>>('/auth/refresh')
+        const { data: refreshData } = await axios.post<ApiResponse<RefreshResponseData>>(
+          '/api/auth/refresh',
+          {},
+          { withCredentials: true }
+        )
         useAuthStore.getState().setAccessToken(refreshData.data.access_token)
         const { data: meData } = await api.get<ApiResponse<User>>('/auth/me')
         if (isMounted) {
