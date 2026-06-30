@@ -159,6 +159,9 @@ body {
   }
 }
 
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
 /* Micro-interactions */
 .card-interactive {
   transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
@@ -189,4 +192,13 @@ button:active { transform: scale(0.98); }
   background-image:
     linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+}
+
+/* White grid mesh for solid-colored cards, fading toward the bottom-left where text sits */
+.bg-grid-card {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.16) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 90% 90% at 100% 0%, black 30%, transparent 85%);
 }
