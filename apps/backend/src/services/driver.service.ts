@@ -194,6 +194,13 @@ class DriverService {
     const driverProfile = await this.getDriverProfileOrThrow(driverId)
 
     await prisma.$transaction(async (tx) => {
+      const existingActiveJob = await tx.deliveryJob.findFirst({
+        where: { driver_id: driverProfile.id, order: { status: JOB_ACTIVE_STATUS } },
+      })
+      if (existingActiveJob) {
+        throw new ConflictError('Kamu masih punya pekerjaan aktif yang belum diselesaikan')
+      }
+
       const locked = await tx.$queryRaw<DeliveryJobRow[]>`
         SELECT id, order_id, driver_id FROM "DeliveryJob"
         WHERE id = ${jobId} AND driver_id IS NULL
